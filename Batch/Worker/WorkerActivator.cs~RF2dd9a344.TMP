@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Batch.Worker
+{
+    public class WorkerActivator
+    {
+        // worker name to a function that creates an instance of it
+        private Dictionary<string, Func<WorkerBase>> WorkerActivators;
+
+
+        public WorkerActivator()
+        {
+
+        }
+
+        public WorkerBase CreateWorkerInstance(string WorkerName, string WorkerClassNameWithNamespace)
+        {
+            AddWorkerActivator(WorkerName, WorkerClassNameWithNamespace);
+
+            return WorkerActivators[WorkerName].Invoke();
+        }
+
+        private void AddWorkerActivator(string WorkerName, string WorkerClassNameWithNamespace)
+        {
+            if (WorkerClassNameWithNamespace == null)
+                throw new ArgumentNullException("WorkerName");
+
+            if (WorkerClassNameWithNamespace.Length == 0)
+                throw new ArgumentException("WorkerName must not be zero length");
+
+            if (!WorkerActivators.ContainsKey(WorkerClassNameWithNamespace))
+            {
+                Type type = TypeDelegator.GetType(WorkerClassNameWithNamespace);
+                MethodInfo mi = type.GetMethod("Create");
+
+                var createInstanceDelegate = (Func<WorkerBase>)Delegate.CreateDelegate(typeof(Func<WorkerBase>), mi);
+
+                WorkerActivators.Add(WorkerName, createInstanceDelegate);
+            }
+        }
+
+        public void AddWorkerActivators(List<string> Workers)
+        {
+            foreach (var WorkerClassNameWithNamespace in Workers)
+                AddWorkerActivator(WorkerClassNameWithNamespace);
+        }
+    }
+}
