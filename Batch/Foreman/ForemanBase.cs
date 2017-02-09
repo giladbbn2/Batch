@@ -21,9 +21,6 @@ namespace Batch.Foreman
         private WorkerActivator WorkerActivator;
         private ForemanConfiguration Config;
 
-        private int WorkerCounter;
-        private int NodeCounter;
-        private int QueueCounter;
         private WorkerNode[] Nodes; // id is nodeId
         private BlockingCollection<object>[] Queues;    // id is queueId
 
@@ -33,7 +30,6 @@ namespace Batch.Foreman
         private Dictionary<string, int> QueueNameToId;
         private bool[] QueueIsToEl;   // id is queueId
         private bool[] QueueIsFromEl; // id is queueId
-
 
         private bool Disposed;
 
@@ -66,6 +62,10 @@ namespace Batch.Foreman
             if (!File.Exists(PathToSettingsFile))
                 throw new FileNotFoundException(PathToSettingsFile);
 
+            int WorkerCounter = 0;
+            int NodeCounter = 0;
+            int QueueCounter = 0;
+
             WorkerActivator = new WorkerActivator();
             
             try
@@ -82,7 +82,6 @@ namespace Batch.Foreman
             if (Config.workers == null || Config.workers.Count == 0)
                 throw new ArgumentException("No workers in config file");
 
-            WorkerCounter = 0;
             WorkerNameToId = new Dictionary<string, int>(Config.workers.Count);
             foreach (var configWorker in Config.workers)
             {
@@ -107,7 +106,6 @@ namespace Batch.Foreman
             if (Config.nodes == null || Config.nodes.Count == 0)
                 throw new ArgumentException("No nodes in config file");
 
-            NodeCounter = 0;
             Nodes = new WorkerNode[Config.nodes.Count];
             NodeNameToId = new Dictionary<string, int>(Config.nodes.Count);
             foreach (var configNode in Config.nodes)
@@ -135,7 +133,6 @@ namespace Batch.Foreman
             if (Config.queues == null || Config.queues.Count == 0)
                 throw new ArgumentException("No queues in config file");
 
-            QueueCounter = 0;
             Queues = new BlockingCollection<object>[Config.queues.Count];
             QueueNameToId = new Dictionary<string, int>(Config.queues.Count);
             QueueIsToEl = new bool[Config.queues.Count];
@@ -205,7 +202,7 @@ namespace Batch.Foreman
 
             DryRun();
 
-            // dispose of helper dicts
+            // dispose of helpers
             WorkerNameToId = null;
             NodeNameToId = null;
             QueueNameToId = null;
@@ -213,6 +210,7 @@ namespace Batch.Foreman
 
         public void DryRun()
         {
+            // verify connections
             // iterate over all tree and check if there are any unconnected nodes
             foreach (var node in Nodes)
                 if (!node.IsConnected)
@@ -225,14 +223,17 @@ namespace Batch.Foreman
                     throw new Exception("A queue cannot be an edge, but must connect a node as input and another node as output");
             }
 
-            // several independent topologies can coexist in a foreman
+            // several independent topologies can coexist in a single foreman
+
+            // dispose of helpers
+            QueueIsFromEl = null;
+            QueueIsToEl = null;
         }
 
         public void Run()
         {
             var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
             Task[] tasks = new Task[Nodes.Length];
-
             
             foreach (var node in Nodes)
             {
@@ -240,18 +241,6 @@ namespace Batch.Foreman
                 tasks[node.Id] = f.StartNew(() => node.Run());
             }
 
-            /*
-
-            for (var i = 0; i < nodes.Count; i++)
-            {
-                Console.WriteLine("Starting new thread with " + nodes[i].name);
-
-                tasks[i] = f.StartNew(() => nodes[i].Run());
-                //nodes[i].Run();
-
-            }
-
-            */
             Task.WaitAll(tasks);    
         }
 
