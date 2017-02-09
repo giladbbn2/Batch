@@ -211,6 +211,7 @@ namespace Batch.Foreman
         public void DryRun()
         {
             // verify connections
+
             // iterate over all tree and check if there are any unconnected nodes
             foreach (var node in Nodes)
                 if (!node.IsConnected)
