@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using log4net;
 
-[assembly: log4net.Config.XmlConfigurator(ConfigFile = "MyStandardLog4Net.config", Watch = true)]
+//[assembly: log4net.Config.XmlConfigurator(ConfigFile = "MyStandardLog4Net.config", Watch = true)]
 
 namespace Batch.Foreman
 {
@@ -21,16 +21,16 @@ namespace Batch.Foreman
         private WorkerActivator WorkerActivator;
         private ForemanConfiguration Config;
 
-        private int workerCounter;
-        private List<Node> nodes;
-        private List<BlockingCollection<object>> queues;
+        private int WorkerCounter;
+        private List<WorkerNode> Nodes;
+        private List<BlockingCollection<object>> Queues;
         
         // helper dicts
-        private Dictionary<string, int> workerNameToId;
-        private Dictionary<string, int> nodeNameToId;
-        private Dictionary<string, int> queueNameToId;
+        private Dictionary<string, int> WorkerNameToId;
+        private Dictionary<string, int> NodeNameToId;
+        private Dictionary<string, int> QueueNameToId;
 
-        private bool disposed;
+        private bool Disposed;
 
 
         public ForemanBase()
@@ -52,7 +52,7 @@ namespace Batch.Foreman
 
         public void LoadSettingsFile()
         {
-            if (disposed)
+            if (Disposed)
                 return;
 
             if (PathToSettingsFile == null)
@@ -77,20 +77,20 @@ namespace Batch.Foreman
             if (Config.workers == null || Config.workers.Count == 0)
                 throw new ArgumentException("No workers in config file");
 
-            workerCounter = 0;
-            workerNameToId = new Dictionary<string, int>(Config.workers.Count);
+            WorkerCounter = 0;
+            WorkerNameToId = new Dictionary<string, int>(Config.workers.Count);
             foreach (var configWorker in Config.workers)
             {
-                if (workerNameToId.ContainsKey(configWorker.name))
+                if (WorkerNameToId.ContainsKey(configWorker.name))
                     throw new ArgumentException("The worker name '" + configWorker.name + "' is already registered");
 
-                int workerId = workerCounter;
-                workerCounter++;
+                int workerId = WorkerCounter;
+                WorkerCounter++;
 
                 try
                 {
                     WorkerActivator.RegisterWorkerType(workerId, configWorker.className);
-                    workerNameToId.Add(configWorker.name, workerId);
+                    WorkerNameToId.Add(configWorker.name, workerId);
                 }
                 catch (Exception ex)
                 {
@@ -102,46 +102,46 @@ namespace Batch.Foreman
             if (Config.nodes == null || Config.nodes.Count == 0)
                 throw new ArgumentException("No nodes in config file");
 
-            nodes = new List<Node>(Config.nodes.Count);
-            nodeNameToId = new Dictionary<string, int>(Config.nodes.Count);
+            Nodes = new List<WorkerNode>(Config.nodes.Count);
+            NodeNameToId = new Dictionary<string, int>(Config.nodes.Count);
             foreach (var configNode in Config.nodes)
             {
                 string workerName = configNode.worker;
-                if (!workerNameToId.ContainsKey(workerName))
+                if (!WorkerNameToId.ContainsKey(workerName))
                     throw new ArgumentException("The worker name '" + workerName + "' in nodes section is not defined in workers section");
-                int workerId = workerNameToId[workerName];
+                int workerId = WorkerNameToId[workerName];
                 
-                if (nodeNameToId.ContainsKey(configNode.name))
+                if (NodeNameToId.ContainsKey(configNode.name))
                     throw new ArgumentException("The node name '" + configNode.name + "' is already registered");
 
-                var node = new Node();
-                node.id = nodes.Count;
-                node.name = configNode.name;
-                node.workerId = workerId;
+                var node = new WorkerNode();
+                node.Id = Nodes.Count;
+                node.Name = configNode.name;
+                node.WorkerId = workerId;
                 node.WorkerActivator = WorkerActivator;
-                nodes.Add(node);
-                nodeNameToId.Add(configNode.name, node.id);
+                Nodes.Add(node);
+                NodeNameToId.Add(configNode.name, node.Id);
             }
 
             // Register queues
             if (Config.queues == null || Config.queues.Count == 0)
                 throw new ArgumentException("No queues in config file");
 
-            queues = new List<BlockingCollection<object>>(Config.queues.Count);
-            queueNameToId = new Dictionary<string, int>(Config.queues.Count);
+            Queues = new List<BlockingCollection<object>>(Config.queues.Count);
+            QueueNameToId = new Dictionary<string, int>(Config.queues.Count);
             foreach (var configQueue in Config.queues)
             {
-                if (queueNameToId.ContainsKey(configQueue.name))
+                if (QueueNameToId.ContainsKey(configQueue.name))
                     throw new ArgumentException("The queue name '" + configQueue.name + "' is already registered");
 
-                int queueId = queues.Count;
+                int queueId = Queues.Count;
 
                 if (configQueue.bufferLimit == 0)
-                    queues.Add(new BlockingCollection<object>());
+                    Queues.Add(new BlockingCollection<object>());
                 else
-                    queues.Add(new BlockingCollection<object>(configQueue.bufferLimit));
+                    Queues.Add(new BlockingCollection<object>(configQueue.bufferLimit));
 
-                queueNameToId.Add(configQueue.name, queueId);
+                QueueNameToId.Add(configQueue.name, queueId);
             }
 
             // Register connections
@@ -162,25 +162,25 @@ namespace Batch.Foreman
 
                 if (fromEl == TopologyElementType.Node && toEl == TopologyElementType.Queue)
                 {
-                    var node = nodes[fromElId];
-                    var queue = queues[toElId];
-                    node.output = queue;
+                    var node = Nodes[fromElId];
+                    var queue = Queues[toElId];
+                    node.Output = queue;
                 }
 
                 if (fromEl == TopologyElementType.Queue && toEl == TopologyElementType.Node)
                 {
-                    var node = nodes[toElId];
-                    var queue = queues[fromElId];
-                    node.input = queue;
+                    var node = Nodes[toElId];
+                    var queue = Queues[fromElId];
+                    node.Input = queue;
                 }
             }
 
             DryRun();
 
             // dispose of helper dicts
-            workerNameToId = null;
-            nodeNameToId = null;
-            queueNameToId = null;
+            WorkerNameToId = null;
+            NodeNameToId = null;
+            QueueNameToId = null;
         }
 
         public void DryRun()
@@ -188,18 +188,20 @@ namespace Batch.Foreman
             // iterate over all tree and check if there are any unconnected edges
             // first element must be a node
             // last element must be a node
+
+
         }
 
         public void Run()
         {
             var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
-            Task[] tasks = new Task[nodes.Count];
+            Task[] tasks = new Task[Nodes.Count];
 
             
-            foreach (var node in nodes)
+            foreach (var node in Nodes)
             {
-                Console.WriteLine("Starting new thread with " + node.name);
-                tasks[node.id] = f.StartNew(() => node.Run());
+                Console.WriteLine("Starting new thread with " + node.Name);
+                tasks[node.Id] = f.StartNew(() => node.Run());
             }
 
             /*
@@ -219,20 +221,20 @@ namespace Batch.Foreman
 
         public void Dispose()
         {
-            disposed = true;
+            Disposed = true;
         }
 
         private TopologyElementType GetNameTopologyType(string Name, out int id)
         {
             int nodeId, queueId, workerId;
 
-            bool isNode = nodeNameToId.TryGetValue(Name, out nodeId);
-            bool isQueue = queueNameToId.TryGetValue(Name, out queueId);
+            bool isNode = NodeNameToId.TryGetValue(Name, out nodeId);
+            bool isQueue = QueueNameToId.TryGetValue(Name, out queueId);
 
             if (isNode && isQueue)
                 throw new Exception("The name '" + Name + "' is ambigious - a node or a queue?");
 
-            bool isWorker = workerNameToId.TryGetValue(Name, out workerId);
+            bool isWorker = WorkerNameToId.TryGetValue(Name, out workerId);
 
             if ((isNode && isWorker) || (isQueue && isWorker))
                 throw new Exception("The name '" + Name + "' is ambigious");

@@ -63,7 +63,7 @@
     <Compile Include="Foreman\Foreman.cs" />
     <Compile Include="Foreman\ForemanBase.cs" />
     <Compile Include="Foreman\ForemanConfiguration.cs" />
-    <Compile Include="Foreman\Node.cs" />
+    <Compile Include="Worker\WorkerNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Worker\Worker.cs" />
     <Compile Include="Worker\WorkerActivator.cs" />

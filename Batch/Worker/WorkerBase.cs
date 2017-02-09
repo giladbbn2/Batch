@@ -10,7 +10,7 @@ namespace Batch.Worker
 {
     public abstract class WorkerBase : IDisposable
     {
-        public int id;
+        public int Id;
 
         public event EventHandler Started;
         public event EventHandler Alive;
@@ -18,7 +18,7 @@ namespace Batch.Worker
 
         private WorkerConfiguration Config;
 
-        public bool disposed { get; private set; }
+        public bool Disposed { get; private set; }
 
 
         public WorkerBase()
@@ -54,7 +54,7 @@ namespace Batch.Worker
 
         protected void OnStarted(EventArgs e)
         {
-            if (disposed)
+            if (Disposed)
                 return;
 
             Started?.Invoke(this, e);
@@ -62,7 +62,7 @@ namespace Batch.Worker
 
         protected void OnAlive(EventArgs e)
         {
-            if (disposed)
+            if (Disposed)
                 return;
 
             Alive?.Invoke(this, e);
@@ -70,7 +70,7 @@ namespace Batch.Worker
 
         protected void OnEnded(EventArgs e)
         {
-            if (disposed)
+            if (Disposed)
                 return;
 
             Ended?.Invoke(this, e);
@@ -78,7 +78,7 @@ namespace Batch.Worker
 
         public void Dispose()
         {
-            disposed = true;
+            Disposed = true;
             Started = null;
             Alive = null;
             Ended = null;
