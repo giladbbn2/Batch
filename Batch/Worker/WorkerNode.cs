@@ -25,6 +25,8 @@ namespace Batch.Worker
 
         private WorkerBase Worker;
 
+        public bool IsConnected;
+
 
         public WorkerNode()
         {

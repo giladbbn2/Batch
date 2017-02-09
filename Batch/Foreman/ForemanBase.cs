@@ -22,13 +22,18 @@ namespace Batch.Foreman
         private ForemanConfiguration Config;
 
         private int WorkerCounter;
-        private List<WorkerNode> Nodes;
-        private List<BlockingCollection<object>> Queues;
-        
-        // helper dicts
+        private int NodeCounter;
+        private int QueueCounter;
+        private WorkerNode[] Nodes; // id is nodeId
+        private BlockingCollection<object>[] Queues;    // id is queueId
+
+        // helper structures
         private Dictionary<string, int> WorkerNameToId;
         private Dictionary<string, int> NodeNameToId;
         private Dictionary<string, int> QueueNameToId;
+        private bool[] QueueIsToEl;   // id is queueId
+        private bool[] QueueIsFromEl; // id is queueId
+
 
         private bool Disposed;
 
@@ -102,7 +107,8 @@ namespace Batch.Foreman
             if (Config.nodes == null || Config.nodes.Count == 0)
                 throw new ArgumentException("No nodes in config file");
 
-            Nodes = new List<WorkerNode>(Config.nodes.Count);
+            NodeCounter = 0;
+            Nodes = new WorkerNode[Config.nodes.Count];
             NodeNameToId = new Dictionary<string, int>(Config.nodes.Count);
             foreach (var configNode in Config.nodes)
             {
@@ -115,33 +121,40 @@ namespace Batch.Foreman
                     throw new ArgumentException("The node name '" + configNode.name + "' is already registered");
 
                 var node = new WorkerNode();
-                node.Id = Nodes.Count;
+                node.Id = NodeCounter;
                 node.Name = configNode.name;
                 node.WorkerId = workerId;
                 node.WorkerActivator = WorkerActivator;
-                Nodes.Add(node);
+                Nodes[NodeCounter] = node;
                 NodeNameToId.Add(configNode.name, node.Id);
+
+                NodeCounter++;
             }
 
             // Register queues
             if (Config.queues == null || Config.queues.Count == 0)
                 throw new ArgumentException("No queues in config file");
 
-            Queues = new List<BlockingCollection<object>>(Config.queues.Count);
+            QueueCounter = 0;
+            Queues = new BlockingCollection<object>[Config.queues.Count];
             QueueNameToId = new Dictionary<string, int>(Config.queues.Count);
+            QueueIsToEl = new bool[Config.queues.Count];
+            QueueIsFromEl = new bool[Config.queues.Count];
             foreach (var configQueue in Config.queues)
             {
                 if (QueueNameToId.ContainsKey(configQueue.name))
                     throw new ArgumentException("The queue name '" + configQueue.name + "' is already registered");
 
-                int queueId = Queues.Count;
+                int queueId = QueueCounter;
 
                 if (configQueue.bufferLimit == 0)
-                    Queues.Add(new BlockingCollection<object>());
+                    Queues[queueId] = new BlockingCollection<object>();
                 else
-                    Queues.Add(new BlockingCollection<object>(configQueue.bufferLimit));
+                    Queues[queueId] = new BlockingCollection<object>(configQueue.bufferLimit);
 
                 QueueNameToId.Add(configQueue.name, queueId);
+
+                QueueCounter++;
             }
 
             // Register connections
@@ -155,6 +168,9 @@ namespace Batch.Foreman
                 TopologyElementType fromEl = GetNameTopologyType(fromName, out fromElId);
                 TopologyElementType toEl = GetNameTopologyType(toName, out toElId);
 
+                if (fromEl == TopologyElementType.None && toEl == TopologyElementType.None)
+                    throw new Exception("Connection from and to elements do not exist: '" + fromName + "' -> '" + toName + "'");
+
                 // node to node, node to queue and queue to node are supported
                 // queue to queue is not supported
                 if (fromEl == TopologyElementType.Queue && toEl == TopologyElementType.Queue)
@@ -164,14 +180,26 @@ namespace Batch.Foreman
                 {
                     var node = Nodes[fromElId];
                     var queue = Queues[toElId];
+
+                    if (node.Output != null)
+                        throw new Exception("Can't set two output elements for same node: '" + fromName + "' -> '" + toName + "'");
+                    
                     node.Output = queue;
+                    node.IsConnected = true;
+                    QueueIsToEl[toElId] = true;
                 }
 
                 if (fromEl == TopologyElementType.Queue && toEl == TopologyElementType.Node)
                 {
                     var node = Nodes[toElId];
                     var queue = Queues[fromElId];
+
+                    if (node.Input != null)
+                        throw new Exception("Can't set two input elements for the same node: '" + fromName + "' -> '" + toName + "'");
+
                     node.Input = queue;
+                    node.IsConnected = true;
+                    QueueIsFromEl[fromElId] = true;
                 }
             }
 
@@ -185,17 +213,25 @@ namespace Batch.Foreman
 
         public void DryRun()
         {
-            // iterate over all tree and check if there are any unconnected edges
-            // first element must be a node
-            // last element must be a node
+            // iterate over all tree and check if there are any unconnected nodes
+            foreach (var node in Nodes)
+                if (!node.IsConnected)
+                    throw new Exception("Node is not connected to topology tree: '" + node.Name + "'");
 
+            // check a queue is not an edge
+            for (var i = 0; i < Queues.Length; i++)
+            {
+                if (!QueueIsFromEl[i] || !QueueIsToEl[i])
+                    throw new Exception("A queue cannot be an edge, but must connect a node as input and another node as output");
+            }
 
+            // several independent topologies can coexist in a foreman
         }
 
         public void Run()
         {
             var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
-            Task[] tasks = new Task[Nodes.Count];
+            Task[] tasks = new Task[Nodes.Length];
 
             
             foreach (var node in Nodes)
