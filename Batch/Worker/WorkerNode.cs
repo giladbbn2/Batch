@@ -11,15 +11,14 @@ namespace Batch.Worker
     {
         // init
         public int Id;
+        public string Guid;
         public string Name;
         public int WorkerId;
+        public bool IsFirst;
+        public bool IsLast;
+        public int NodeCount = 1;
         public WorkerActivator WorkerActivator;
 
-        // node to node
-        public WorkerNode NextNode;
-        public object Data; // input/output between node to node, should be OUTSIDE of node?
-
-        // node to queue, queue to node
         public BlockingCollection<object> Input;
         public BlockingCollection<object> Output;
 
@@ -35,16 +34,36 @@ namespace Batch.Worker
 
         public void Run()
         {
-            using (Worker = WorkerActivator.CreateWorkerInstance(WorkerId))
+            try
             {
-                Worker.Run(Input, Output, ref Data);
-            }
+                foreach (var item in Input.GetConsumingEnumerable())
+                {
+                    if (item == null)
+                        continue;
 
-            // if node to node then pass data to next node and run it
-            if (NextNode != null)
+                    using (Worker = WorkerActivator.CreateWorkerInstance(WorkerId))
+                    {
+                        object result = Worker.Run(item);
+                        if (result != null)
+                            Output.Add(result);
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                NextNode.Data = Data;
-                NextNode.Run();
+
+            }
+            finally
+            {
+                try
+                {
+                    Output.CompleteAdding();
+                }
+                catch (Exception ex)
+                {
+                    // Output is already complete
+                }
+
             }
         }
     }

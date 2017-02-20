@@ -47,7 +47,7 @@ namespace Batch.Worker
 
         #endregion
 
-        public virtual void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public virtual object Run(object Item)
         {
             throw new NotImplementedException("Inherited Worker must override the Run() method");
         }

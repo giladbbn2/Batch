@@ -32,6 +32,9 @@ namespace Batch.Foreman
         public int id;
         public string name;
         public string worker;
+        public bool isFirst;
+        public bool isLast;
+        public int nodeCount = 1;
     }
 
     public class FCQueue

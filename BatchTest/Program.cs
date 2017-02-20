@@ -14,62 +14,25 @@ namespace BatchTest
     {
         public class MyWorker1 : Worker
         {
-            public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+            public override object Run(object Item)
             {
-                Console.WriteLine("w1 Started");
-
-                string[] strings = new string[] { "a", "b", "c", "d", "e", "f", "g" };
-
-                foreach (var str in strings)
-                {
-                    Output.Add((object)str);
-                    Thread.Sleep(1000);
-                }
-
-                Output.CompleteAdding();
-
-                Console.WriteLine("w1 Ended");
+                return (object)(Item.ToString() + "|w1|");
             }
         }
 
         public class MyWorker2 : Worker
         {
-            public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+            public override object Run(object Item)
             {
-                Console.WriteLine("w2/3 Started");
-
-                try
-                {
-                    foreach (var item in Input.GetConsumingEnumerable())
-                    {
-                        string str = item.ToString() + "1";
-                        Output.Add((object)str);
-                        Thread.Sleep(1000);
-                    }
-                }
-                finally
-                {
-                    Output.CompleteAdding();
-                }
-
-                Console.WriteLine("w2/3 Ended");
+                return (object)(Item.ToString() + "|w2|");
             }
         }
 
         public class MyWorker3 : Worker
         {
-            public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+            public override object Run(object Item)
             {
-                Console.WriteLine("w4 Started");
-
-                foreach (var item in Input.GetConsumingEnumerable())
-                {
-                    string str = item.ToString() + "g";
-                    Console.WriteLine(str);
-                    Thread.Sleep(1000);
-                }
-
-                Console.WriteLine("w4 Ended");
+                return (object)(Item.ToString() + "|w3|");
             }
         }
 
@@ -94,12 +57,12 @@ namespace BatchTest
                
 
                 {
-                    "foremanVer": "0.1",
-	                "NetMQPort": "5556",
+	                "foremanVer": "0.1",
+	                "NetMQPort": "",
 	                "workers": [{
 		                "name": "w1",
 		                "className": "BatchTest.Program+MyWorker1, BatchTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
-                    }, {
+	                }, {
 		                "name": "w2",
 		                "className": "BatchTest.Program+MyWorker2, BatchTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
 	                }, {
@@ -108,7 +71,9 @@ namespace BatchTest
 	                }],
 	                "nodes": [{
 		                "name": "n1",
-		                "worker": "w1"
+		                "worker": "w1",
+		                "isFirst": true,
+		                "nodeCount": 1
 	                }, {
 		                "name": "n2",
 		                "worker": "w2"
@@ -117,7 +82,8 @@ namespace BatchTest
 		                "worker": "w2"
 	                }, {
 		                "name": "n4",
-		                "worker": "w3"
+		                "worker": "w3",
+		                "isLast": true
 	                }],
 	                "queues": [{
 		                "name": "q1",
@@ -151,7 +117,35 @@ namespace BatchTest
 
             var frmn = new Foreman(@"C:\projects\Batch\Batch\Config\frmn-test.config");
             frmn.LoadSettingsFile();
+
+            var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
+            f.StartNew(() => {
+                try
+                {
+                    foreach (var item in frmn.lastQueue.GetConsumingEnumerable())
+                    {
+                        if (item == null)
+                            continue;
+
+                        Console.WriteLine(item.ToString());
+                    }
+                }
+                finally
+                {
+                    frmn.lastQueue.CompleteAdding();
+                }
+            });
+
+            frmn.firstQueue.Add("1");
+            frmn.firstQueue.Add("2");
+            frmn.firstQueue.Add("3");
+            frmn.firstQueue.CompleteAdding();
+
             frmn.Run();
+
+            
+
+            
 
             Console.ReadLine();
         }
