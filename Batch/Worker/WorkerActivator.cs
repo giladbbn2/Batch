@@ -49,6 +49,10 @@ namespace Batch.Worker
             if (!WorkerTypes.ContainsKey(WorkerId))
             {
                 Type type = TypeDelegator.GetType(WorkerClassNameWithNamespace);
+
+                if (type == null)
+                    throw new Exception(WorkerClassNameWithNamespace + " is supposed to be a class name with namespace");
+
                 WorkerTypes.Add(WorkerId, type);
             }
         }

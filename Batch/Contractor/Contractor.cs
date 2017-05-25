@@ -8,5 +8,7 @@ namespace Batch.Contractor
 {
     public class Contractor
     {
+        // gets the foreman config file and allocation of a computer
+
     }
 }

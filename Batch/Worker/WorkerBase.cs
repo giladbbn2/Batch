@@ -12,10 +12,6 @@ namespace Batch.Worker
     {
         public int Id;
 
-        public event EventHandler Started;
-        public event EventHandler Alive;
-        public event EventHandler Ended;
-
         private WorkerConfiguration Config;
 
         public bool Disposed { get; private set; }
@@ -47,41 +43,14 @@ namespace Batch.Worker
 
         #endregion
 
-        public virtual object Run(object Item)
+        public virtual void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
             throw new NotImplementedException("Inherited Worker must override the Run() method");
-        }
-
-        protected void OnStarted(EventArgs e)
-        {
-            if (Disposed)
-                return;
-
-            Started?.Invoke(this, e);
-        }
-
-        protected void OnAlive(EventArgs e)
-        {
-            if (Disposed)
-                return;
-
-            Alive?.Invoke(this, e);
-        }
-
-        protected void OnEnded(EventArgs e)
-        {
-            if (Disposed)
-                return;
-
-            Ended?.Invoke(this, e);
         }
 
         public void Dispose()
         {
             Disposed = true;
-            Started = null;
-            Alive = null;
-            Ended = null;
         }
 
     }

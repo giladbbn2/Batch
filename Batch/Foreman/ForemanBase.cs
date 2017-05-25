@@ -10,54 +10,62 @@ using System.Text;
 using System.Threading.Tasks;
 using log4net;
 
-//[assembly: log4net.Config.XmlConfigurator(ConfigFile = "MyStandardLog4Net.config", Watch = true)]
-
 namespace Batch.Foreman
 {
     public abstract class ForemanBase : IDisposable
     {
+        public string Id;
+
         public string PathToSettingsFile;
 
-        public BlockingCollection<object> firstQueue;
-        public BlockingCollection<object> lastQueue;
-
         private WorkerActivator WorkerActivator;
-        private ForemanConfiguration Config;
+        private ForemanConfigurationFile Config;
 
-        private List<WorkerNode> Nodes; // id is nodeId
-        private BlockingCollection<object>[] Queues;    // id is queueId
+        private WorkerNode[] Nodes;                                 // id is nodeId
+        private WorkerNodeState[] NodeState;                        // id is nodeId
+        private Dictionary<int, List<WorkerNode>> WorkerNodeOrder;  // id is orderId
+        private BlockingCollection<object>[] Queues;                // id is queueId
 
-        private List<int> firstNodeIds;
-        private List<int> lastNodeIds;
-
-        // helper structures
+        // helpers
         private Dictionary<string, int> WorkerNameToId;
-        private Dictionary<string, List<int>> NodeNameToId;
+        private Dictionary<string, int> NodeNameToId;
         private Dictionary<string, int> QueueNameToId;
-        private bool[] QueueIsToEl;   // id is queueId
-        private bool[] QueueIsFromEl; // id is queueId
+        private bool[] QueueIsToEl;                                 // id is queueId
+        private bool[] QueueIsFromEl;                               // id is queueId
+
+        private log4net.ILog Logger;                                // logger from external code
+
+        private bool IsLoadDiagonstics;
 
         private bool Disposed;
 
 
+        
         public ForemanBase()
         {
-            Config = new ForemanConfiguration();
+            Config = new ForemanConfigurationFile();
         }
 
         public ForemanBase(string PathToSettingsFile)
         {
             this.PathToSettingsFile = PathToSettingsFile;
-            Config = new ForemanConfiguration();
+            Config = new ForemanConfigurationFile();
         }
 
-        public void LoadSettingsFile(string PathToSettingsFile)
+        public ForemanBase(string PathToSettingsFile, log4net.ILog Logger)
         {
             this.PathToSettingsFile = PathToSettingsFile;
-            LoadSettingsFile();
+            this.Logger = Logger;
+            Config = new ForemanConfigurationFile();
         }
 
-        public void LoadSettingsFile()
+        public void Load(string PathToSettingsFile)
+        {
+            this.PathToSettingsFile = PathToSettingsFile;
+            Load();
+        }
+
+        public void Load()
         {
             if (Disposed)
                 return;
@@ -68,27 +76,33 @@ namespace Batch.Foreman
             if (!File.Exists(PathToSettingsFile))
                 throw new FileNotFoundException(PathToSettingsFile);
 
+            Logger?.Info("Foreman LoadSettingsFile() start");
+
             int WorkerCounter = 0;
+            int NodeCounter = 0;
             int QueueCounter = 0;
-            bool isGlobalIsFirst = false;
-            bool isGlobalIsLast = false;
-            firstNodeIds = new List<int>();
-            lastNodeIds = new List<int>();
-            firstQueue = new BlockingCollection<object>();
-            lastQueue = new BlockingCollection<object>();
+
             WorkerActivator = new WorkerActivator();
             
             try
             {
                 string settings = File.ReadAllText(PathToSettingsFile);
-                Config = JsonConvert.DeserializeObject<ForemanConfiguration>(settings);
+                Config = JsonConvert.DeserializeObject<ForemanConfigurationFile>(settings);
             }
             catch (Exception ex)
             {
-                throw new Exception("Can't parse config file: " + PathToSettingsFile + "(" + ex.Message + ")");
+                string err = "Can't parse config file: " + PathToSettingsFile + "(" + ex.Message + ")";
+                Logger?.Error(err);
+                throw new Exception(err, ex);
             }
 
+            if (Config.foremanId.Length == 0)
+                throw new ArgumentException("foremanId must not be empty string");
+
+            Id = Config.foremanId;
+
             // Register workers
+            Logger?.Info("Registering workers");
             if (Config.workers == null || Config.workers.Count == 0)
                 throw new ArgumentException("No workers in config file");
 
@@ -96,7 +110,11 @@ namespace Batch.Foreman
             foreach (var configWorker in Config.workers)
             {
                 if (WorkerNameToId.ContainsKey(configWorker.name))
-                    throw new ArgumentException("The worker name '" + configWorker.name + "' is already registered");
+                {
+                    string err = "The worker name '" + configWorker.name + "' is already registered";
+                    Logger?.Error(err);
+                    throw new ArgumentException(err);
+                }
 
                 int workerId = WorkerCounter;
                 WorkerCounter++;
@@ -108,148 +126,170 @@ namespace Batch.Foreman
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException("Can't create a worker using className (" + ex.Message + ")");
+                    string err = "Can't create a worker using className (" + ex.Message + ")";
+                    Logger?.Error(err);
+                    throw new ArgumentException(err, ex);
                 }
             }
 
             // Register nodes
+            Logger?.Info("Registering nodes");
             if (Config.nodes == null || Config.nodes.Count == 0)
-                throw new ArgumentException("No nodes in config file");
+            {
+                string err = "No nodes in config file";
+                Logger?.Error(err);
+                throw new ArgumentException(err);
+            }
 
-            Nodes = new List<WorkerNode>();
-            NodeNameToId = new Dictionary<string, List<int>>();
+            Nodes = new WorkerNode[Config.nodes.Count];
+            NodeState = new WorkerNodeState[Config.nodes.Count];
+            WorkerNodeOrder = new Dictionary<int, List<WorkerNode>>();
+            NodeNameToId = new Dictionary<string, int>(Config.nodes.Count);
             foreach (var configNode in Config.nodes)
             {
                 string workerName = configNode.worker;
                 if (!WorkerNameToId.ContainsKey(workerName))
-                    throw new ArgumentException("The worker name '" + workerName + "' in nodes section is not defined in workers section");
+                {
+                    string err = "The worker name '" + workerName + "' in nodes section is not defined in workers section";
+                    Logger?.Error(err);
+                    throw new ArgumentException(err);
+                }
+                    
                 int workerId = WorkerNameToId[workerName];
                 
                 if (NodeNameToId.ContainsKey(configNode.name))
-                    throw new ArgumentException("The node name '" + configNode.name + "' is already registered");
-
-                List<int> ids = new List<int>(configNode.nodeCount);
-
-                for (int i=0; i<configNode.nodeCount; i++)
                 {
-                    var node = new WorkerNode();
-                    node.Id = Nodes.Count;
-                    node.Name = configNode.name;
-                    node.WorkerId = workerId;
-                    node.Guid = Guid.NewGuid().ToString();
-                    node.WorkerActivator = WorkerActivator;
-
-                    if (configNode.isFirst)
-                    {
-                        isGlobalIsFirst = true;
-                        node.IsFirst = true;
-                        firstNodeIds.Add(node.Id);
-                    }
-
-                    if (configNode.isLast)
-                    {
-                        isGlobalIsLast = true;
-                        node.IsLast = true;
-                        lastNodeIds.Add(node.Id);
-                    }
-
-                    Nodes.Add(node);
-                    ids.Add(node.Id);
+                    string err = "The node name '" + configNode.name + "' is already registered";
+                    Logger?.Error(err);
+                    throw new ArgumentException(err);
                 }
 
-                NodeNameToId.Add(configNode.name, ids);
+                var node = new WorkerNode();
+                node.Id = NodeCounter;
+                node.OrderId = configNode.orderId;
+                node.IsWaitToFinish = configNode.isWaitToFinish;
+                node.Name = configNode.name;
+                node.WorkerId = workerId;
+                node.WorkerActivator = WorkerActivator;
+
+                if (!WorkerNodeOrder.ContainsKey(node.OrderId))
+                    WorkerNodeOrder.Add(node.OrderId, new List<WorkerNode>() { node });
+                else
+                    WorkerNodeOrder[node.OrderId].Add(node);
+
+                Nodes[NodeCounter] = node;
+                NodeState[NodeCounter] = WorkerNodeState.Idle;
+                NodeNameToId.Add(node.Name, node.Id);
+                
+                NodeCounter++;
             }
 
-            if (!isGlobalIsFirst)
-                throw new ArgumentException("There is no first node");
-
-            if (!isGlobalIsLast)
-                throw new ArgumentException("There is no last node");
-
             // Register queues
+            Logger?.Info("Registering queues");
             if (Config.queues == null || Config.queues.Count == 0)
-                throw new ArgumentException("No queues in config file");
-
-            Queues = new BlockingCollection<object>[Config.queues.Count];
-            QueueNameToId = new Dictionary<string, int>(Config.queues.Count);
-            QueueIsToEl = new bool[Config.queues.Count];
-            QueueIsFromEl = new bool[Config.queues.Count];
-            foreach (var configQueue in Config.queues)
             {
-                if (QueueNameToId.ContainsKey(configQueue.name))
-                    throw new ArgumentException("The queue name '" + configQueue.name + "' is already registered");
+                Logger?.Info("No queues in config file");
+            } 
+            else
+            {
+                Queues = new BlockingCollection<object>[Config.queues.Count];
+                QueueNameToId = new Dictionary<string, int>(Config.queues.Count);
+                QueueIsToEl = new bool[Config.queues.Count];
+                QueueIsFromEl = new bool[Config.queues.Count];
+                foreach (var configQueue in Config.queues)
+                {
+                    if (QueueNameToId.ContainsKey(configQueue.name))
+                    {
+                        string err = "The queue name '" + configQueue.name + "' is already registered";
+                        Logger?.Error(err);
+                        throw new ArgumentException(err);
+                    }
 
-                int queueId = QueueCounter;
+                    int queueId = QueueCounter;
 
-                if (configQueue.bufferLimit == 0)
-                    Queues[queueId] = new BlockingCollection<object>();
-                else
-                    Queues[queueId] = new BlockingCollection<object>(configQueue.bufferLimit);
+                    if (configQueue.bufferLimit == 0)
+                        Queues[queueId] = new BlockingCollection<object>();
+                    else
+                        Queues[queueId] = new BlockingCollection<object>(configQueue.bufferLimit);
 
-                QueueNameToId.Add(configQueue.name, queueId);
+                    QueueNameToId.Add(configQueue.name, queueId);
 
-                QueueCounter++;
+                    QueueCounter++;
+                }
             }
 
             // Register connections
+            Logger?.Info("Building topology");
             foreach (var configConnection in Config.connections)
             {
                 string fromName = configConnection.from;
                 string toName = configConnection.to;
 
-                List<int> fromNodeIds, toNodeIds;
-                int fromQueueId, toQueueId, fromWorkerId, toWorkerId;
+                int fromElId, toElId;
 
-                TopologyElementType fromEl = GetNameTopologyType(fromName, out fromNodeIds, out fromQueueId, out fromWorkerId);
-                TopologyElementType toEl = GetNameTopologyType(toName, out toNodeIds, out toQueueId, out toWorkerId);
+                TopologyElementType fromEl = GetNameTopologyType(fromName, out fromElId);
+                TopologyElementType toEl = GetNameTopologyType(toName, out toElId);
 
-                // node to queue and queue to node are supported
-                // queue to queue is not supported, node to node is not supported
+                if (fromEl == TopologyElementType.None && toEl == TopologyElementType.None)
+                {
+                    string err = "Connection from and to elements do not exist: '" + fromName + "' -> '" + toName + "'";
+                    Logger?.Error(err);
+                    throw new Exception(err);
+                }
 
+                // node to node, node to queue and queue to node are supported
+                // queue to queue is not supported
                 if (fromEl == TopologyElementType.Queue && toEl == TopologyElementType.Queue)
-                    throw new Exception("Can't connect a queue to a queue: '" + fromName + "' -> '" + toName + "'");
-
-                if (fromEl == TopologyElementType.Node && toEl == TopologyElementType.Node)
-                    throw new Exception("Can't connect a node to a node: '" + fromName + "' -> '" + toName + "'");
+                {
+                    string err = "Can't connect a queue to a queue: '" + fromName + "' -> '" + toName + "'";
+                    Logger?.Error(err);
+                    throw new Exception(err);
+                }
 
                 if (fromEl == TopologyElementType.Node && toEl == TopologyElementType.Queue)
                 {
-                    var queue = Queues[toQueueId];
-                    for (int i=0; i<fromNodeIds.Count; i++)
+                    var node = Nodes[fromElId];
+                    var queue = Queues[toElId];
+
+                    if (node.Output != null)
                     {
-                        var node = Nodes[fromNodeIds[i]];
-
-                        if (i==0 && node.Output != null)
-                            throw new Exception("Can't set two output elements for same node: '" + fromName + "' -> '" + toName + "'");
-
-                        node.Output = queue;
-                        node.IsConnected = true;
-
-                        if (node.IsFirst)
-                            node.Input = firstQueue;
+                        string err = "Can't set two output elements for same node: '" + fromName + "' -> '" + toName + "'";
+                        Logger?.Error(err);
+                        throw new Exception();
                     }
-
-                    QueueIsToEl[toQueueId] = true;
+                    
+                    node.Output = queue;
+                    node.IsConnected = true;
+                    QueueIsToEl[toElId] = true;
                 }
 
                 if (fromEl == TopologyElementType.Queue && toEl == TopologyElementType.Node)
                 {
-                    var queue = Queues[fromQueueId];
-                    for (int i=0; i<toNodeIds.Count; i++)
+                    var node = Nodes[toElId];
+                    var queue = Queues[fromElId];
+
+                    if (node.Input != null)
                     {
-                        var node = Nodes[toNodeIds[i]];
-
-                        if (i==0 && node.Input != null)
-                            throw new Exception("Can't set two input elements for the same node: '" + fromName + "' -> '" + toName + "'");
-
-                        node.Input = queue;
-                        node.IsConnected = true;
-
-                        if (node.IsLast)
-                            node.Output = lastQueue;
+                        string err = "Can't set two input elements for the same node: '" + fromName + "' -> '" + toName + "'";
+                        Logger?.Error(err);
+                        throw new Exception(err);
                     }
 
-                    QueueIsFromEl[fromQueueId] = true;
+                    node.Input = queue;
+                    node.IsConnected = true;
+                    QueueIsFromEl[fromElId] = true;
+                }
+
+                if (fromEl == TopologyElementType.Node && toEl == TopologyElementType.Node)
+                {
+                    var node1 = Nodes[fromElId];
+                    node1.IsConnected = true;
+
+                    var node2 = Nodes[toElId];
+                    node2.IsConnected = true;
+
+                    if (node1.IsWaitToFinish && node2.IsWaitToFinish)
+                        node1.NextNode = node2;
                 }
             }
 
@@ -259,6 +299,8 @@ namespace Batch.Foreman
             WorkerNameToId = null;
             NodeNameToId = null;
             QueueNameToId = null;
+
+            Logger?.Info("Foreman LoadSettingsFile() finish");
         }
 
         public void DryRun()
@@ -266,16 +308,26 @@ namespace Batch.Foreman
             // verify connections
 
             // iterate over all tree and check if there are any unconnected nodes
-            if (Nodes.Count > 0)
-                foreach (var node in Nodes)
-                    if (!node.IsConnected)
-                        throw new Exception("Node is not connected to topology tree: '" + node.Name + "'");
+            foreach (var node in Nodes)
+                if (!node.IsConnected)
+                {
+                    string err = "Node is not connected to topology tree: '" + node.Name + "'";
+                    Logger?.Error(err);
+                    throw new Exception(err);
+                }
 
-            // check a queue is not an edge
-            for (var i = 0; i < Queues.Length; i++)
+            if (Queues != null)
             {
-                if (!QueueIsFromEl[i] || !QueueIsToEl[i])
-                    throw new Exception("A queue cannot be an edge, but must connect a node as input and another node as output");
+                // check a queue is not an edge
+                for (var i = 0; i < Queues.Length; i++)
+                {
+                    if (!QueueIsFromEl[i] || !QueueIsToEl[i])
+                    {
+                        string err = "A queue cannot be an edge, but must connect a node as input and another node as output";
+                        Logger?.Error(err);
+                        throw new Exception(err);
+                    }
+                }
             }
 
             // several independent topologies can coexist in a single foreman
@@ -287,16 +339,66 @@ namespace Batch.Foreman
 
         public void Run()
         {
+            Logger?.Info("Foreman Run() start");
+
             var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
-            Task[] tasks = new Task[Nodes.Count];
-            
-            foreach (var node in Nodes)
+            List<Task> orderedNonWaitingNodeTasks = new List<Task>();
+            List<WorkerNode> orderedWaitingNodes = new List<WorkerNode>();
+
+            var orderedNodes = WorkerNodeOrder.Keys.OrderBy(x =>  x);
+
+            foreach (var orderId in orderedNodes)
             {
-                Console.WriteLine("Starting new thread with " + node.Name);
-                tasks[node.Id] = f.StartNew(() => node.Run());
+                var nodes = WorkerNodeOrder[orderId];
+
+                foreach (var node in nodes)
+                {
+                    if (node.IsWaitToFinish)
+                        orderedWaitingNodes.Add(node);
+                    else
+                        orderedNonWaitingNodeTasks.Add(f.StartNew(() =>
+                        {
+                            OnWorkerNodeStarted(node.Id);
+
+                            try
+                            {
+                                node.Run();
+                            }
+                            catch (Exception ex)
+                            {
+                                OnWorkerNodeError(node.Id, ex);
+                            }
+
+                            OnWorkerNodeEnded(node.Id);
+                        }));
+                }
+                
             }
 
-            Task.WaitAll(tasks);    
+            // execute waiting nodes synchronously
+            for (var i=0; i<orderedWaitingNodes.Count; i++)
+            {
+                var node = orderedWaitingNodes[i];
+
+                OnWorkerNodeStarted(node.Id);
+
+                try
+                {
+                    node.Run();
+                }
+                catch (Exception ex)
+                {
+                    OnWorkerNodeError(node.Id, ex);
+                    IsLoadDiagonstics = true;
+                }
+
+                OnWorkerNodeEnded(node.Id);
+            }
+
+            // wait on non waiting nodes to finish
+            Task.WaitAll(orderedNonWaitingNodeTasks.ToArray());
+
+            Logger?.Info("Foreman Run() finish");
         }
 
         public void Dispose()
@@ -304,29 +406,81 @@ namespace Batch.Foreman
             Disposed = true;
         }
 
-        private TopologyElementType GetNameTopologyType(string Name, out List<int> NodeIds, out int QueueId, out int WorkerId)
+        public void Terminate(bool IsGraceful = true) { }
+
+        private TopologyElementType GetNameTopologyType(string Name, out int id)
         {
-            bool isNode = NodeNameToId.TryGetValue(Name, out NodeIds);
-            bool isQueue = QueueNameToId.TryGetValue(Name, out QueueId);
+            int nodeId = 0, queueId = 0, workerId = 0;
+            bool isNode, isQueue;
+
+            if (NodeNameToId == null)
+                isNode = false;
+            else
+                isNode = NodeNameToId.TryGetValue(Name, out nodeId);
+
+            if (QueueNameToId == null)
+                isQueue = false;
+            else
+                isQueue = QueueNameToId.TryGetValue(Name, out queueId);
 
             if (isNode && isQueue)
-                throw new Exception("The name '" + Name + "' is ambigious - a node or a queue?");
+            {
+                string err = "The name '" + Name + "' is ambigious - a node or a queue?";
+                Logger?.Error(err);
+                throw new Exception(err);
+            }
 
-            bool isWorker = WorkerNameToId.TryGetValue(Name, out WorkerId);
+            bool isWorker = WorkerNameToId.TryGetValue(Name, out workerId);
 
             if ((isNode && isWorker) || (isQueue && isWorker))
-                throw new Exception("The name '" + Name + "' is ambigious");
+            {
+                string err = "The name '" + Name + "' is ambigious";
+                Logger?.Error(err);
+                throw new Exception(err);
+            }
 
             if (isNode)
+            {
+                id = nodeId;
                 return TopologyElementType.Node;
+            }
 
             if (isQueue)
+            {
+                id = queueId;
                 return TopologyElementType.Queue;
+            }
 
             if (isWorker)
+            {
+                id = workerId;
                 return TopologyElementType.Worker;
+            }
 
+            id = -1;
             return TopologyElementType.None;
         }
+
+        #region WorkerNode Events
+
+        public void OnWorkerNodeStarted(int NodeId)
+        {
+            NodeState[NodeId] = WorkerNodeState.Running;
+            //Console.WriteLine(NodeId.ToString() + " started");
+        }
+
+        public void OnWorkerNodeEnded(int NodeId)
+        {
+            NodeState[NodeId] = WorkerNodeState.Finished;
+            //Console.WriteLine(NodeId.ToString() + " finished");
+        }
+
+        public void OnWorkerNodeError(int NodeId, Exception ex)
+        {
+            NodeState[NodeId] = WorkerNodeState.Error;
+            //Console.WriteLine(NodeId.ToString() + " error");
+        }
+
+        #endregion
     }
 }

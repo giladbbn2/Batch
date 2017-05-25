@@ -9,42 +9,41 @@ namespace Batch.Foreman
 {
     // Default configuration
 
-    internal class ForemanConfiguration
+    internal class ForemanConfigurationFile
     {
-        public string foremanVer = "0.1";
-        public string NetMQPort = "5556";
+        public string foremanId = "";
+        public string foremanVer = "0.1.1";
 
-        public List<FCWorker> workers;
-        public List<FCNode> nodes;
-        public List<FCQueue> queues;
-        public List<FCConnection> connections;
+        public List<FCFWorker> workers;
+        public List<FCFNode> nodes;
+        public List<FCFQueue> queues;
+        public List<FCFConnection> connections;
     }
 
-    public class FCWorker
+    public class FCFWorker
     {
         public int id;
         public string name;
         public string className;
     }
 
-    public class FCNode
+    public class FCFNode
     {
         public int id;
         public string name;
         public string worker;
-        public bool isFirst;
-        public bool isLast;
-        public int nodeCount = 1;
-    }
+        public int orderId;
+        public bool isWaitToFinish = true;
+    } 
 
-    public class FCQueue
+    public class FCFQueue
     {
         public int id;
         public string name;
         public int bufferLimit = 0;
     }
 
-    public class FCConnection
+    public class FCFConnection
     {
         public string from;
         public string to;

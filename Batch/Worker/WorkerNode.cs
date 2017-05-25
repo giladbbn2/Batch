@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Batch.Foreman;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +12,22 @@ namespace Batch.Worker
     {
         // init
         public int Id;
-        public string Guid;
         public string Name;
         public int WorkerId;
-        public bool IsFirst;
-        public bool IsLast;
-        public int NodeCount = 1;
+        public int OrderId;
+        public object Data;
+        public bool IsWaitToFinish;
+
+        public WorkerNode NextNode;
         public WorkerActivator WorkerActivator;
 
         public BlockingCollection<object> Input;
         public BlockingCollection<object> Output;
 
+        public bool IsConnected;
+
         private WorkerBase Worker;
 
-        public bool IsConnected;
 
 
         public WorkerNode()
@@ -34,37 +37,11 @@ namespace Batch.Worker
 
         public void Run()
         {
-            try
-            {
-                foreach (var item in Input.GetConsumingEnumerable())
-                {
-                    if (item == null)
-                        continue;
+            using (Worker = WorkerActivator.CreateWorkerInstance(WorkerId))
+                Worker.Run(Input, Output, ref Data);
 
-                    using (Worker = WorkerActivator.CreateWorkerInstance(WorkerId))
-                    {
-                        object result = Worker.Run(item);
-                        if (result != null)
-                            Output.Add(result);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                try
-                {
-                    Output.CompleteAdding();
-                }
-                catch (Exception ex)
-                {
-                    // Output is already complete
-                }
-
-            }
+            if (NextNode != null)
+                NextNode.Data = Data;
         }
     }
 }
