@@ -389,6 +389,7 @@ namespace Batch.Foreman
                 catch (Exception ex)
                 {
                     OnWorkerNodeError(node.Id, ex);
+                    Console.WriteLine("Error");
                     IsLoadDiagonstics = true;
                 }
 
