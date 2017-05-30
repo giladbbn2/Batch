@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BatchTest")]
+[assembly: AssemblyTitle("BatchFoundation")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BatchTest")]
+[assembly: AssemblyProduct("BatchFoundation")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("026922e9-7c97-468d-832c-946526b67cbb")]
+[assembly: Guid("22adec6f-b6fa-4210-b476-185999a6d668")]
 
 // Version information for an assembly consists of the following four values:
 //

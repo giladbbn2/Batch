@@ -13,7 +13,7 @@ namespace Batch.Foreman
 
         }
 
-        public Foreman(string PathToSettingsFile) : base(PathToSettingsFile)
+        public Foreman(string PathToConfigFile) : base(PathToConfigFile)
         {
 
         }

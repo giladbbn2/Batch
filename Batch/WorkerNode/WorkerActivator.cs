@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BatchFoundation.Worker;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +12,7 @@ namespace Batch.Worker
     {
         // worker id to a function that creates an instance of it
         private Dictionary<int, Type> WorkerTypes;
+
 
 
         public WorkerActivator()
@@ -35,26 +37,18 @@ namespace Batch.Worker
             return (WorkerBase)Activator.CreateInstance(type);
         }
 
-        public void RegisterWorkerType(int WorkerId, string WorkerClassNameWithNamespace)
+        public void RegisterWorkerType(int WorkerId, Type WorkerType)
         {
-            if (WorkerClassNameWithNamespace == null)
-                throw new ArgumentNullException("WorkerClassNameWithNamespace");
-
-            if (WorkerClassNameWithNamespace.Length == 0)
-                throw new ArgumentException("WorkerClassNameWithNamespace must not be zero length");
+            if (WorkerType == null)
+                throw new ArgumentNullException("WorkerType");
 
             if (WorkerTypes == null)
                 WorkerTypes = new Dictionary<int, Type>();
 
+            //Type type = TypeDelegator.GetType(WorkerClassNameWithNamespace);
+
             if (!WorkerTypes.ContainsKey(WorkerId))
-            {
-                Type type = TypeDelegator.GetType(WorkerClassNameWithNamespace);
-
-                if (type == null)
-                    throw new Exception(WorkerClassNameWithNamespace + " is supposed to be a class name with namespace");
-
-                WorkerTypes.Add(WorkerId, type);
-            }
+                WorkerTypes.Add(WorkerId, WorkerType);
         }
     }
 }

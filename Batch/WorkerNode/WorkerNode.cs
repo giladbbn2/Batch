@@ -1,4 +1,5 @@
 ﻿using Batch.Foreman;
+using BatchFoundation.Worker;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

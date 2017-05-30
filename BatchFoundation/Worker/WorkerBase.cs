@@ -1,25 +1,23 @@
-﻿using Batch.Foreman;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Batch.Worker
+namespace BatchFoundation.Worker
 {
     public abstract class WorkerBase : IDisposable
     {
         public int Id;
 
-        private WorkerConfiguration Config;
-
         public bool Disposed { get; private set; }
+
 
 
         public WorkerBase()
         {
-            this.Config = new WorkerConfiguration();
+
         }
 
         #region CreateInstances

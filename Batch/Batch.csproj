@@ -30,18 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncIO, Version=0.1.25.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
-      <HintPath>..\packages\AsyncIO.0.1.26.0\lib\net40\AsyncIO.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.7.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.7\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NetMQ, Version=4.0.0.1, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\NetMQ.4.0.0.1\lib\net40\NetMQ.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -59,23 +47,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contractor\Contractor.cs" />
+    <Compile Include="Contractor\ContractorConfigurationFile.cs" />
     <Compile Include="Foreman\Enums\TopologyElementType.cs" />
     <Compile Include="Foreman\Foreman.cs" />
     <Compile Include="Foreman\ForemanBase.cs" />
-    <Compile Include="Foreman\ForemanConfiguration.cs" />
-    <Compile Include="Worker\Enums\WorkerNodeState.cs" />
-    <Compile Include="Worker\WorkerNode.cs" />
+    <Compile Include="Foreman\ForemanConfigurationFile.cs" />
+    <Compile Include="Helpers\ForemanHelper.cs" />
+    <Compile Include="WorkerNode\Enums\WorkerNodeState.cs" />
+    <Compile Include="WorkerNode\WorkerNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Worker\Worker.cs" />
-    <Compile Include="Worker\WorkerActivator.cs" />
-    <Compile Include="Worker\WorkerBase.cs" />
-    <Compile Include="Worker\WorkerConfiguration.cs" />
+    <Compile Include="WorkerNode\WorkerActivator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Config\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BatchFoundation\BatchFoundation.csproj">
+      <Project>{22adec6f-b6fa-4210-b476-185999a6d668}</Project>
+      <Name>BatchFoundation</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

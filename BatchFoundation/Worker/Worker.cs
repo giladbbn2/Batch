@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Batch.Worker
+namespace BatchFoundation.Worker
 {
     public class Worker : WorkerBase
     {
