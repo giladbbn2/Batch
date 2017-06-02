@@ -80,9 +80,6 @@ namespace BatchConsole
 
             //var t = wl.GetWorkerType("BatchTest.Test2.MyWorker1");
 
-
-
-
             //Console.ReadLine();
 
             //return;
@@ -96,8 +93,7 @@ namespace BatchConsole
             AppDomain.Unload(domain);
             */
 
-
-            var frmn = new Foreman(@"C:\projects\Batch\BatchTest\Test2\frmn-test2.config");
+            var frmn = new Foreman(@"C:\projects\Batch\BatchTest\Test1\frmn-test1.config");
             frmn.Load();
             frmn.Run();
 

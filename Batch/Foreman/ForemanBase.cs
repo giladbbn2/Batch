@@ -16,7 +16,7 @@ namespace Batch.Foreman
     public abstract class ForemanBase : IDisposable
     {
         public string Id;
-
+        public bool IsNodesLongRunning;
         public string PathToConfigFile;
 
         private ForemanConfigurationFile Config;
@@ -25,14 +25,13 @@ namespace Batch.Foreman
         private WorkerNodeState[] NodeState;                            // id is nodeId
         private Dictionary<int, List<WorkerNode>> WorkerNodeExeOrder;   // id is orderId
         private BlockingCollection<object>[] Queues;                    // id is queueId
+        private Assembly asm;
 
         // helpers
         private Dictionary<string, int> NodeNameToId;
         private Dictionary<string, int> QueueNameToId;
         private bool[] QueueIsToEl;                                     // id is queueId
         private bool[] QueueIsFromEl;                                   // id is queueId
-
-        private bool IsLoadDiagonstics;
 
         private bool Disposed;
 
@@ -69,10 +68,16 @@ namespace Batch.Foreman
             int QueueCounter = 0;
 
             Id = Config.foremanId;
+            IsNodesLongRunning = Config.isNodesLongRunning;
 
+            /*
             // register assemblies
             foreach (var configAssembly in Config.assemblies)
                 WorkerLoader.RegisterInstance(configAssembly.name, configAssembly.path);
+            */
+
+            // register assembly
+            asm = Assembly.LoadFile(Config.assemblyPath);
 
             // Register nodes
             if (Config.nodes == null || Config.nodes.Count == 0)
@@ -90,15 +95,27 @@ namespace Batch.Foreman
                 var node = new WorkerNode();
                 node.Id = NodeCounter;
                 node.OrderId = configNode.exeOrderId;
-                node.IsWaitToFinish = configNode.isWaitToFinish;
                 node.Name = configNode.name;
                 node.WorkerClassName = configNode.className;
 
+                if (IsNodesLongRunning)
+                    node.IsLongRunning = true;
+
+                /*
                 WorkerLoader wl;
                 if (!WorkerLoader.TryGetInstanceByAppDomainName(configNode.assemblyName, out wl))
                     throw new Exception("Assembly not found for node: " + configNode.assemblyName);
 
                 node.WorkerLoader = wl;
+                */
+
+                var workerType = asm.GetTypes().First(x => x.FullName.Equals(configNode.className));
+                var worker = (WorkerBase)Activator.CreateInstance(workerType);
+
+                if (worker == null)
+                    throw new Exception("Can't create instance from" + configNode.className);
+
+                node.Worker = worker;
 
                 if (!WorkerNodeExeOrder.ContainsKey(node.OrderId))
                     WorkerNodeExeOrder.Add(node.OrderId, new List<WorkerNode>() { node });
@@ -209,7 +226,7 @@ namespace Batch.Foreman
                     var node2 = Nodes[toElId];
                     node2.IsConnected = true;
 
-                    if (node1.IsWaitToFinish && node2.IsWaitToFinish)
+                    if (!node1.IsLongRunning && !node2.IsLongRunning)
                         node1.NextNode = node2;
                 }
             }
@@ -271,6 +288,67 @@ namespace Batch.Foreman
 
         public void Run()
         {
+            var orderedNodes = WorkerNodeExeOrder.Keys.OrderBy(x => x);
+
+            if (IsNodesLongRunning)
+            {
+                var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
+                List<Task> orderedNonWaitingNodeTasks = new List<Task>();
+
+                foreach (var orderId in orderedNodes)
+                {
+                    var nodes = WorkerNodeExeOrder[orderId];
+
+                    foreach (var node in nodes)
+                    {
+                        orderedNonWaitingNodeTasks.Add(f.StartNew(() =>
+                        {
+                            OnWorkerNodeStarted(node.Id);
+
+                            try
+                            {
+                                node.Run();
+                            }
+                            catch (Exception ex)
+                            {
+                                OnWorkerNodeError(node.Id, ex);
+                            }
+
+                            OnWorkerNodeEnded(node.Id);
+                        }));
+                    }
+
+                }
+            }
+            else
+            {
+                foreach (var orderId in orderedNodes)
+                {
+                    var nodes = WorkerNodeExeOrder[orderId];
+
+                    foreach (var node in nodes)
+                    {
+                        OnWorkerNodeStarted(node.Id);
+
+                        try
+                        {
+                            node.Run();
+                        }
+                        catch (Exception ex)
+                        {
+                            OnWorkerNodeError(node.Id, ex);
+                        }
+
+                        OnWorkerNodeEnded(node.Id);
+                    }
+
+                }
+            }
+            
+
+            /*
+            // Foreman can have both long running and short running tasks - not applicable, so overriden in child classes
+
             var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
             List<Task> orderedNonWaitingNodeTasks = new List<Task>();
             List<WorkerNode> orderedWaitingNodes = new List<WorkerNode>();
@@ -319,7 +397,6 @@ namespace Batch.Foreman
                 catch (Exception ex)
                 {
                     OnWorkerNodeError(node.Id, ex);
-                    IsLoadDiagonstics = true;
                 }
 
                 OnWorkerNodeEnded(node.Id);
@@ -328,11 +405,7 @@ namespace Batch.Foreman
             // wait on non waiting nodes to finish
             Task.WaitAll(orderedNonWaitingNodeTasks.ToArray());
 
-            if (IsLoadDiagonstics)
-            {
-                //
-                //Console.WriteLine();
-            }
+            */
         }
 
         public void Dispose()
@@ -400,7 +473,7 @@ namespace Batch.Foreman
         public void OnWorkerNodeError(int NodeId, Exception ex)
         {
             NodeState[NodeId] = WorkerNodeState.Error;
-            Console.WriteLine(NodeId.ToString() + " exception: " + ex.Message);
+            Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);
         }
 
         #endregion

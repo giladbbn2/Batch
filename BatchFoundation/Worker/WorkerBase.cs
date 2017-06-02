@@ -11,7 +11,6 @@ namespace BatchFoundation.Worker
     {
         public int Id;
         public string ClassName;
-        public WorkerLoader WorkerLoader;
 
         public bool Disposed { get; private set; }
 
@@ -21,27 +20,6 @@ namespace BatchFoundation.Worker
         {
 
         }
-
-        #region CreateInstances
-
-        public static WorkerBase CreateInstance(Type type)
-        {
-            return (WorkerBase)Activator.CreateInstance(type);
-        }
-             
-        public static T CreateInstance<T>() where T : WorkerBase, new()
-        {
-            T t = new T();
-            return t;
-        }
-
-        public WorkerBase CreateInstance()
-        {
-            Type t = this.GetType();
-            return (WorkerBase)Activator.CreateInstance(t);
-        }
-
-        #endregion
 
         public virtual void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
