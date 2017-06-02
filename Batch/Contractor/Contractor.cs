@@ -10,5 +10,8 @@ namespace Batch.Contractor
     {
         // gets the foreman config file and allocation of a computer
 
+        // creating a new instance of Contractor does:
+        // WorkerLoader.Init();
+
     }
 }

@@ -14,22 +14,19 @@ namespace Batch.Worker
         // init
         public int Id;
         public string Name;
-        public int WorkerId;
         public int OrderId;
         public object Data;
         public bool IsWaitToFinish;
-
+        public string WorkerClassName;
+        public WorkerLoader WorkerLoader;
         public WorkerNode NextNode;
-        public WorkerActivator WorkerActivator;
-
+        
         public BlockingCollection<object> Input;
         public BlockingCollection<object> Output;
 
         public bool IsConnected;
 
-        private WorkerBase Worker;
-
-
+        
 
         public WorkerNode()
         {
@@ -38,8 +35,7 @@ namespace Batch.Worker
 
         public void Run()
         {
-            using (Worker = WorkerActivator.CreateWorkerInstance(WorkerId))
-                Worker.Run(Input, Output, ref Data);
+            WorkerLoader.Run(WorkerClassName, Input, Output, ref Data);
 
             if (NextNode != null)
                 NextNode.Data = Data;

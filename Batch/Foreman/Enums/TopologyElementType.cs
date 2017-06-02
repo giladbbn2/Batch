@@ -9,8 +9,7 @@ namespace Batch.Foreman
     internal enum TopologyElementType
     {
         None = 0,
-        Worker = 1,
-        Node = 2,
-        Queue = 3
+        Node = 1,
+        Queue = 2
     }
 }

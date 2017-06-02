@@ -1,5 +1,7 @@
 ﻿using Batch.Foreman;
+using BatchFoundation.Worker;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,106 +11,28 @@ using System.Threading.Tasks;
 namespace BatchConsole
 {
 
-    class WorkerClassLoader : MarshalByRefObject, IDisposable
-    {
-        public AppDomain AppDomain;
-        public string PathToAssembly;
-        public string AppDomainName;
-
-        private Assembly asm;
-        private Dictionary<string, Type> WorkerType;    // key is ClassName
-        private bool IsDisposed;
-        
-
-
-        public WorkerClassLoader()
-        {
-
-        }
-
-        public override object InitializeLifetimeService()
-        {
-            return null;
-        }
-
-        public Type GetWorkerType(string ClassName)
-        {
-            if (IsDisposed)
-                return null;
-
-            if (asm == null)
-                asm = Assembly.Load(AssemblyName.GetAssemblyName(PathToAssembly));
-
-            if (WorkerType == null)
-                WorkerType = new Dictionary<string, Type>();
-
-            Type t;
-            if (WorkerType.TryGetValue(ClassName, out t))
-                return t;
-
-            t = asm.GetType(ClassName);
-            WorkerType[ClassName] = t;
-            return t;
-        }
-
-        public static WorkerClassLoader CreateInstance(string AppDomainName, string PathToAssembly)
-        {
-            AppDomain ad = AppDomain.CreateDomain(AppDomainName);
-
-            var wl = (WorkerClassLoader)ad.CreateInstanceAndUnwrap(typeof(WorkerClassLoader).Assembly.FullName, typeof(WorkerClassLoader).FullName);
-            wl.PathToAssembly = PathToAssembly;
-            wl.AppDomainName = AppDomainName;
-            wl.AppDomain = ad;
-            
-            return wl;
-        }
-
-        public void Dispose()
-        {
-            IsDisposed = true;
-            AppDomain.Unload(AppDomain);
-            AppDomain = null;
-            WorkerType = null;
-            asm = null;
-        }
-    }
-
-    class Loader : MarshalByRefObject
-    {
-        private Assembly _assembly;
-
-        public override object InitializeLifetimeService()
-        {
-            return null;
-        }
-
-        public void LoadAssembly(string path)
-        {
-            _assembly = Assembly.Load(AssemblyName.GetAssemblyName(path));
-        }
-
-        public object ExecuteStaticMethod(string typeName, string methodName, params object[] parameters)
-        {
-            Type type = _assembly.GetType(typeName);
-            // TODO: this won't work if there are overloads available
-            MethodInfo method = type.GetMethod(
-                methodName,
-                BindingFlags.Static | BindingFlags.Public);
-            return method.Invoke(null, parameters);
-        }
-
-        public Type getWorkerType(string typeName)
-        {
-            return _assembly.GetType(typeName);
-        }
-    }
-
 
 
     class Program
     {
         static void Main(string[] args)
         {
+            /*
+            var wl = WorkerLoader.CreateInstance("Test", "C:\\projects\\Batch\\BatchTest\\bin\\Debug\\BatchTest.dll");
+            int x = 12;
+            object o = (object)x;
+            wl.Run("BatchTest.Test2.MyWorker2", null, null, ref o);
+
+            Console.WriteLine("The number: " + o);
+            Console.ReadLine();
+            return;
+            */
+
+
+
+
+
+            /*
             AppDomain ad = AppDomain.CreateDomain("Test");
 
             // Loader lives in another AppDomain
@@ -124,7 +48,7 @@ namespace BatchConsole
 
 
 
-
+            */
 
 
             /*
@@ -151,17 +75,17 @@ namespace BatchConsole
                 //Console.WriteLine(asm.GetName());
             */
 
-            var wl = WorkerClassLoader.CreateInstance("TestAppDomain", "C:\\projects\\Batch\\BatchTest\\bin\\Debug\\BatchTest.dll");
-            Console.WriteLine(wl.PathToAssembly);
+            //var wl = WorkerLoader.CreateInstance("TestAppDomain", "C:\\projects\\Batch\\BatchTest\\bin\\Debug\\BatchTest.dll");
+            //Console.WriteLine(wl.PathToAssembly);
 
             //var t = wl.GetWorkerType("BatchTest.Test2.MyWorker1");
 
 
 
 
-            Console.ReadLine();
+            //Console.ReadLine();
 
-            return;
+            //return;
             /*
             // Write application domain information to the console.
             Console.WriteLine("Host domain: " + AppDomain.CurrentDomain.FriendlyName);

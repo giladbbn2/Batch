@@ -15,9 +15,10 @@ namespace Batch.Foreman
         public string foremanVer = "0.1.1";
 
         public List<FCFAssemblyFile> assemblies;
-        public List<FCFWorker> workers;
         public List<FCFNode> nodes;
         public List<FCFQueue> queues;
+
+        // connections define which node is passing data to which node
         public List<FCFConnection> connections;
     }
 
@@ -27,18 +28,12 @@ namespace Batch.Foreman
         public string path;
     }
 
-    public class FCFWorker
-    {
-        public string name;
-        public string assemblyName;
-        public string className;
-    }
-
     public class FCFNode
     {
         public int id;
         public string name;
-        public string worker;
+        public string assemblyName;
+        public string className;
         public int exeOrderId;
         public bool isWaitToFinish = true;
     }

@@ -19,7 +19,6 @@ namespace Batch.Foreman
 
         public string PathToConfigFile;
 
-        private WorkerActivator WorkerActivator;
         private ForemanConfigurationFile Config;
 
         private WorkerNode[] Nodes;                                     // id is nodeId
@@ -27,11 +26,7 @@ namespace Batch.Foreman
         private Dictionary<int, List<WorkerNode>> WorkerNodeExeOrder;   // id is orderId
         private BlockingCollection<object>[] Queues;                    // id is queueId
 
-        private Dictionary<string, Assembly> Assemblies;                // id is assemblyId
-        private string[] AssemblyPaths;
-
         // helpers
-        private Dictionary<string, int> WorkerNameToId;
         private Dictionary<string, int> NodeNameToId;
         private Dictionary<string, int> QueueNameToId;
         private bool[] QueueIsToEl;                                     // id is queueId
@@ -53,9 +48,8 @@ namespace Batch.Foreman
             this.PathToConfigFile = PathToConfigFile;
         }
 
-        internal ForemanBase(Dictionary<string, Assembly> Assemblies, ForemanConfigurationFile Config)
+        internal ForemanBase(ForemanConfigurationFile Config)
         {
-            this.Assemblies = Assemblies;
             this.Config = Config;
         }
 
@@ -69,52 +63,16 @@ namespace Batch.Foreman
 
             // load config file only if not already defined by Contractor
             if (Config == null)
-                Config = ForemanHelper.LoadConfigFile(PathToConfigFile);
+                Config = LoadConfigFile(PathToConfigFile);
             
-            int WorkerCounter = 0;
             int NodeCounter = 0;
             int QueueCounter = 0;
 
-            WorkerActivator = new WorkerActivator();
-
             Id = Config.foremanId;
 
-            // register assemblies only if not already defined by Contractor
-            if (Assemblies == null)
-                Assemblies = ForemanHelper.LoadAssemblies(new ForemanConfigurationFile[] { Config });
-            
-            // Register workers
-            if (Config.workers == null || Config.workers.Count == 0)
-                throw new ArgumentException("No workers in config file");
-
-            WorkerNameToId = new Dictionary<string, int>(Config.workers.Count);
-            foreach (var configWorker in Config.workers)
-            {
-                if (WorkerNameToId.ContainsKey(configWorker.name))
-                {
-                    string err = "The worker name '" + configWorker.name + "' is already registered";
-                    throw new ArgumentException(err);
-                }
-
-                int workerId = WorkerCounter;
-                WorkerCounter++;
-
-                Assembly asm;
-                if (!Assemblies.TryGetValue(configWorker.assemblyName, out asm))
-                    throw new ArgumentException("assemblyId " + configWorker.assemblyName + " missing from assemblies declaration");
-
-                try
-                {
-                    var workerType = asm.GetType(configWorker.className);
-                    WorkerActivator.RegisterWorkerType(workerId, workerType);
-                    WorkerNameToId.Add(configWorker.name, workerId);
-                }
-                catch (Exception ex)
-                {
-                    string err = "Can't create a worker using className (" + ex.Message + ")";
-                    throw new ArgumentException(err, ex);
-                }
-            }
+            // register assemblies
+            foreach (var configAssembly in Config.assemblies)
+                WorkerLoader.RegisterInstance(configAssembly.name, configAssembly.path);
 
             // Register nodes
             if (Config.nodes == null || Config.nodes.Count == 0)
@@ -129,28 +87,18 @@ namespace Batch.Foreman
             NodeNameToId = new Dictionary<string, int>(Config.nodes.Count);
             foreach (var configNode in Config.nodes)
             {
-                string workerName = configNode.worker;
-                if (!WorkerNameToId.ContainsKey(workerName))
-                {
-                    string err = "The worker name '" + workerName + "' in nodes section is not defined in workers section";
-                    throw new ArgumentException(err);
-                }
-                    
-                int workerId = WorkerNameToId[workerName];
-                
-                if (NodeNameToId.ContainsKey(configNode.name))
-                {
-                    string err = "The node name '" + configNode.name + "' is already registered";
-                    throw new ArgumentException(err);
-                }
-
                 var node = new WorkerNode();
                 node.Id = NodeCounter;
                 node.OrderId = configNode.exeOrderId;
                 node.IsWaitToFinish = configNode.isWaitToFinish;
                 node.Name = configNode.name;
-                node.WorkerId = workerId;
-                node.WorkerActivator = WorkerActivator;
+                node.WorkerClassName = configNode.className;
+
+                WorkerLoader wl;
+                if (!WorkerLoader.TryGetInstanceByAppDomainName(configNode.assemblyName, out wl))
+                    throw new Exception("Assembly not found for node: " + configNode.assemblyName);
+
+                node.WorkerLoader = wl;
 
                 if (!WorkerNodeExeOrder.ContainsKey(node.OrderId))
                     WorkerNodeExeOrder.Add(node.OrderId, new List<WorkerNode>() { node });
@@ -296,9 +244,29 @@ namespace Batch.Foreman
             // dispose of helpers
             QueueIsFromEl = null;
             QueueIsToEl = null;
-            WorkerNameToId = null;
             NodeNameToId = null;
             QueueNameToId = null;
+        }
+
+        public ForemanConfigurationFile LoadConfigFile(string PathToConfigFile)
+        {
+            ForemanConfigurationFile Config;
+
+            try
+            {
+                string settings = File.ReadAllText(PathToConfigFile);
+                Config = JsonConvert.DeserializeObject<ForemanConfigurationFile>(settings);
+            }
+            catch (Exception ex)
+            {
+                string err = "Can't parse config file: " + PathToConfigFile + "(" + ex.Message + ")";
+                throw new Exception(err, ex);
+            }
+
+            if (Config.foremanId.Length == 0)
+                throw new ArgumentException("foremanId must not be empty string");
+
+            return Config;
         }
 
         public void Run()
@@ -380,7 +348,7 @@ namespace Batch.Foreman
 
         private TopologyElementType GetNameTopologyType(string Name, out int id)
         {
-            int nodeId = 0, queueId = 0, workerId = 0;
+            int nodeId = 0, queueId = 0;
             bool isNode, isQueue;
 
             if (NodeNameToId == null)
@@ -399,14 +367,6 @@ namespace Batch.Foreman
                 throw new Exception(err);
             }
 
-            bool isWorker = WorkerNameToId.TryGetValue(Name, out workerId);
-
-            if ((isNode && isWorker) || (isQueue && isWorker))
-            {
-                string err = "The name '" + Name + "' is ambigious";
-                throw new Exception(err);
-            }
-
             if (isNode)
             {
                 id = nodeId;
@@ -417,12 +377,6 @@ namespace Batch.Foreman
             {
                 id = queueId;
                 return TopologyElementType.Queue;
-            }
-
-            if (isWorker)
-            {
-                id = workerId;
-                return TopologyElementType.Worker;
             }
 
             id = -1;

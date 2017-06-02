@@ -10,6 +10,8 @@ namespace BatchFoundation.Worker
     public abstract class WorkerBase : IDisposable
     {
         public int Id;
+        public string ClassName;
+        public WorkerLoader WorkerLoader;
 
         public bool Disposed { get; private set; }
 
