@@ -53,10 +53,10 @@
     <Compile Include="Foreman\ForemanBase.cs" />
     <Compile Include="Foreman\ForemanConfigurationFile.cs" />
     <Compile Include="Foreman\ForemanLoader.cs" />
+    <Compile Include="Foreman\Interfaces\IForeman.cs" />
     <Compile Include="WorkerNode\Enums\WorkerNodeState.cs" />
     <Compile Include="WorkerNode\WorkerNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WorkerNode\WorkerActivator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

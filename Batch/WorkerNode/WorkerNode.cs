@@ -17,7 +17,6 @@ namespace Batch.Worker
         public string Name;
         public int OrderId;
         public object Data;
-        public bool IsLongRunning;
         public string WorkerClassName;
         public WorkerBase Worker;
         public WorkerNode NextNode;
@@ -40,37 +39,6 @@ namespace Batch.Worker
 
             if (NextNode != null)
                 NextNode.Data = Data;
-
-            /*
-                    
-        private volatile bool _IsRunning = false;
-        public bool IsRunning
-        {
-            get;
-            private set;
-        }
-        
-
-            if (IsRunning && IsLongRunning)  // this node is a long running task and is already running so don't run again
-                return;
-
-            Thread.MemoryBarrier();
-
-            IsRunning = true;
-
-            Thread.MemoryBarrier();
-
-            WorkerLoader.Run(WorkerClassName, Input, Output, ref Data);
-
-            if (NextNode != null)
-                NextNode.Data = Data;
-
-            Thread.MemoryBarrier();
-
-            IsRunning = false;
-
-            Thread.MemoryBarrier();
-            */
         }
     }
 }

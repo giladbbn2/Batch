@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Batch.Foreman;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,44 +7,26 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BatchFoundation.Worker
+namespace Batch.Foreman
 {
-    public class ForemanLoader : MarshalByRefObject, IDisposable
+    public class ForemanLoader : MarshalByRefObject, IForeman, IDisposable
     {
-        public AppDomain AppDomain
+        public string PathToConfigFile;
+        public AppDomain AppDomain;
+        public bool IsLoaded
         {
             get;
             private set;
         }
-        public string AppDomainName
-        {
-            get;
-            private set;
-        }
-        public bool isLoaded
-        {
-            get;
-            private set;
-        }
-        public string PathToAssembly
-        {
-            get;
-            private set;
-        }
-        
-        private Assembly asm;
-        private bool Disposed;
 
-        private static object wlsync = new object();
-        private static bool isInit = false;
-        public static ConcurrentDictionary<string, ForemanLoader> AppDomainToWorkerLoader;
-        public static ConcurrentDictionary<string, ForemanLoader> AssemblyPathToWorkerLoader;
+        private ForemanBase foreman;
+        private bool Disposed;
 
 
 
         public ForemanLoader()
         {
-            isLoaded = false;
+            IsLoaded = false;
         }
 
         public override object InitializeLifetimeService()
@@ -51,12 +34,61 @@ namespace BatchFoundation.Worker
             return null;
         }
 
+        public void Load()
+        {
+            if (Disposed)
+                return;
+
+            foreman = new Foreman(PathToConfigFile);
+            foreman.Load();
+
+            IsLoaded = true;
+        }
+
+        public void Run()
+        {
+            if (Disposed)
+                return;
+
+            if (!IsLoaded)
+                throw new Exception("ForemanLoader not loaded yet");
+
+            foreman.Run();
+        }
+
+        public void Pause()
+        {
+            if (Disposed)
+                return;
+
+            foreman.Pause();
+        }
+
+        public void Resume()
+        {
+            if (Disposed)
+                return;
+
+            foreman.Resume();
+        }
+
+        public void Dispose()
+        {
+            Disposed = true;
+
+            if (foreman != null)
+                foreman.Dispose();
+
+            foreman = null;
+        }
+
+        /*
         public void Load(AppDomain AppDomain, string AppDomainName, string PathToAssembly)
         {
             if (Disposed)
                 return;
 
-            if (isLoaded || asm != null)
+            if (IsLoaded || asm != null)
                 throw new Exception("Load() was already executed");
 
             this.AppDomain = AppDomain;
@@ -65,33 +97,23 @@ namespace BatchFoundation.Worker
 
             asm = Assembly.Load(AssemblyName.GetAssemblyName(this.PathToAssembly));
 
-            isLoaded = true;
+            IsLoaded = true;
         }
 
-        public void Run(string WorkerClassName, BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public void Run()
         {
             if (Disposed)
                 return;
 
-            if (!isLoaded)
+            if (!IsLoaded)
                 throw new Exception("Load() must be executed before Run()");
 
-            var t = asm.GetTypes().First(x => x.FullName.Equals(WorkerClassName));
-            BatchFoundation.Worker.Worker w = (BatchFoundation.Worker.Worker)Activator.CreateInstance(t);
-            w.Run(Input, Output, ref data);
+            
+            //var t = asm.GetTypes().First(x => x.FullName.Equals(WorkerClassName));
+            //BatchFoundation.Worker.Worker w = (BatchFoundation.Worker.Worker)Activator.CreateInstance(t);
+            //w.Run(Input, Output, ref data);
         }
-
-        public void Dispose()
-        {
-            if (Disposed)
-                return;
-
-            Disposed = true;
-            AppDomain.Unload(AppDomain);
-            AppDomain = null;
-            asm = null;
-        }
-
+            
         public static void Init()
         {
             if (!isInit)
@@ -99,14 +121,13 @@ namespace BatchFoundation.Worker
                 {
                     if (!isInit)
                     {
-                        AppDomainToWorkerLoader = new ConcurrentDictionary<string, ForemanLoader>();
-                        AssemblyPathToWorkerLoader = new ConcurrentDictionary<string, ForemanLoader>();
+                        ForemanIdToLoader = new ConcurrentDictionary<string, ForemanLoader>();
                         isInit = true;
                     }
                 }
         }
 
-        public static ForemanLoader RegisterInstance(string AppDomainName, string PathToAssembly)
+            public static ForemanLoader RegisterInstance(string PathToConfigFile)
         {
             if (!isInit)
                 Init();
@@ -151,13 +172,13 @@ namespace BatchFoundation.Worker
                 AppDomainToWorkerLoader.AddOrUpdate(AppDomainName, wl, (k, v) => wl);
                 AssemblyPathToWorkerLoader.AddOrUpdate(PathToAssembly, wl, (k, v) => wl);
 
-                /*
-                int x = 1;
-                object o = (object)x;
-                wl.Run("BatchTest.Test2.MyWorker2", null, null, ref o);
-                Console.WriteLine(o);
-                Console.ReadLine();
-                */
+                
+                //int x = 1;
+                //object o = (object)x;
+                //wl.Run("BatchTest.Test2.MyWorker2", null, null, ref o);
+                //Console.WriteLine(o);
+                //Console.ReadLine();
+                
             }
             
             return wl;
@@ -203,6 +224,40 @@ namespace BatchFoundation.Worker
                 wlAppDomain.Dispose();
                 wlPath.Dispose();
             }
+        }
+        */
+
+        public static ForemanLoader CreateInstance(string PathToConfigFile)
+        {
+            AppDomain ad = AppDomain.CreateDomain(Guid.NewGuid().ToString());
+
+            var fl = (ForemanLoader)ad.CreateInstanceAndUnwrap(typeof(ForemanLoader).Assembly.FullName, typeof(ForemanLoader).FullName);
+
+            fl.AppDomain = ad;
+            fl.PathToConfigFile = PathToConfigFile;
+            fl.Load();
+
+            return fl;
+        }
+
+        public static void Unload(ForemanLoader Loader)
+        {
+            if (Loader == null)
+                return;
+
+            Loader.Dispose();
+
+            try
+            {
+                AppDomain.Unload(Loader.AppDomain);
+            }
+            catch (Exception ex)
+            {
+                // log errors
+                // if code got here then AppDomain was not unloaded
+                // apparently because a finally block or unmanaged code which didn't finish running
+            }
+            
         }
     }
 }

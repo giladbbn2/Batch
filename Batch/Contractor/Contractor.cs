@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Batch.Foreman;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,15 @@ namespace Batch.Contractor
         // gets the foreman config file and allocation of a computer
 
         // creating a new instance of Contractor does:
-        // WorkerLoader.Init();
+
+
+        // every foreman should be run separately on its own appdomain (logical process)
+        // the foreman should be loaded and unloaded manually by Contractor
+        // a foreman can have only one assembly defining all workers
+
+
+        private List<IForeman> Foremen;
+
 
     }
 }

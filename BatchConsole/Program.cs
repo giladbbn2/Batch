@@ -10,9 +10,6 @@ using System.Threading.Tasks;
 
 namespace BatchConsole
 {
-
-
-
     class Program
     {
         static void Main(string[] args)
@@ -93,9 +90,18 @@ namespace BatchConsole
             AppDomain.Unload(domain);
             */
 
-            var frmn = new Foreman(@"C:\projects\Batch\BatchTest\Test1\frmn-test1.config");
-            frmn.Load();
-            frmn.Run();
+            var fl = ForemanLoader.CreateInstance(@"C:\projects\Batch\BatchTest\Test2\frmn-test2.config");
+            //var fl = ForemanLoader.CreateInstance(@"C:\projects\Batch\BatchTest\Test1\frmn-test1.config");
+            fl.Run();
+
+            //var frmn = new Foreman(@"C:\projects\Batch\BatchTest\Test1\frmn-test1.config");
+            //frmn.Load();
+            //frmn.Run();
+            //fl.Unload();
+
+            Console.ReadLine();
+
+            ForemanLoader.Unload(fl);
 
             Console.ReadLine();
         }

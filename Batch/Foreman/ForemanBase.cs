@@ -13,43 +13,57 @@ using System.Threading.Tasks;
 
 namespace Batch.Foreman
 {
-    public abstract class ForemanBase : IDisposable
+    public abstract class ForemanBase : IForeman, IDisposable
     {
-        public string Id;
-        public bool IsNodesLongRunning;
-        public string PathToConfigFile;
+        public string Id
+        {
+            get;
+            private set;
+        }
+        public bool IsNodesLongRunning
+        {
+            get;
+            private set;
+        }
+        public string PathToConfigFile
+        {
+            get;
+            private set;
+        }
+        public bool IsLoaded
+        {
+            get;
+            private set;
+        }
 
-        private ForemanConfigurationFile Config;
+        private ForemanConfigurationFile config;
 
-        private WorkerNode[] Nodes;                                     // id is nodeId
-        private WorkerNodeState[] NodeState;                            // id is nodeId
-        private Dictionary<int, List<WorkerNode>> WorkerNodeExeOrder;   // id is orderId
-        private BlockingCollection<object>[] Queues;                    // id is queueId
+        private WorkerNode[] nodes;                                     // id is nodeId
+        private WorkerNodeState[] nodeState;                            // id is nodeId
+        private Dictionary<int, List<WorkerNode>> workerNodeExeOrder;   // id is orderId
+        private BlockingCollection<object>[] queues;                    // id is queueId
         private Assembly asm;
 
         // helpers
-        private Dictionary<string, int> NodeNameToId;
-        private Dictionary<string, int> QueueNameToId;
-        private bool[] QueueIsToEl;                                     // id is queueId
-        private bool[] QueueIsFromEl;                                   // id is queueId
+        private Dictionary<string, int> nodeNameToId;
+        private Dictionary<string, int> queueNameToId;
+        private bool[] queueIsToEl;                                     // id is queueId
+        private bool[] queueIsFromEl;                                   // id is queueId
 
+        private bool isPaused;
+        private bool isRunning;
+        private bool isRunAtLeastOnce;
         private bool Disposed;
+        
 
-
-
-        public ForemanBase()
-        {
-
-        }
 
         public ForemanBase(string PathToConfigFile)
         {
             this.PathToConfigFile = PathToConfigFile;
-        }
-
-        internal ForemanBase(ForemanConfigurationFile Config)
-        {
-            this.Config = Config;
+            isRunning = false;
+            isPaused = false;
+            IsLoaded = false;
+            isRunAtLeastOnce = false;
         }
 
         public void Load()
@@ -57,18 +71,21 @@ namespace Batch.Foreman
             if (Disposed)
                 return;
 
-            if (PathToConfigFile == null && Config == null)
+            if (isRunning)
+                return;
+
+            if (PathToConfigFile == null && config == null)
                 throw new ArgumentNullException("PathToConfigFile");
 
             // load config file only if not already defined by Contractor
-            if (Config == null)
-                Config = LoadConfigFile(PathToConfigFile);
+            if (config == null)
+                config = LoadConfigFile(PathToConfigFile);
             
             int NodeCounter = 0;
             int QueueCounter = 0;
 
-            Id = Config.foremanId;
-            IsNodesLongRunning = Config.isNodesLongRunning;
+            Id = config.foremanId;
+            IsNodesLongRunning = config.isNodesLongRunning;
 
             /*
             // register assemblies
@@ -77,20 +94,20 @@ namespace Batch.Foreman
             */
 
             // register assembly
-            asm = Assembly.LoadFile(Config.assemblyPath);
+            if (config.assemblyPath == null || config.assemblyPath.Length == 0)
+                throw new Exception("assemblyPath field in Foreman configuration file cannot be empty");
+
+            asm = Assembly.LoadFile(config.assemblyPath);
 
             // Register nodes
-            if (Config.nodes == null || Config.nodes.Count == 0)
-            {
-                string err = "No nodes in config file";
-                throw new ArgumentException(err);
-            }
+            if (config.nodes == null || config.nodes.Count == 0)
+                throw new ArgumentException("No nodes in config file");
 
-            Nodes = new WorkerNode[Config.nodes.Count];
-            NodeState = new WorkerNodeState[Config.nodes.Count];
-            WorkerNodeExeOrder = new Dictionary<int, List<WorkerNode>>();
-            NodeNameToId = new Dictionary<string, int>(Config.nodes.Count);
-            foreach (var configNode in Config.nodes)
+            nodes = new WorkerNode[config.nodes.Count];
+            nodeState = new WorkerNodeState[config.nodes.Count];
+            workerNodeExeOrder = new Dictionary<int, List<WorkerNode>>();
+            nodeNameToId = new Dictionary<string, int>(config.nodes.Count);
+            foreach (var configNode in config.nodes)
             {
                 var node = new WorkerNode();
                 node.Id = NodeCounter;
@@ -98,18 +115,11 @@ namespace Batch.Foreman
                 node.Name = configNode.name;
                 node.WorkerClassName = configNode.className;
 
-                if (IsNodesLongRunning)
-                    node.IsLongRunning = true;
-
-                /*
-                WorkerLoader wl;
-                if (!WorkerLoader.TryGetInstanceByAppDomainName(configNode.assemblyName, out wl))
-                    throw new Exception("Assembly not found for node: " + configNode.assemblyName);
-
-                node.WorkerLoader = wl;
-                */
-
                 var workerType = asm.GetTypes().First(x => x.FullName.Equals(configNode.className));
+
+                if (workerType == null)
+                    throw new Exception("Type not found: " + configNode.className);
+
                 var worker = (WorkerBase)Activator.CreateInstance(workerType);
 
                 if (worker == null)
@@ -117,32 +127,32 @@ namespace Batch.Foreman
 
                 node.Worker = worker;
 
-                if (!WorkerNodeExeOrder.ContainsKey(node.OrderId))
-                    WorkerNodeExeOrder.Add(node.OrderId, new List<WorkerNode>() { node });
+                if (!workerNodeExeOrder.ContainsKey(node.OrderId))
+                    workerNodeExeOrder.Add(node.OrderId, new List<WorkerNode>() { node });
                 else
-                    WorkerNodeExeOrder[node.OrderId].Add(node);
+                    workerNodeExeOrder[node.OrderId].Add(node);
 
-                Nodes[NodeCounter] = node;
-                NodeState[NodeCounter] = WorkerNodeState.Idle;
-                NodeNameToId.Add(node.Name, node.Id);
+                nodes[NodeCounter] = node;
+                nodeState[NodeCounter] = WorkerNodeState.Idle;
+                nodeNameToId.Add(node.Name, node.Id);
                 
                 NodeCounter++;
             }
 
             // Register queues
-            if (Config.queues == null || Config.queues.Count == 0)
+            if (config.queues == null || config.queues.Count == 0)
             {
                 // no queues
             } 
             else
             {
-                Queues = new BlockingCollection<object>[Config.queues.Count];
-                QueueNameToId = new Dictionary<string, int>(Config.queues.Count);
-                QueueIsToEl = new bool[Config.queues.Count];
-                QueueIsFromEl = new bool[Config.queues.Count];
-                foreach (var configQueue in Config.queues)
+                queues = new BlockingCollection<object>[config.queues.Count];
+                queueNameToId = new Dictionary<string, int>(config.queues.Count);
+                queueIsToEl = new bool[config.queues.Count];
+                queueIsFromEl = new bool[config.queues.Count];
+                foreach (var configQueue in config.queues)
                 {
-                    if (QueueNameToId.ContainsKey(configQueue.name))
+                    if (queueNameToId.ContainsKey(configQueue.name))
                     {
                         string err = "The queue name '" + configQueue.name + "' is already registered";
                         throw new ArgumentException(err);
@@ -151,26 +161,26 @@ namespace Batch.Foreman
                     int queueId = QueueCounter;
 
                     if (configQueue.bufferLimit == 0)
-                        Queues[queueId] = new BlockingCollection<object>();
+                        queues[queueId] = new BlockingCollection<object>();
                     else
-                        Queues[queueId] = new BlockingCollection<object>(configQueue.bufferLimit);
+                        queues[queueId] = new BlockingCollection<object>(configQueue.bufferLimit);
 
-                    QueueNameToId.Add(configQueue.name, queueId);
+                    queueNameToId.Add(configQueue.name, queueId);
 
                     QueueCounter++;
                 }
             }
 
             // Register connections
-            foreach (var configConnection in Config.connections)
+            foreach (var configConnection in config.connections)
             {
                 string fromName = configConnection.from;
                 string toName = configConnection.to;
 
                 int fromElId, toElId;
 
-                TopologyElementType fromEl = GetNameTopologyType(fromName, out fromElId);
-                TopologyElementType toEl = GetNameTopologyType(toName, out toElId);
+                TopologyElementType fromEl = GetTopologyTypeByName(fromName, out fromElId);
+                TopologyElementType toEl = GetTopologyTypeByName(toName, out toElId);
 
                 if (fromEl == TopologyElementType.None && toEl == TopologyElementType.None)
                 {
@@ -188,8 +198,8 @@ namespace Batch.Foreman
 
                 if (fromEl == TopologyElementType.Node && toEl == TopologyElementType.Queue)
                 {
-                    var node = Nodes[fromElId];
-                    var queue = Queues[toElId];
+                    var node = nodes[fromElId];
+                    var queue = queues[toElId];
 
                     if (node.Output != null)
                     {
@@ -199,13 +209,13 @@ namespace Batch.Foreman
                     
                     node.Output = queue;
                     node.IsConnected = true;
-                    QueueIsToEl[toElId] = true;
+                    queueIsToEl[toElId] = true;
                 }
 
                 if (fromEl == TopologyElementType.Queue && toEl == TopologyElementType.Node)
                 {
-                    var node = Nodes[toElId];
-                    var queue = Queues[fromElId];
+                    var node = nodes[toElId];
+                    var queue = queues[fromElId];
 
                     if (node.Input != null)
                     {
@@ -215,18 +225,18 @@ namespace Batch.Foreman
 
                     node.Input = queue;
                     node.IsConnected = true;
-                    QueueIsFromEl[fromElId] = true;
+                    queueIsFromEl[fromElId] = true;
                 }
 
                 if (fromEl == TopologyElementType.Node && toEl == TopologyElementType.Node)
                 {
-                    var node1 = Nodes[fromElId];
+                    var node1 = nodes[fromElId];
                     node1.IsConnected = true;
 
-                    var node2 = Nodes[toElId];
+                    var node2 = nodes[toElId];
                     node2.IsConnected = true;
 
-                    if (!node1.IsLongRunning && !node2.IsLongRunning)
+                    if (!IsNodesLongRunning)
                         node1.NextNode = node2;
                 }
             }
@@ -236,19 +246,19 @@ namespace Batch.Foreman
             // verify connections
 
             // iterate over all tree and check if there are any unconnected nodes
-            foreach (var node in Nodes)
+            foreach (var node in nodes)
                 if (!node.IsConnected)
                 {
                     string err = "Node is not connected to topology tree: '" + node.Name + "'";
                     throw new Exception(err);
                 }
 
-            if (Queues != null)
+            if (queues != null)
             {
                 // check a queue is not an edge
-                for (var i = 0; i < Queues.Length; i++)
+                for (var i = 0; i < queues.Length; i++)
                 {
-                    if (!QueueIsFromEl[i] || !QueueIsToEl[i])
+                    if (!queueIsFromEl[i] || !queueIsToEl[i])
                     {
                         string err = "A queue cannot be an edge, but must connect a node as input and another node as output";
                         throw new Exception(err);
@@ -259,36 +269,38 @@ namespace Batch.Foreman
             // several independent topologies can coexist in a single foreman
 
             // dispose of helpers
-            QueueIsFromEl = null;
-            QueueIsToEl = null;
-            NodeNameToId = null;
-            QueueNameToId = null;
-        }
+            queueIsFromEl = null;
+            queueIsToEl = null;
+            nodeNameToId = null;
+            queueNameToId = null;
 
-        public ForemanConfigurationFile LoadConfigFile(string PathToConfigFile)
-        {
-            ForemanConfigurationFile Config;
-
-            try
-            {
-                string settings = File.ReadAllText(PathToConfigFile);
-                Config = JsonConvert.DeserializeObject<ForemanConfigurationFile>(settings);
-            }
-            catch (Exception ex)
-            {
-                string err = "Can't parse config file: " + PathToConfigFile + "(" + ex.Message + ")";
-                throw new Exception(err, ex);
-            }
-
-            if (Config.foremanId.Length == 0)
-                throw new ArgumentException("foremanId must not be empty string");
-
-            return Config;
+            IsLoaded = true;
         }
 
         public void Run()
         {
-            var orderedNodes = WorkerNodeExeOrder.Keys.OrderBy(x => x);
+            // if IsNodesLongRunning is true then Run() is expected to run once until Dispose() is executed
+            // if IsNodesLongRunning is false then Run() is expected run again and again
+
+            if (Disposed)
+                return;
+
+            if (!IsLoaded)
+                throw new Exception("Foreman not loaded yet");
+
+            if (isPaused)
+                throw new Exception("Foreman is paused");
+
+            if (isRunning)
+                throw new Exception("Foreman is already running");
+
+            if (IsNodesLongRunning && isRunAtLeastOnce)
+                throw new Exception("long running foremen (IsNodesLongRunning = true) cannot be run more than once");
+
+            isRunning = true;
+            isRunAtLeastOnce = true;
+
+            var orderedNodes = workerNodeExeOrder.Keys.OrderBy(x => x);
 
             if (IsNodesLongRunning)
             {
@@ -297,7 +309,7 @@ namespace Batch.Foreman
 
                 foreach (var orderId in orderedNodes)
                 {
-                    var nodes = WorkerNodeExeOrder[orderId];
+                    var nodes = workerNodeExeOrder[orderId];
 
                     foreach (var node in nodes)
                     {
@@ -324,7 +336,7 @@ namespace Batch.Foreman
             {
                 foreach (var orderId in orderedNodes)
                 {
-                    var nodes = WorkerNodeExeOrder[orderId];
+                    var nodes = workerNodeExeOrder[orderId];
 
                     foreach (var node in nodes)
                     {
@@ -344,7 +356,8 @@ namespace Batch.Foreman
 
                 }
             }
-            
+
+            isRunning = false;
 
             /*
             // Foreman can have both long running and short running tasks - not applicable, so overriden in child classes
@@ -408,31 +421,54 @@ namespace Batch.Foreman
             */
         }
 
+        public void Pause()
+        {
+            if (IsNodesLongRunning)
+                throw new Exception("A long running Foreman (IsNodesLongRunning = true) can't be paused");
+
+            // if Run() is already run it is not interrupted, but it won't run again until
+            // foreman is resumed
+
+            isPaused = true;
+        }
+
+        public void Resume()
+        {
+            if (IsNodesLongRunning)
+                throw new Exception("A long running Foreman (IsNodesLongRunning = true) can't be resumed");
+
+            isPaused = false;
+        }
+
         public void Dispose()
         {
             Disposed = true;
+
+            if (queues != null)
+                foreach (var q in queues)
+                    q.CompleteAdding();
+
+            queues = null;
+            asm = null;
+            workerNodeExeOrder = null;
+            nodeNameToId = null;
+            queueNameToId = null;
         }
 
-        public void Terminate(bool IsGraceful = true)
-        {
-            if (Disposed)
-                return;
-        }
-
-        private TopologyElementType GetNameTopologyType(string Name, out int id)
+        private TopologyElementType GetTopologyTypeByName(string Name, out int id)
         {
             int nodeId = 0, queueId = 0;
             bool isNode, isQueue;
 
-            if (NodeNameToId == null)
+            if (nodeNameToId == null)
                 isNode = false;
             else
-                isNode = NodeNameToId.TryGetValue(Name, out nodeId);
+                isNode = nodeNameToId.TryGetValue(Name, out nodeId);
 
-            if (QueueNameToId == null)
+            if (queueNameToId == null)
                 isQueue = false;
             else
-                isQueue = QueueNameToId.TryGetValue(Name, out queueId);
+                isQueue = queueNameToId.TryGetValue(Name, out queueId);
 
             if (isNode && isQueue)
             {
@@ -456,23 +492,44 @@ namespace Batch.Foreman
             return TopologyElementType.None;
         }
 
+        private ForemanConfigurationFile LoadConfigFile(string PathToConfigFile)
+        {
+            ForemanConfigurationFile Config;
+
+            try
+            {
+                string settings = File.ReadAllText(PathToConfigFile);
+                Config = JsonConvert.DeserializeObject<ForemanConfigurationFile>(settings);
+            }
+            catch (Exception ex)
+            {
+                string err = "Can't parse config file: " + PathToConfigFile + "(" + ex.Message + ")";
+                throw new Exception(err, ex);
+            }
+
+            if (Config.foremanId.Length == 0)
+                throw new ArgumentException("foremanId must not be empty string");
+
+            return Config;
+        }
+
         #region WorkerNode Events
 
         public void OnWorkerNodeStarted(int NodeId)
         {
-            NodeState[NodeId] = WorkerNodeState.Running;
+            nodeState[NodeId] = WorkerNodeState.Running;
             //Console.WriteLine(NodeId.ToString() + " started");
         }
 
         public void OnWorkerNodeEnded(int NodeId)
         {
-            NodeState[NodeId] = WorkerNodeState.Finished;
+            nodeState[NodeId] = WorkerNodeState.Finished;
             //Console.WriteLine(NodeId.ToString() + " finished");
         }
 
         public void OnWorkerNodeError(int NodeId, Exception ex)
         {
-            NodeState[NodeId] = WorkerNodeState.Error;
+            nodeState[NodeId] = WorkerNodeState.Error;
             Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);
         }
 

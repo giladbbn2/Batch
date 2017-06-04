@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace Batch.Foreman
 {
-    public class Foreman : ForemanBase
+    internal interface IForeman
     {
-        public Foreman(string PathToConfigFile) : base(PathToConfigFile)
-        {
+        void Load();
 
-        }
+        void Run();
+
+        void Pause();
+
+        void Resume();
     }
 }
