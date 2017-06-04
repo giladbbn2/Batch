@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Batch.Foreman
 {
-    public class Foreman : ForemanBase
+    internal class Foreman : ForemanBase
     {
         public Foreman(string PathToConfigFile) : base(PathToConfigFile)
         {

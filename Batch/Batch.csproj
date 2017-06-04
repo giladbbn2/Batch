@@ -61,9 +61,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Config\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\BatchFoundation\BatchFoundation.csproj">
       <Project>{22adec6f-b6fa-4210-b476-185999a6d668}</Project>

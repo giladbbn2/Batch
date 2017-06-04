@@ -20,6 +20,7 @@ namespace Batch.Foreman
         }
 
         private ForemanBase foreman;
+        private object data;
         private bool Disposed;
 
 
@@ -72,8 +73,20 @@ namespace Batch.Foreman
             foreman.Resume();
         }
 
+        public object GetData()
+        {
+            return data;
+        }
+
+        public void SetData(object data)
+        {
+            this.data = data;
+        }
+
         public void Dispose()
         {
+            // AppDomain.Unload() must be executed on parent AppDomain
+
             Disposed = true;
 
             if (foreman != null)

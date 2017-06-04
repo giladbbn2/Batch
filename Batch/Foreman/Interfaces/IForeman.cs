@@ -15,5 +15,9 @@ namespace Batch.Foreman
         void Pause();
 
         void Resume();
+
+        object GetData();
+
+        void SetData(object data);
     }
 }

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Batch.Foreman
 {
-    public abstract class ForemanBase : IForeman, IDisposable
+    internal abstract class ForemanBase : IForeman, IDisposable
     {
         public string Id
         {
@@ -35,8 +35,24 @@ namespace Batch.Foreman
             get;
             private set;
         }
+        public bool IsRunning
+        {
+            get;
+            private set;
+        }
+        public bool IsPaused
+        {
+            get;
+            private set;
+        }
+        public bool IsRanAtLeastOnce
+        {
+            get;
+            private set;
+        }
 
         private ForemanConfigurationFile config;
+        private object data;
 
         private WorkerNode[] nodes;                                     // id is nodeId
         private WorkerNodeState[] nodeState;                            // id is nodeId
@@ -50,9 +66,6 @@ namespace Batch.Foreman
         private bool[] queueIsToEl;                                     // id is queueId
         private bool[] queueIsFromEl;                                   // id is queueId
 
-        private bool isPaused;
-        private bool isRunning;
-        private bool isRunAtLeastOnce;
         private bool Disposed;
         
 
@@ -60,10 +73,10 @@ namespace Batch.Foreman
         public ForemanBase(string PathToConfigFile)
         {
             this.PathToConfigFile = PathToConfigFile;
-            isRunning = false;
-            isPaused = false;
+            IsRunning = false;
+            IsPaused = false;
             IsLoaded = false;
-            isRunAtLeastOnce = false;
+            IsRanAtLeastOnce = false;
         }
 
         public void Load()
@@ -71,7 +84,7 @@ namespace Batch.Foreman
             if (Disposed)
                 return;
 
-            if (isRunning)
+            if (IsRunning)
                 return;
 
             if (PathToConfigFile == null && config == null)
@@ -288,17 +301,17 @@ namespace Batch.Foreman
             if (!IsLoaded)
                 throw new Exception("Foreman not loaded yet");
 
-            if (isPaused)
+            if (IsPaused)
                 throw new Exception("Foreman is paused");
 
-            if (isRunning)
+            if (IsRunning)
                 throw new Exception("Foreman is already running");
 
-            if (IsNodesLongRunning && isRunAtLeastOnce)
+            if (IsNodesLongRunning && IsRanAtLeastOnce)
                 throw new Exception("long running foremen (IsNodesLongRunning = true) cannot be run more than once");
 
-            isRunning = true;
-            isRunAtLeastOnce = true;
+            IsRunning = true;
+            IsRanAtLeastOnce = true;
 
             var orderedNodes = workerNodeExeOrder.Keys.OrderBy(x => x);
 
@@ -357,7 +370,7 @@ namespace Batch.Foreman
                 }
             }
 
-            isRunning = false;
+            IsRunning = false;
 
             /*
             // Foreman can have both long running and short running tasks - not applicable, so overriden in child classes
@@ -429,7 +442,7 @@ namespace Batch.Foreman
             // if Run() is already run it is not interrupted, but it won't run again until
             // foreman is resumed
 
-            isPaused = true;
+            IsPaused = true;
         }
 
         public void Resume()
@@ -437,7 +450,17 @@ namespace Batch.Foreman
             if (IsNodesLongRunning)
                 throw new Exception("A long running Foreman (IsNodesLongRunning = true) can't be resumed");
 
-            isPaused = false;
+            IsPaused = false;
+        }
+
+        public object GetData()
+        {
+            return data;
+        }
+
+        public void SetData(object data)
+        {
+            this.data = data;
         }
 
         public void Dispose()
@@ -513,8 +536,6 @@ namespace Batch.Foreman
             return Config;
         }
 
-        #region WorkerNode Events
-
         public void OnWorkerNodeStarted(int NodeId)
         {
             nodeState[NodeId] = WorkerNodeState.Running;
@@ -533,6 +554,5 @@ namespace Batch.Foreman
             Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);
         }
 
-        #endregion
     }
 }
