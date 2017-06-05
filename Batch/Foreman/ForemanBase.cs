@@ -18,7 +18,7 @@ namespace Batch.Foreman
         public string Id
         {
             get;
-            private set;
+            set;
         }
         public bool IsNodesLongRunning
         {
@@ -50,10 +50,31 @@ namespace Batch.Foreman
             get;
             private set;
         }
+        public object Data
+        {
+            get;
+            set;
+        }
+
+        // short running foreman to short running foreman connection
+        public IForeman NextForeman
+        {
+            get;
+            set;
+        }
+        public IForeman BranchForeman
+        {
+            get;
+            set;
+        }
+        public int BranchRequestWeight
+        {
+            get;
+            set;
+        }
 
         private ForemanConfigurationFile config;
-        private object data;
-
+        
         private WorkerNode[] nodes;                                     // id is nodeId
         private WorkerNodeState[] nodeState;                            // id is nodeId
         private Dictionary<int, List<WorkerNode>> workerNodeExeOrder;   // id is orderId
@@ -65,6 +86,7 @@ namespace Batch.Foreman
         private Dictionary<string, int> queueNameToId;
         private bool[] queueIsToEl;                                     // id is queueId
         private bool[] queueIsFromEl;                                   // id is queueId
+        private List<Task> orderedLongRunningNodeTasks;
 
         private bool Disposed;
         
@@ -97,7 +119,6 @@ namespace Batch.Foreman
             int NodeCounter = 0;
             int QueueCounter = 0;
 
-            Id = config.foremanId;
             IsNodesLongRunning = config.isNodesLongRunning;
 
             /*
@@ -308,7 +329,7 @@ namespace Batch.Foreman
                 throw new Exception("Foreman is already running");
 
             if (IsNodesLongRunning && IsRanAtLeastOnce)
-                throw new Exception("long running foremen (IsNodesLongRunning = true) cannot be run more than once");
+                throw new Exception("Long running foremen (IsNodesLongRunning = true) cannot be run more than once");
 
             IsRunning = true;
             IsRanAtLeastOnce = true;
@@ -318,7 +339,7 @@ namespace Batch.Foreman
             if (IsNodesLongRunning)
             {
                 var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
-                List<Task> orderedNonWaitingNodeTasks = new List<Task>();
+                orderedLongRunningNodeTasks = new List<Task>();
 
                 foreach (var orderId in orderedNodes)
                 {
@@ -326,7 +347,7 @@ namespace Batch.Foreman
 
                     foreach (var node in nodes)
                     {
-                        orderedNonWaitingNodeTasks.Add(f.StartNew(() =>
+                        orderedLongRunningNodeTasks.Add(f.StartNew(() =>
                         {
                             OnWorkerNodeStarted(node.Id);
 
@@ -337,19 +358,35 @@ namespace Batch.Foreman
                             catch (Exception ex)
                             {
                                 OnWorkerNodeError(node.Id, ex);
+                                return;
                             }
 
                             OnWorkerNodeEnded(node.Id);
                         }));
                     }
 
+                    // wait on non waiting nodes to finish
+                    //Task.WaitAll(orderedNonWaitingNodeTasks.ToArray());
+
+                    //IsRunning = false;
+
+                    // actually don't wait on tasks so this thread is not blocked and IsRunning is always true until foreman is disposed
                 }
             }
             else
             {
+                bool isFirstNode = true;
+
                 foreach (var orderId in orderedNodes)
                 {
                     var nodes = workerNodeExeOrder[orderId];
+
+                    if (isFirstNode && nodes.Count > 0)
+                    {
+                        // put external data into first node (from foreman upstream?)
+                        nodes[0].Data = Data;
+                        isFirstNode = false;
+                    }
 
                     foreach (var node in nodes)
                     {
@@ -358,80 +395,30 @@ namespace Batch.Foreman
                         try
                         {
                             node.Run();
+
+                            // save local copy of last worker data result for next foreman's first node
+                            Data = node.Data;
                         }
                         catch (Exception ex)
                         {
                             OnWorkerNodeError(node.Id, ex);
+                            return;
                         }
 
                         OnWorkerNodeEnded(node.Id);
                     }
-
-                }
-            }
-
-            IsRunning = false;
-
-            /*
-            // Foreman can have both long running and short running tasks - not applicable, so overriden in child classes
-
-            var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
-            List<Task> orderedNonWaitingNodeTasks = new List<Task>();
-            List<WorkerNode> orderedWaitingNodes = new List<WorkerNode>();
-
-            var orderedNodes = WorkerNodeExeOrder.Keys.OrderBy(x =>  x);
-
-            foreach (var orderId in orderedNodes)
-            {
-                var nodes = WorkerNodeExeOrder[orderId];
-
-                foreach (var node in nodes)
-                {
-                    if (node.IsWaitToFinish)
-                        orderedWaitingNodes.Add(node);
-                    else
-                        orderedNonWaitingNodeTasks.Add(f.StartNew(() =>
-                        {
-                            OnWorkerNodeStarted(node.Id);
-
-                            try
-                            {
-                                node.Run();
-                            }
-                            catch (Exception ex)
-                            {
-                                OnWorkerNodeError(node.Id, ex);
-                            }
-
-                            OnWorkerNodeEnded(node.Id);
-                        }));
                 }
                 
+                /*
+                if (NextForeman != null)
+                    NextForeman.Data = Data;
+
+                if (BackupForeman != null)
+                    BackupForeman.Data = Data;
+                */
+
+                IsRunning = false;
             }
-
-            // execute waiting nodes synchronously
-            for (var i=0; i<orderedWaitingNodes.Count; i++)
-            {
-                var node = orderedWaitingNodes[i];
-
-                OnWorkerNodeStarted(node.Id);
-
-                try
-                {
-                    node.Run();
-                }
-                catch (Exception ex)
-                {
-                    OnWorkerNodeError(node.Id, ex);
-                }
-
-                OnWorkerNodeEnded(node.Id);
-            }
-
-            // wait on non waiting nodes to finish
-            Task.WaitAll(orderedNonWaitingNodeTasks.ToArray());
-
-            */
         }
 
         public void Pause()
@@ -453,20 +440,16 @@ namespace Batch.Foreman
             IsPaused = false;
         }
 
-        public object GetData()
+        public void StopLongRunningNodeTasks()
         {
-            return data;
-        }
 
-        public void SetData(object data)
-        {
-            this.data = data;
         }
 
         public void Dispose()
         {
             Disposed = true;
 
+            // should do this in an orderly fashion to avoid exceptions?
             if (queues != null)
                 foreach (var q in queues)
                     q.CompleteAdding();
@@ -529,9 +512,6 @@ namespace Batch.Foreman
                 string err = "Can't parse config file: " + PathToConfigFile + "(" + ex.Message + ")";
                 throw new Exception(err, ex);
             }
-
-            if (Config.foremanId.Length == 0)
-                throw new ArgumentException("foremanId must not be empty string");
 
             return Config;
         }

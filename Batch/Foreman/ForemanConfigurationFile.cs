@@ -11,7 +11,6 @@ namespace Batch.Foreman
 
     public class ForemanConfigurationFile
     {
-        public string foremanId = "";
         public string foremanVer = "0.1.1";
         public bool isNodesLongRunning = false;
         public string assemblyPath = "";

@@ -9,8 +9,13 @@ using System.Threading.Tasks;
 
 namespace Batch.Foreman
 {
-    public class ForemanLoader : MarshalByRefObject, IForeman, IDisposable
+    internal class ForemanLoader : MarshalByRefObject, IForeman, IDisposable
     {
+        public string Id
+        {
+            get;
+            set;
+        }
         public string PathToConfigFile;
         public AppDomain AppDomain;
         public bool IsLoaded
@@ -18,9 +23,35 @@ namespace Batch.Foreman
             get;
             private set;
         }
+        public bool IsNodesLongRunning
+        {
+            get;
+            private set;
+        }
+
+        public object Data
+        {
+            get;
+            set;
+        }
+
+        public IForeman NextForeman
+        {
+            get;
+            set;
+        }
+        public IForeman BranchForeman
+        {
+            get;
+            set;
+        }
+        public int BranchRequestWeight
+        {
+            get;
+            set;
+        }
 
         private ForemanBase foreman;
-        private object data;
         private bool Disposed;
 
 
@@ -41,7 +72,9 @@ namespace Batch.Foreman
                 return;
 
             foreman = new Foreman(PathToConfigFile);
+            foreman.Id = Id;
             foreman.Load();
+            IsNodesLongRunning = foreman.IsNodesLongRunning;
 
             IsLoaded = true;
         }
@@ -54,7 +87,14 @@ namespace Batch.Foreman
             if (!IsLoaded)
                 throw new Exception("ForemanLoader not loaded yet");
 
+            foreman.Data = Data;
+            foreman.NextForeman = NextForeman;
+            foreman.BranchForeman = BranchForeman;
+            foreman.BranchRequestWeight = BranchRequestWeight;
+
             foreman.Run();
+
+            Data = foreman.Data;
         }
 
         public void Pause()
@@ -71,16 +111,6 @@ namespace Batch.Foreman
                 return;
 
             foreman.Resume();
-        }
-
-        public object GetData()
-        {
-            return data;
-        }
-
-        public void SetData(object data)
-        {
-            this.data = data;
         }
 
         public void Dispose()
@@ -240,12 +270,13 @@ namespace Batch.Foreman
         }
         */
 
-        public static ForemanLoader CreateInstance(string PathToConfigFile)
+        public static ForemanLoader CreateInstance(string Id, string PathToConfigFile)
         {
             AppDomain ad = AppDomain.CreateDomain(Guid.NewGuid().ToString());
 
             var fl = (ForemanLoader)ad.CreateInstanceAndUnwrap(typeof(ForemanLoader).Assembly.FullName, typeof(ForemanLoader).FullName);
 
+            fl.Id = Id;
             fl.AppDomain = ad;
             fl.PathToConfigFile = PathToConfigFile;
             fl.Load();

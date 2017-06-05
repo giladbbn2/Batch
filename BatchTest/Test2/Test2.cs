@@ -22,7 +22,7 @@ namespace BatchTest.Test2
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
             Console.WriteLine("w1+");
-            data = (new Random()).Next(1000);
+            //data = (new Random()).Next(1000);
             Console.WriteLine(data);
             Console.WriteLine("w1-");
         }

@@ -8,6 +8,18 @@ namespace Batch.Foreman
 {
     internal interface IForeman
     {
+        string Id { get; set; }
+
+        bool IsNodesLongRunning { get; }
+
+        object Data { get; set; }
+
+        IForeman NextForeman { get; set; }
+
+        IForeman BranchForeman { get; set; }
+
+        int BranchRequestWeight { get; set; }
+
         void Load();
 
         void Run();
@@ -16,8 +28,6 @@ namespace Batch.Foreman
 
         void Resume();
 
-        object GetData();
-
-        void SetData(object data);
+        void StopLongRunningNodeTasks();
     }
 }
