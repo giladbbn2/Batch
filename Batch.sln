@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchTest", "BatchTest\Batc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchTestBL", "BatchTestBL\BatchTestBL.csproj", "{D4C8B9CB-F0D2-448D-95F2-EAFA015BC6B8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{20D7C2A6-702B-4EE5-B63F-2BDEE3D9ECC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F59E1757-F68A-4372-B863-813FCAD58EA2} = {20D7C2A6-702B-4EE5-B63F-2BDEE3D9ECC9}
+		{D4C8B9CB-F0D2-448D-95F2-EAFA015BC6B8} = {20D7C2A6-702B-4EE5-B63F-2BDEE3D9ECC9}
 	EndGlobalSection
 EndGlobal
