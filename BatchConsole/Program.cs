@@ -13,50 +13,56 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            /*
-            var fl = ForemanLoader.CreateInstance(@"C:\projects\Batch\BatchTest\Test2\frmn-test2.config");
-            //var fl = ForemanLoader.CreateInstance(@"C:\projects\Batch\BatchTest\Test1\frmn-test1.config");
-            fl.Run();
+            Test1();
 
-            //var frmn = new Foreman(@"C:\projects\Batch\BatchTest\Test1\frmn-test1.config");
-            //frmn.Load();
-            //frmn.Run();
-            //fl.Unload();
+        }
 
-            Console.ReadLine();
-
-            ForemanLoader.Unload(fl);
-
-            Console.ReadLine();
-            */
-
-
+        public static void Test1()
+        {
             var c = new Contractor();
-            c.AddForeman("frmn1", @"C:\projects\Batch\BatchTest\Test2\frmn-test2.config");
-            c.AddForeman("frmn2", @"C:\projects\Batch\BatchTest\Test2\frmn-test2.config");
-
+            c.AddForeman("frmn1", @"C:\projects\Batch\BatchTest\Test1\frmn-test1.config");
 
             int x = 15;
             object o = (object)x;
 
-            //o = c.RunForeman("frmn1", o);
-            //Console.WriteLine("1. foreman returned: " + o);
-            //o = c.RunForeman("frmn1", o);
-            //Console.WriteLine("2. foreman returned: " + o);
-
-            c.AddForemanConnection("frmn1", "frmn2");
-
-            o = c.RunSequence("frmn1", o);
+            o = c.Run("frmn1", o);
 
             Console.WriteLine(o);
 
 
+            // trigger SubmitData
+            Console.ReadLine();
+            int x2 = 24;
+            object o2 = (object)x2;
+
+            c.SubmitData("frmn1", "q2", o2);
+
+
+            // trigger unload
+            Console.ReadLine();
+            c.RemoveForeman("frmn1");
+
+            Console.ReadLine();
+        }
+
+        public static void Test2()
+        {
+            var c = new Contractor();
+            c.AddForeman("frmn1", @"C:\projects\Batch\BatchTest\Test2\frmn-test2.config");
+            c.AddForeman("frmn2", @"C:\projects\Batch\BatchTest\Test2\frmn-test2.config");
+            c.ConnectForeman("frmn1", "frmn2");
+
+            int x = 15;
+            object o = (object)x;
+
+            o = c.Run("frmn1", o);
+
+            Console.WriteLine(o);
 
             c.RemoveForeman("frmn1");
             c.RemoveForeman("frmn2");
 
             Console.ReadLine();
-
         }
     }
 }

@@ -21,10 +21,7 @@ namespace BatchTest.Test2
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Console.WriteLine("w1+");
-            //data = (new Random()).Next(1000);
-            Console.WriteLine(data);
-            Console.WriteLine("w1-");
+            Console.WriteLine(DateTime.UtcNow + " - W1: " + data);
         }
     }
 
@@ -32,10 +29,8 @@ namespace BatchTest.Test2
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Console.WriteLine("w2+");
             data = (object)((int)data + 1);
-            Console.WriteLine(data);
-            Console.WriteLine("w2-");
+            Console.WriteLine(DateTime.UtcNow + " - W2: " + data);
         }
     }
 
@@ -43,9 +38,8 @@ namespace BatchTest.Test2
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Console.WriteLine("w3+");
-            data = (object)((int)data + 1); Console.WriteLine(data);
-            Console.WriteLine("w3-");
+            data = (object)((int)data + 1);
+            Console.WriteLine(DateTime.UtcNow + " - W3: " + data);
         }
     }
 
@@ -53,9 +47,8 @@ namespace BatchTest.Test2
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Console.WriteLine("w4+");
-            data = (object)((int)data + 1); Console.WriteLine(data);
-            Console.WriteLine("w4-");
+            data = (object)((int)data + 1);
+            Console.WriteLine(DateTime.UtcNow + " - W4: " + data);
         }
     }
 
@@ -63,9 +56,8 @@ namespace BatchTest.Test2
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Console.WriteLine("w5+");
-            data = (object)((int)data + 1); Console.WriteLine(data);
-            Console.WriteLine("w5-");
+            data = (object)((int)data + 1);
+            Console.WriteLine(DateTime.UtcNow + " - W5: " + data);
         }
     }
 
@@ -73,10 +65,9 @@ namespace BatchTest.Test2
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Console.WriteLine("w6+");
-            Console.WriteLine(data);
             Thread.Sleep(3000);
-            Console.WriteLine("w6-");
+            data = (object)((int)data + 1);
+            Console.WriteLine(DateTime.UtcNow + " - W6: " + data);
         }
     }
 }

@@ -24,11 +24,6 @@ namespace Batch.Contractor
             get;
             private set;
         }
-        public bool IsLongRunningForemenRun
-        {
-            get;
-            private set;
-        }
         
         private ConcurrentDictionary<string, IForeman> foremen;             // key is foremanId
 
@@ -38,7 +33,6 @@ namespace Batch.Contractor
         {
             foremen = new ConcurrentDictionary<string, IForeman>();
             IsLoaded = false;
-            IsLongRunningForemenRun = false;
         }
 
         public void LoadConfigFile(string PathToConfigFile)
@@ -50,25 +44,6 @@ namespace Batch.Contractor
         {
             // try to stop all long running foremen and
             // try to remove all foremen connections and all foremen
-        }
-
-        public void RunLongRunningForemen()
-        {
-            if (IsLongRunningForemenRun)
-                throw new Exception("Long running foreman already run");
-
-            // verify there are no errors before running all long running foremen
-
-            foreach (var foreman in foremen.Values)
-                if (foreman.IsNodesLongRunning)
-                    foreman.Run();
-
-            IsLongRunningForemenRun = true;
-        }
-
-        public void StopLongRunningForemen()
-        {
-
         }
 
         public void AddForeman(string ForemanId, string PathToConfigFile)
@@ -93,9 +68,13 @@ namespace Batch.Contractor
             foreman = null;
         }
 
-        public void AddForemanConnection(string ForemanIdFrom, string ForemanIdTo, int BranchRequestWeight = 1000, bool IsBranchForeman = false)
+        public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, int BranchRequestWeight = 100, bool IsBranchForeman = false)
         {
-            // max BackupRequestWeight is 1000
+            // max BackupRequestWeight is 100 (percent)
+
+
+            // handle also long running foremen! connect q to q ???
+
 
             if (ForemanIdFrom.Equals(ForemanIdTo))
                 throw new Exception("Can't connect Foreman to itself");
@@ -125,53 +104,73 @@ namespace Batch.Contractor
             }
         }
 
-        public void RemoveForemanConnection(string ForemanIdFrom, string ForemanIdTo)
+        public void DisconnectForeman(string ForemanIdFrom, string ForemanIdTo)
         {
 
         }
 
-        public object RunSingleForeman(string ForemanId, object Data)
+        public object Run(string ForemanId, object Data, bool IsFollowConnections = true)
         {
             IForeman foreman;
-            if (foremen.TryGetValue(ForemanId, out foreman))
+            if (!foremen.TryGetValue(ForemanId, out foreman))
+                throw new Exception("Foreman not found");
+
+            if (foreman.IsNodesLongRunning)
+            {
+                foreman.Run();
+                return null;
+            }
+
+            // short running foreman
+
+            if (!IsFollowConnections)
             {
                 foreman.Data = Data;
                 foreman.Run();
                 return foreman.Data;
             }
 
-            return null;
-        }
+            // follow short running foreman connections
 
-        public object RunSequence(string ForemanId, object Data)
-        {
-            IForeman foreman;
-            if (foremen.TryGetValue(ForemanId, out foreman))
+            while (foreman != null)
             {
+                foreman.Data = Data;
+                foreman.Run();
+                Data = foreman.Data;
 
-                while (foreman != null)
-                {
-                    foreman.Data = Data;
-                    foreman.Run();
-                    Data = foreman.Data;
-
-                    foreman = foreman.NextForeman;
-                    // backup forman
-                }
-
-                return Data;
-                
+                foreman = foreman.NextForeman;
+                // branch foreman async?
             }
 
-            return null;
+            return Data;
         }
 
-        public void AddEndpointConnection(string Endpoint, string ForemanIdTo)
+        public void SubmitData(string ForemanId, string QueueName, object Data)
         {
+            IForeman foreman;
+            if (!foremen.TryGetValue(ForemanId, out foreman))
+                throw new Exception("Foreman not found");
 
+            foreman.SubmitData(QueueName, Data);
         }
 
-        public void RemoveEndpointConnection(string Endpoint)
+        public void AddEndpoint(string Endpoint) { }
+
+        public void RemoveEndpoint(string Endpoint) { }
+
+        public void ConnectEndpointToForeman(string Endpoint, string ForemanId, string QueueName = null)
+        {
+            if (QueueName == null)
+            {
+                // connect endpoint to a short running foreman
+            }
+            else
+            {
+                // connect endpoint to a queue inside a long running foreman
+            }
+        }
+
+        public void DisconnectEndpoint(string Endpoint)
         {
 
         }

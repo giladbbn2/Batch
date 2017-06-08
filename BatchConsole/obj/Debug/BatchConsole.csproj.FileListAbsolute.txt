@@ -4,8 +4,8 @@ C:\projects\Batch\BatchConsole\bin\Debug\BatchConsole.pdb
 C:\projects\Batch\BatchConsole\bin\Debug\Batch.dll
 C:\projects\Batch\BatchConsole\bin\Debug\BatchFoundation.dll
 C:\projects\Batch\BatchConsole\bin\Debug\Newtonsoft.Json.dll
-C:\projects\Batch\BatchConsole\bin\Debug\BatchFoundation.pdb
 C:\projects\Batch\BatchConsole\bin\Debug\Batch.pdb
+C:\projects\Batch\BatchConsole\bin\Debug\BatchFoundation.pdb
 C:\projects\Batch\BatchConsole\bin\Debug\Newtonsoft.Json.xml
 C:\projects\Batch\BatchConsole\obj\Debug\BatchConsole.csprojResolveAssemblyReference.cache
 C:\projects\Batch\BatchConsole\obj\Debug\BatchConsole.exe

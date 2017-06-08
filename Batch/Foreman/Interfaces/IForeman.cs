@@ -28,6 +28,6 @@ namespace Batch.Foreman
 
         void Resume();
 
-        void StopLongRunningNodeTasks();
+        void SubmitData(string QueueName, object data);
     }
 }

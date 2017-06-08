@@ -13,7 +13,7 @@ namespace BatchTest.Test1
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Console.WriteLine("w1 Started");
+            Console.WriteLine(DateTime.UtcNow + " - W1: " + data);
 
             string[] strings = new string[] { "a", "b", "c", "d", "e", "f", "g" };
 
@@ -25,7 +25,7 @@ namespace BatchTest.Test1
 
             Output.CompleteAdding();
 
-            Console.WriteLine("w1 Ended");
+            Console.WriteLine(DateTime.UtcNow + " - W1 ended");
         }
     }
 
@@ -33,7 +33,7 @@ namespace BatchTest.Test1
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Console.WriteLine("w2/3 Started");
+            Console.WriteLine(DateTime.UtcNow + " - W2: " + data);
 
             try
             {
@@ -49,7 +49,7 @@ namespace BatchTest.Test1
                 Output.CompleteAdding();
             }
 
-            Console.WriteLine("w2/3 Ended");
+            Console.WriteLine(DateTime.UtcNow + " - W2 ended");
         }
     }
 
@@ -57,7 +57,7 @@ namespace BatchTest.Test1
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Console.WriteLine("w4 Started");
+            Console.WriteLine(DateTime.UtcNow + " - W3: " + data);
 
             foreach (var item in Input.GetConsumingEnumerable())
             {
@@ -66,7 +66,7 @@ namespace BatchTest.Test1
                 Thread.Sleep(1000);
             }
 
-            Console.WriteLine("w4 Ended");
+            Console.WriteLine(DateTime.UtcNow + " - W3 ended");
         }
     }
 

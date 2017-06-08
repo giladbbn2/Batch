@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Batch.Foreman
@@ -23,12 +24,12 @@ namespace Batch.Foreman
         public bool IsNodesLongRunning
         {
             get;
-            private set;
+            protected set;
         }
         public string PathToConfigFile
         {
             get;
-            private set;
+            protected set;
         }
         public bool IsLoaded
         {
@@ -75,17 +76,18 @@ namespace Batch.Foreman
 
         private ForemanConfigurationFile config;
         
-        private WorkerNode[] nodes;                                     // id is nodeId
-        private WorkerNodeState[] nodeState;                            // id is nodeId
-        private Dictionary<int, List<WorkerNode>> workerNodeExeOrder;   // id is orderId
-        private BlockingCollection<object>[] queues;                    // id is queueId
+        private WorkerNode[] nodes;                                         // id is nodeId
+        private WorkerNodeState[] nodeState;                                // id is nodeId
+        private Dictionary<int, List<WorkerNode>> workerNodeExeOrder;       // key is orderId
+        private BlockingCollection<object>[] queues;                        // id is queueId
+        private Dictionary<string, int> queueNameToId;
         private Assembly asm;
 
         // helpers
         private Dictionary<string, int> nodeNameToId;
-        private Dictionary<string, int> queueNameToId;
-        private bool[] queueIsToEl;                                     // id is queueId
-        private bool[] queueIsFromEl;                                   // id is queueId
+        private bool[] queueIsToEl;                                         // id is queueId
+        private bool[] queueIsFromEl;                                       // id is queueId
+
         private List<Task> orderedLongRunningNodeTasks;
 
         private bool Disposed;
@@ -106,6 +108,9 @@ namespace Batch.Foreman
             if (Disposed)
                 return;
 
+            if (IsLoaded)
+                throw new Exception("Foreman already loaded");
+
             if (IsRunning)
                 return;
 
@@ -120,12 +125,6 @@ namespace Batch.Foreman
             int QueueCounter = 0;
 
             IsNodesLongRunning = config.isNodesLongRunning;
-
-            /*
-            // register assemblies
-            foreach (var configAssembly in Config.assemblies)
-                WorkerLoader.RegisterInstance(configAssembly.name, configAssembly.path);
-            */
 
             // register assembly
             if (config.assemblyPath == null || config.assemblyPath.Length == 0)
@@ -180,6 +179,9 @@ namespace Batch.Foreman
             } 
             else
             {
+                if (!IsNodesLongRunning)
+                    throw new Exception("Can't define queues in short running foremen");
+
                 queues = new BlockingCollection<object>[config.queues.Count];
                 queueNameToId = new Dictionary<string, int>(config.queues.Count);
                 queueIsToEl = new bool[config.queues.Count];
@@ -275,10 +277,6 @@ namespace Batch.Foreman
                 }
             }
 
-            // dry run
-
-            // verify connections
-
             // iterate over all tree and check if there are any unconnected nodes
             foreach (var node in nodes)
                 if (!node.IsConnected)
@@ -306,7 +304,6 @@ namespace Batch.Foreman
             queueIsFromEl = null;
             queueIsToEl = null;
             nodeNameToId = null;
-            queueNameToId = null;
 
             IsLoaded = true;
         }
@@ -323,7 +320,7 @@ namespace Batch.Foreman
                 throw new Exception("Foreman not loaded yet");
 
             if (IsPaused)
-                throw new Exception("Foreman is paused");
+                throw new Exception("Foreman is stopped");
 
             if (IsRunning)
                 throw new Exception("Foreman is already running");
@@ -368,9 +365,10 @@ namespace Batch.Foreman
                     // wait on non waiting nodes to finish
                     //Task.WaitAll(orderedNonWaitingNodeTasks.ToArray());
 
+                    // IsRunning will never be false again in a long running foreman
                     //IsRunning = false;
 
-                    // actually don't wait on tasks so this thread is not blocked and IsRunning is always true until foreman is disposed
+                    // don't wait on tasks so this thread is not blocked and IsRunning is always true until foreman is disposed
                 }
             }
             else
@@ -409,50 +407,73 @@ namespace Batch.Foreman
                     }
                 }
                 
-                /*
-                if (NextForeman != null)
-                    NextForeman.Data = Data;
-
-                if (BackupForeman != null)
-                    BackupForeman.Data = Data;
-                */
-
                 IsRunning = false;
             }
         }
 
         public void Pause()
         {
+            if (Disposed)
+                return;
+
+            if (IsPaused)
+                return;
+
             if (IsNodesLongRunning)
-                throw new Exception("A long running Foreman (IsNodesLongRunning = true) can't be paused");
+                throw new Exception("Long running foremen can't be paused");
+            else
+                IsPaused = true;
 
             // if Run() is already run it is not interrupted, but it won't run again until
             // foreman is resumed
-
-            IsPaused = true;
         }
 
         public void Resume()
         {
-            if (IsNodesLongRunning)
-                throw new Exception("A long running Foreman (IsNodesLongRunning = true) can't be resumed");
+            if (Disposed)
+                return;
 
-            IsPaused = false;
+            if (!IsPaused)
+                return;
+
+            if (IsNodesLongRunning)
+                throw new Exception("Long running foremen can't be resumed");
+            else
+                IsPaused = false;
         }
 
-        public void StopLongRunningNodeTasks()
+        public void SubmitData(string QueueName, object data)
         {
+            if (Disposed)
+                return;
 
+            if (!IsNodesLongRunning)
+                throw new Exception("SubmitData() is used only in long running foremen");
+
+            if (QueueName == null)
+                throw new ArgumentNullException("QueueName");
+
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            int qId;
+            if (!queueNameToId.TryGetValue(QueueName, out qId))
+                throw new Exception("Queue doesn't exist");
+
+            queues[qId].Add(data);
         }
 
         public void Dispose()
         {
             Disposed = true;
+            IsPaused = true;
 
             // should do this in an orderly fashion to avoid exceptions?
             if (queues != null)
                 foreach (var q in queues)
                     q.CompleteAdding();
+
+            // terminate tasks
 
             queues = null;
             asm = null;
@@ -533,6 +554,5 @@ namespace Batch.Foreman
             nodeState[NodeId] = WorkerNodeState.Error;
             Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);
         }
-
     }
 }

@@ -28,7 +28,6 @@ namespace Batch.Foreman
             get;
             private set;
         }
-
         public object Data
         {
             get;
@@ -111,6 +110,23 @@ namespace Batch.Foreman
                 return;
 
             foreman.Resume();
+        }
+
+        public void SubmitData(string QueueName, object data)
+        {
+            if (Disposed)
+                return;
+
+            if (!IsNodesLongRunning)
+                throw new Exception("SubmitData() is used only in long running foremen");
+
+            if (QueueName == null)
+                throw new ArgumentNullException("QueueName");
+
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            foreman.SubmitData(QueueName, data);
         }
 
         public void Dispose()
