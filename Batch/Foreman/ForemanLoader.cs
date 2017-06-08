@@ -129,6 +129,20 @@ namespace Batch.Foreman
             return foreman.SubmitData(QueueName, data);
         }
 
+        public bool CompleteAdding(string QueueName)
+        {
+            if (Disposed)
+                return false;
+
+            if (!IsNodesLongRunning)
+                throw new Exception("CompleteAdding() is used only in long running foremen");
+
+            if (QueueName == null)
+                throw new ArgumentNullException("QueueName");
+
+            return foreman.CompleteAdding(QueueName);
+        }
+
         public void Dispose()
         {
             // AppDomain.Unload() must be executed on parent AppDomain

@@ -28,6 +28,10 @@ namespace Batch.Foreman
 
         void Resume();
 
+        // only for long running foremen
         bool SubmitData(string QueueName, object data);
+
+        // only for long running foremen
+        bool CompleteAdding(string QueueName);
     }
 }

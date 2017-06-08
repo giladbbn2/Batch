@@ -9,10 +9,16 @@ using System.Threading.Tasks;
 
 namespace BatchTest.Test1
 {
+    public static class Settings
+    {
+        public static bool IsTestWithSleep = true;
+    }
+
     public class MyWorker1 : Worker
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
+            /*
             Console.WriteLine(DateTime.UtcNow + " - W1: " + data);
 
             string[] strings = new string[] { "a", "b", "c", "d", "e", "f", "g" };
@@ -20,12 +26,19 @@ namespace BatchTest.Test1
             foreach (var str in strings)
             {
                 Output.Add((object)str);
-                Thread.Sleep(1000);
+
+                if (Settings.IsTestWithSleep)
+                    Thread.Sleep(1000);
             }
 
             Output.CompleteAdding();
 
             Console.WriteLine(DateTime.UtcNow + " - W1 ended");
+            */
+
+            // do nothing
+
+            Console.WriteLine("W1 was here");
         }
     }
 
@@ -41,7 +54,9 @@ namespace BatchTest.Test1
                 {
                     string str = item.ToString() + "1";
                     Output.Add((object)str);
-                    Thread.Sleep(1000);
+
+                    if (Settings.IsTestWithSleep)
+                        Thread.Sleep(1000);
                 }
             }
             finally
@@ -63,7 +78,9 @@ namespace BatchTest.Test1
             {
                 string str = item.ToString() + "g";
                 Console.WriteLine(str);
-                Thread.Sleep(1000);
+
+                if (Settings.IsTestWithSleep)
+                    Thread.Sleep(1000);
             }
 
             Console.WriteLine(DateTime.UtcNow + " - W3 ended");

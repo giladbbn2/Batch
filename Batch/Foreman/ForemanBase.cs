@@ -285,6 +285,10 @@ namespace Batch.Foreman
                     throw new Exception(err);
                 }
 
+            /*
+            
+            // queues CAN be an edge
+            
             if (queues != null)
             {
                 // check a queue is not an edge
@@ -297,6 +301,7 @@ namespace Batch.Foreman
                     }
                 }
             }
+            */
 
             // several independent topologies can coexist in a single foreman
 
@@ -460,8 +465,6 @@ namespace Batch.Foreman
             if (!queueNameToId.TryGetValue(QueueName, out qId))
                 throw new Exception("Queue doesn't exist");
 
-            var q = queues[qId];
-
             try
             {
                 queues[qId].Add(data);
@@ -472,6 +475,42 @@ namespace Batch.Foreman
             }
 
             return true;
+        }
+
+        public bool CompleteAdding(string QueueName)
+        {
+            if (Disposed)
+                return false;
+
+            if (!IsNodesLongRunning)
+                throw new Exception("CompleteAdding() is used only in long running foremen");
+
+            if (QueueName == null)
+                throw new ArgumentNullException("QueueName");
+
+            int qId;
+            if (!queueNameToId.TryGetValue(QueueName, out qId))
+                throw new Exception("Queue doesn't exist");
+
+            var q = queues[qId];
+
+            try
+            {
+                q.CompleteAdding();
+            }
+            catch (Exception ex)
+            {
+                return true;
+            }
+
+            try
+            {
+                return q.IsAddingCompleted;
+            }
+            catch (Exception ex)
+            {
+                return true;
+            }
         }
 
         public void Dispose()

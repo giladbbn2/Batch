@@ -57,7 +57,7 @@ namespace BatchTest.Test2
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
         {
-            Thread.Sleep(3000);
+            //Thread.Sleep(3000);
             data = (object)((int)data + 1);
             Console.WriteLine(DateTime.UtcNow + " - W6: " + data);
         }

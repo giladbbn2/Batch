@@ -35,9 +35,18 @@ namespace Batch.Contractor
             IsLoaded = false;
         }
 
-        public void LoadConfigFile(string PathToConfigFile)
+        public void ImportConfigFile(string PathToConfigFile)
         {
             // Contractor's config file
+        }
+
+        public ContractorConfigurationFile ExportConfigFile()
+        {
+            var ccf = new ContractorConfigurationFile();
+
+            // ...
+
+            return ccf;
         }
 
         public void Reset()
@@ -109,7 +118,7 @@ namespace Batch.Contractor
 
         }
 
-        public object Run(string ForemanId, object Data, bool IsFollowConnections = true)
+        public object Run(string ForemanId, object Data = null, bool IsFollowConnections = true)
         {
             IForeman foreman;
             if (!foremen.TryGetValue(ForemanId, out foreman))
@@ -152,6 +161,15 @@ namespace Batch.Contractor
                 throw new Exception("Foreman not found");
 
             return foreman.SubmitData(QueueName, Data);
+        }
+
+        public bool CompleteAdding(string ForemanId, string QueueName)
+        {
+            IForeman foreman;
+            if (!foremen.TryGetValue(ForemanId, out foreman))
+                throw new Exception("Foreman not found");
+
+            return foreman.CompleteAdding(QueueName);
         }
 
         public void AddEndpoint(string Endpoint) { }

@@ -45,6 +45,7 @@
     <Compile Include="Test2\Test2.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Test1\frmn-test1-old.config" />
     <None Include="Test1\frmn-test1.config" />
     <None Include="Test2\frmn-test2.config" />
   </ItemGroup>
