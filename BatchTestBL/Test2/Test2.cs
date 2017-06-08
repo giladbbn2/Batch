@@ -9,14 +9,6 @@ using System.Threading.Tasks;
 
 namespace BatchTest.Test2
 {
-    public class test
-    {
-        public int run(int x)
-        {
-            return x + 5;
-        }
-    }
-
     public class MyWorker1 : Worker
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)

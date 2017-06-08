@@ -13,7 +13,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test1();
+            Test2();
 
         }
 
@@ -35,7 +35,10 @@ namespace BatchConsole
             int x2 = 24;
             object o2 = (object)x2;
 
-            c.SubmitData("frmn1", "q2", o2);
+            if (c.SubmitData("frmn1", "q2", o2))
+                Console.WriteLine("Data submitted!");
+            else
+                Console.WriteLine("Data wasn't submitted!");
 
 
             // trigger unload
@@ -48,8 +51,8 @@ namespace BatchConsole
         public static void Test2()
         {
             var c = new Contractor();
-            c.AddForeman("frmn1", @"C:\projects\Batch\BatchTest\Test2\frmn-test2.config");
-            c.AddForeman("frmn2", @"C:\projects\Batch\BatchTest\Test2\frmn-test2.config");
+            c.AddForeman("frmn1", @"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
+            c.AddForeman("frmn2", @"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
             c.ConnectForeman("frmn1", "frmn2");
 
             int x = 15;

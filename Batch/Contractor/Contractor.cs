@@ -145,13 +145,13 @@ namespace Batch.Contractor
             return Data;
         }
 
-        public void SubmitData(string ForemanId, string QueueName, object Data)
+        public bool SubmitData(string ForemanId, string QueueName, object Data)
         {
             IForeman foreman;
             if (!foremen.TryGetValue(ForemanId, out foreman))
                 throw new Exception("Foreman not found");
 
-            foreman.SubmitData(QueueName, Data);
+            return foreman.SubmitData(QueueName, Data);
         }
 
         public void AddEndpoint(string Endpoint) { }

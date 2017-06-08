@@ -28,6 +28,6 @@ namespace Batch.Foreman
 
         void Resume();
 
-        void SubmitData(string QueueName, object data);
+        bool SubmitData(string QueueName, object data);
     }
 }

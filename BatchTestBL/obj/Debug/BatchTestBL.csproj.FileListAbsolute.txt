@@ -1,0 +1,7 @@
+C:\projects\Batch\BatchTestBL\bin\Debug\BatchTestBL.dll
+C:\projects\Batch\BatchTestBL\bin\Debug\BatchTestBL.pdb
+C:\projects\Batch\BatchTestBL\bin\Debug\BatchFoundation.dll
+C:\projects\Batch\BatchTestBL\bin\Debug\BatchFoundation.pdb
+C:\projects\Batch\BatchTestBL\obj\Debug\BatchTestBL.csprojResolveAssemblyReference.cache
+C:\projects\Batch\BatchTestBL\obj\Debug\BatchTestBL.dll
+C:\projects\Batch\BatchTestBL\obj\Debug\BatchTestBL.pdb

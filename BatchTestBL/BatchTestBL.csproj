@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9C86F705-F886-4E1D-B4D9-BBE511C0B216}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{D4C8B9CB-F0D2-448D-95F2-EAFA015BC6B8}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BatchConsole</RootNamespace>
-    <AssemblyName>BatchConsole</AssemblyName>
+    <RootNamespace>BatchTestBL</RootNamespace>
+    <AssemblyName>BatchTestBL</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -43,16 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test1\Test1.cs" />
+    <Compile Include="Test2\Test2.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="Test1\frmn-test1.config" />
+    <None Include="Test2\frmn-test2.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Batch\Batch.csproj">
-      <Project>{5c151424-929b-40a9-bec1-939cd9397b0d}</Project>
-      <Name>Batch</Name>
+    <ProjectReference Include="..\BatchFoundation\BatchFoundation.csproj">
+      <Project>{22adec6f-b6fa-4210-b476-185999a6d668}</Project>
+      <Name>BatchFoundation</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

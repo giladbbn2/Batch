@@ -442,10 +442,10 @@ namespace Batch.Foreman
                 IsPaused = false;
         }
 
-        public void SubmitData(string QueueName, object data)
+        public bool SubmitData(string QueueName, object data)
         {
             if (Disposed)
-                return;
+                return false;
 
             if (!IsNodesLongRunning)
                 throw new Exception("SubmitData() is used only in long running foremen");
@@ -460,7 +460,18 @@ namespace Batch.Foreman
             if (!queueNameToId.TryGetValue(QueueName, out qId))
                 throw new Exception("Queue doesn't exist");
 
-            queues[qId].Add(data);
+            var q = queues[qId];
+
+            try
+            {
+                queues[qId].Add(data);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public void Dispose()
