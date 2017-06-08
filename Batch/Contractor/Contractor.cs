@@ -49,12 +49,6 @@ namespace Batch.Contractor
             return ccf;
         }
 
-        public void Reset()
-        {
-            // try to stop all long running foremen and
-            // try to remove all foremen connections and all foremen
-        }
-
         public void AddForeman(string ForemanId, string PathToConfigFile)
         {
             // check that foremanId doesn't exist
@@ -77,12 +71,9 @@ namespace Batch.Contractor
             foreman = null;
         }
 
-        public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, int BranchRequestWeight = 100, bool IsBranchForeman = false)
+        public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, bool IsBranchForeman = false, int BranchRequestWeight = 1000000)
         {
-            // max BackupRequestWeight is 100 (percent)
-
-
-            // handle also long running foremen! connect q to q ???
+            // max BackupRequestWeight is 1000000
 
 
             if (ForemanIdFrom.Equals(ForemanIdTo))
