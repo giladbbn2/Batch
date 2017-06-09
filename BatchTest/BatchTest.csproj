@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BatchTestBL\BatchTestBL.csproj">
+      <Project>{d4c8b9cb-f0d2-448d-95f2-eafa015bc6b8}</Project>
+      <Name>BatchTestBL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Batch\Batch.csproj">
       <Project>{5c151424-929b-40a9-bec1-939cd9397b0d}</Project>
       <Name>Batch</Name>

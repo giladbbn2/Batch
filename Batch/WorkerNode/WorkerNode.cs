@@ -20,7 +20,9 @@ namespace Batch.Worker
         public string WorkerClassName;
         public WorkerBase Worker;
         public WorkerNode NextNode;
-        
+        public WorkerNodeState State;
+        public Exception Exception;
+
         public BlockingCollection<object> Input;
         public BlockingCollection<object> Output;
 

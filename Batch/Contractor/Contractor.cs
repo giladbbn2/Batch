@@ -71,10 +71,9 @@ namespace Batch.Contractor
             foreman = null;
         }
 
-        public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, bool IsBranchForeman = false, int BranchRequestWeight = 1000000)
+        public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, bool IsTestForeman = false, int TestForemanRequestWeight = 1000000)
         {
-            // max BackupRequestWeight is 1000000
-
+            // max TestForemanRequestWeight is 1000000
 
             if (ForemanIdFrom.Equals(ForemanIdTo))
                 throw new Exception("Can't connect Foreman to itself");
@@ -84,10 +83,16 @@ namespace Batch.Contractor
             if (!foremen.TryGetValue(ForemanIdFrom, out foremanFrom))
                 throw new Exception("Foreman " + ForemanIdFrom + " not found");
 
+            if (foremanFrom.IsNodesLongRunning)
+                throw new Exception("Can't connect long running foremen");
+
             if (!foremen.TryGetValue(ForemanIdTo, out foremanTo))
                 throw new Exception("Foreman " + ForemanIdTo + " not found");
 
-            if (!IsBranchForeman)
+            if (foremanFrom.IsNodesLongRunning)
+                throw new Exception("Can't connect long running foremen");
+
+            if (!IsTestForeman)
             {
                 if (foremanFrom.NextForeman != null)
                     throw new Exception("Foreman " + ForemanIdFrom + " was already assigned the next foreman");
@@ -96,53 +101,76 @@ namespace Batch.Contractor
             }
             else
             {
-                if (foremanFrom.BranchForeman != null)
-                    throw new Exception("Foreman " + ForemanIdFrom + " was already assigned the backup foreman");
+                if (foremanFrom.TestForeman != null)
+                    throw new Exception("Foreman " + ForemanIdFrom + " was already assigned the test foreman");
 
-                foremanFrom.BranchForeman = foremanTo;
-                foremanTo.BranchRequestWeight = BranchRequestWeight;
+                foremanFrom.TestForeman = foremanTo;
+                foremanTo.TestForemanRequestWeight = TestForemanRequestWeight;
             }
         }
 
         public void DisconnectForeman(string ForemanIdFrom, string ForemanIdTo)
         {
-
+            
         }
 
-        public object Run(string ForemanId, object Data = null, bool IsFollowConnections = true)
+        public object Run(string ForemanId, object Data = null, bool IsFollowConnections = true, bool IsContinueOnError = false)
         {
             IForeman foreman;
             if (!foremen.TryGetValue(ForemanId, out foreman))
                 throw new Exception("Foreman not found");
 
-            if (foreman.IsNodesLongRunning)
+            try
             {
-                foreman.Run();
-                return null;
+                if (foreman.IsNodesLongRunning)
+                {
+                    foreman.Run();
+                    return null;
+                }
+
+                // short running foreman
+
+                if (!IsFollowConnections)
+                {
+                    foreman.Data = Data;
+                    foreman.Run();
+                    return foreman.Data;
+                }
+
+                // follow short running foreman connections
+
+                while (foreman != null)
+                {
+
+                    // test foreman!
+                    
+                    //if (foreman.TestForeman != null)
+
+
+
+                    foreman.Data = Data;
+                    foreman.Run();
+
+                    // can get here after foreman threw an unhandled exception (foreman is still running)
+                    if (!IsContinueOnError && foreman.IsError)
+                    {
+                        throw new Exception("Foreman threw an error");
+                    }
+
+                    Data = foreman.Data;
+
+                    foreman = foreman.NextForeman;
+
+                    // branch foreman async?
+                }
+
+                return Data;
             }
-
-            // short running foreman
-
-            if (!IsFollowConnections)
+            catch (Exception ex)
             {
-                foreman.Data = Data;
-                foreman.Run();
-                return foreman.Data;
+
+                throw new Exception("Error running foreman", ex);
             }
-
-            // follow short running foreman connections
-
-            while (foreman != null)
-            {
-                foreman.Data = Data;
-                foreman.Run();
-                Data = foreman.Data;
-
-                foreman = foreman.NextForeman;
-                // branch foreman async?
-            }
-
-            return Data;
         }
 
         public bool SubmitData(string ForemanId, string QueueName, object Data)

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BatchTest.Test2
+namespace BatchTestBL.Test2
 {
     public class MyWorker1 : Worker
     {

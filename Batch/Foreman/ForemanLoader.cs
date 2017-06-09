@@ -1,4 +1,5 @@
 ﻿using Batch.Foreman;
+using Batch.Worker;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -28,6 +29,16 @@ namespace Batch.Foreman
             get;
             private set;
         }
+        public bool IsError
+        {
+            get
+            {
+                if (foreman == null)
+                    return false;
+
+                return foreman.IsError;
+            }
+        }
         public object Data
         {
             get;
@@ -39,15 +50,25 @@ namespace Batch.Foreman
             get;
             set;
         }
-        public IForeman BranchForeman
+        public IForeman TestForeman
         {
             get;
             set;
         }
-        public int BranchRequestWeight
+        public int TestForemanRequestWeight
         {
             get;
             set;
+        }
+        public IEnumerable<WorkerNodeState> WorkerNodeStates
+        {
+            get
+            {
+                if (foreman == null)
+                    return null;
+
+                return foreman.WorkerNodeStates;
+            }
         }
 
         private ForemanBase foreman;
@@ -88,8 +109,8 @@ namespace Batch.Foreman
 
             foreman.Data = Data;
             foreman.NextForeman = NextForeman;
-            foreman.BranchForeman = BranchForeman;
-            foreman.BranchRequestWeight = BranchRequestWeight;
+            foreman.TestForeman = TestForeman;
+            foreman.TestForemanRequestWeight = TestForemanRequestWeight;
 
             foreman.Run();
 

@@ -24,12 +24,12 @@ namespace Batch.Foreman
         public bool IsNodesLongRunning
         {
             get;
-            protected set;
+            private set;
         }
         public string PathToConfigFile
         {
             get;
-            protected set;
+            private set;
         }
         public bool IsLoaded
         {
@@ -51,6 +51,11 @@ namespace Batch.Foreman
             get;
             private set;
         }
+        public bool IsError
+        {
+            get;
+            private set;
+        }
         public object Data
         {
             get;
@@ -63,21 +68,29 @@ namespace Batch.Foreman
             get;
             set;
         }
-        public IForeman BranchForeman
+        public IForeman TestForeman
         {
             get;
             set;
         }
-        public int BranchRequestWeight
+        public int TestForemanRequestWeight
         {
             get;
             set;
         }
 
+        public IEnumerable<WorkerNodeState> WorkerNodeStates
+        {
+            get
+            {
+                foreach (var node in nodes)
+                    yield return node.State;
+            }
+        }
+
         private ForemanConfigurationFile config;
         
         private WorkerNode[] nodes;                                         // id is nodeId
-        private WorkerNodeState[] nodeState;                                // id is nodeId
         private Dictionary<int, List<WorkerNode>> workerNodeExeOrder;       // key is orderId
         private BlockingCollection<object>[] queues;                        // id is queueId
         private Dictionary<string, int> queueNameToId;
@@ -137,7 +150,6 @@ namespace Batch.Foreman
                 throw new ArgumentException("No nodes in config file");
 
             nodes = new WorkerNode[config.nodes.Count];
-            nodeState = new WorkerNodeState[config.nodes.Count];
             workerNodeExeOrder = new Dictionary<int, List<WorkerNode>>();
             nodeNameToId = new Dictionary<string, int>(config.nodes.Count);
             foreach (var configNode in config.nodes)
@@ -165,8 +177,8 @@ namespace Batch.Foreman
                 else
                     workerNodeExeOrder[node.OrderId].Add(node);
 
+                node.State = WorkerNodeState.Idle;
                 nodes[NodeCounter] = node;
-                nodeState[NodeCounter] = WorkerNodeState.Idle;
                 nodeNameToId.Add(node.Name, node.Id);
                 
                 NodeCounter++;
@@ -589,20 +601,23 @@ namespace Batch.Foreman
 
         public void OnWorkerNodeStarted(int NodeId)
         {
-            nodeState[NodeId] = WorkerNodeState.Running;
+            nodes[NodeId].State = WorkerNodeState.Running;
             //Console.WriteLine(NodeId.ToString() + " started");
         }
 
         public void OnWorkerNodeEnded(int NodeId)
         {
-            nodeState[NodeId] = WorkerNodeState.Finished;
+            nodes[NodeId].State = WorkerNodeState.Done;
             //Console.WriteLine(NodeId.ToString() + " finished");
         }
 
         public void OnWorkerNodeError(int NodeId, Exception ex)
         {
-            nodeState[NodeId] = WorkerNodeState.Error;
-            Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);
+            nodes[NodeId].State = WorkerNodeState.Error;
+            nodes[NodeId].Exception = ex;
+            IsError = true;
+            IsRunning = false;
+            //Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BatchTest.Test1
+namespace BatchTestBL.Test1
 {
     public static class Settings
     {

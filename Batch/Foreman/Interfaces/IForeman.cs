@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Batch.Worker;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,13 +13,17 @@ namespace Batch.Foreman
 
         bool IsNodesLongRunning { get; }
 
+        bool IsError { get; }
+
         object Data { get; set; }
 
         IForeman NextForeman { get; set; }
 
-        IForeman BranchForeman { get; set; }
+        IForeman TestForeman { get; set; }
 
-        int BranchRequestWeight { get; set; }
+        int TestForemanRequestWeight { get; set; }
+
+        IEnumerable<WorkerNodeState> WorkerNodeStates { get; }
 
         void Load();
 

@@ -1,4 +1,5 @@
 ﻿using Batch.Contractor;
+using BatchTestBL.Test3;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test1();
+            Test3();
         }
 
         public static void Test1()
@@ -91,6 +92,40 @@ namespace BatchConsole
             o = c.Run("frmn1", o);
 
             Console.WriteLine(o);
+
+            c.RemoveForeman("frmn1");
+            c.RemoveForeman("frmn2");
+
+            Console.ReadLine();
+        }
+
+        public static void Test3()
+        {
+            var c = new Contractor();
+            c.AddForeman("frmn1", @"C:\projects\Batch\BatchTestBL\Test3\frmn-test3.config");
+            c.AddForeman("frmn2", @"C:\projects\Batch\BatchTestBL\Test3\frmn-test3.config");
+
+            c.ConnectForeman("frmn1", "frmn2");
+
+            Person p = new Person();
+            object o = (object)p;
+
+            o = c.Run("frmn1", o, true, true);
+
+            p = (Person)o;
+            Console.WriteLine(p.x);
+
+            o = c.Run("frmn1", o, true, true);
+
+            p = (Person)o;
+            Console.WriteLine(p.x);
+
+            o = c.Run("frmn1", o);
+            o = c.Run("frmn1", o);
+            o = c.Run("frmn1", o);
+
+            p = (Person)o;
+            Console.WriteLine(p.x);
 
             c.RemoveForeman("frmn1");
             c.RemoveForeman("frmn2");

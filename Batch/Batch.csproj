@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Contractor\Contractor.cs" />
     <Compile Include="Contractor\ContractorConfigurationFile.cs" />
+    <Compile Include="Contractor\Data.cs" />
     <Compile Include="Foreman\Enums\TopologyElementType.cs" />
     <Compile Include="Foreman\Foreman.cs" />
     <Compile Include="Foreman\ForemanBase.cs" />

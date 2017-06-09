@@ -10,7 +10,7 @@ namespace Batch.Worker
     {
         Idle = 0,
         Running = 1,
-        Finished = 2,
+        Done = 2,
         Error = 3
     }
 }
