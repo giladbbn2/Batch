@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Batch.Contractor
 {
-    public class Contractor
+    public sealed class Contractor : IDisposable
     {
         // gets the foreman config file and allocation of a computer
 
@@ -26,6 +26,10 @@ namespace Batch.Contractor
         }
         
         private ConcurrentDictionary<string, IForeman> foremen;             // key is foremanId
+
+        private TaskFactory tf;
+
+        private bool IsDisposed;
 
 
 
@@ -63,6 +67,9 @@ namespace Batch.Contractor
 
         public void RemoveForeman(string ForemanId)
         {
+            // prevent removal if foreman is connected to endpoint or another foreman
+
+
             // unload if ForemanLoader
             IForeman foreman;
             if (foremen.TryRemove(ForemanId, out foreman))
@@ -71,7 +78,7 @@ namespace Batch.Contractor
             foreman = null;
         }
 
-        public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, bool IsTestForeman = false, int TestForemanRequestWeight = 1000000)
+        public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, bool IsForce = false, bool IsTestForeman = false, int TestForemanRequestWeight = 1000000)
         {
             // max TestForemanRequestWeight is 1000000
 
@@ -84,24 +91,24 @@ namespace Batch.Contractor
                 throw new Exception("Foreman " + ForemanIdFrom + " not found");
 
             if (foremanFrom.IsNodesLongRunning)
-                throw new Exception("Can't connect long running foremen");
+                throw new Exception("Can't connect a long running foreman");
 
             if (!foremen.TryGetValue(ForemanIdTo, out foremanTo))
                 throw new Exception("Foreman " + ForemanIdTo + " not found");
 
-            if (foremanFrom.IsNodesLongRunning)
-                throw new Exception("Can't connect long running foremen");
+            if (foremanTo.IsNodesLongRunning)
+                throw new Exception("Can't connect a long running foreman");
 
             if (!IsTestForeman)
             {
-                if (foremanFrom.NextForeman != null)
+                if (!IsForce && foremanFrom.NextForeman != null)
                     throw new Exception("Foreman " + ForemanIdFrom + " was already assigned the next foreman");
 
                 foremanFrom.NextForeman = foremanTo;
             }
             else
             {
-                if (foremanFrom.TestForeman != null)
+                if (!IsForce && foremanFrom.TestForeman != null)
                     throw new Exception("Foreman " + ForemanIdFrom + " was already assigned the test foreman");
 
                 foremanFrom.TestForeman = foremanTo;
@@ -120,57 +127,51 @@ namespace Batch.Contractor
             if (!foremen.TryGetValue(ForemanId, out foreman))
                 throw new Exception("Foreman not found");
 
-            try
+            if (foreman.IsNodesLongRunning)
             {
-                if (foreman.IsNodesLongRunning)
+                foreman.Run();
+                return null;
+            }
+
+            // short running foreman
+
+            // dont follow short running foreman connections
+
+            if (!IsFollowConnections)
+            {
+                foreman.Data = Data;
+                foreman.Run();
+                return foreman.Data;
+            }
+
+            // follow short running foreman connections
+
+            while (foreman != null)
+            {
+                if (foreman.TestForeman != null)
                 {
-                    foreman.Run();
-                    return null;
-                }
-
-                // short running foreman
-
-                if (!IsFollowConnections)
-                {
-                    foreman.Data = Data;
-                    foreman.Run();
-                    return foreman.Data;
-                }
-
-                // follow short running foreman connections
-
-                while (foreman != null)
-                {
-
-                    // test foreman!
-                    
-                    //if (foreman.TestForeman != null)
-
-
-
-                    foreman.Data = Data;
-                    foreman.Run();
-
-                    // can get here after foreman threw an unhandled exception (foreman is still running)
-                    if (!IsContinueOnError && foreman.IsError)
+                    var task = tf.StartNew(() =>
                     {
-                        throw new Exception("Foreman threw an error");
-                    }
-
-                    Data = foreman.Data;
-
-                    foreman = foreman.NextForeman;
-
-                    // branch foreman async?
+                        foreman.TestForeman.Data = Data;
+                        foreman.Run();
+                    });
                 }
 
-                return Data;
-            }
-            catch (Exception ex)
-            {
+                foreman.Data = Data;
+                foreman.Run();
 
-                throw new Exception("Error running foreman", ex);
+                // can get here after foreman threw an unhandled exception
+                if (!IsContinueOnError && foreman.IsError)
+                {
+                    throw new Exception("Foreman threw an error");
+                }
+
+                Data = foreman.Data;
+
+                foreman = foreman.NextForeman;
             }
+
+            return Data;
         }
 
         public bool SubmitData(string ForemanId, string QueueName, object Data)
@@ -191,25 +192,9 @@ namespace Batch.Contractor
             return foreman.CompleteAdding(QueueName);
         }
 
-        public void AddEndpoint(string Endpoint) { }
-
-        public void RemoveEndpoint(string Endpoint) { }
-
-        public void ConnectEndpointToForeman(string Endpoint, string ForemanId, string QueueName = null)
+        public void Dispose()
         {
-            if (QueueName == null)
-            {
-                // connect endpoint to a short running foreman
-            }
-            else
-            {
-                // connect endpoint to a queue inside a long running foreman
-            }
-        }
-
-        public void DisconnectEndpoint(string Endpoint)
-        {
-
+            IsDisposed = true;
         }
     }
 }

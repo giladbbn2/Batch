@@ -98,12 +98,12 @@ namespace Batch.Foreman
 
         // helpers
         private Dictionary<string, int> nodeNameToId;
-        private bool[] queueIsToEl;                                         // id is queueId
-        private bool[] queueIsFromEl;                                       // id is queueId
+        //private bool[] queueIsToEl;                                         // id is queueId
+        //private bool[] queueIsFromEl;                                       // id is queueId
 
         private List<Task> orderedLongRunningNodeTasks;
 
-        private bool Disposed;
+        private bool IsDisposed;
         
 
 
@@ -118,7 +118,7 @@ namespace Batch.Foreman
 
         public void Load()
         {
-            if (Disposed)
+            if (IsDisposed)
                 return;
 
             if (IsLoaded)
@@ -196,8 +196,8 @@ namespace Batch.Foreman
 
                 queues = new BlockingCollection<object>[config.queues.Count];
                 queueNameToId = new Dictionary<string, int>(config.queues.Count);
-                queueIsToEl = new bool[config.queues.Count];
-                queueIsFromEl = new bool[config.queues.Count];
+                //queueIsToEl = new bool[config.queues.Count];
+                //queueIsFromEl = new bool[config.queues.Count];
                 foreach (var configQueue in config.queues)
                 {
                     if (queueNameToId.ContainsKey(configQueue.name))
@@ -257,7 +257,7 @@ namespace Batch.Foreman
                     
                     node.Output = queue;
                     node.IsConnected = true;
-                    queueIsToEl[toElId] = true;
+                    //queueIsToEl[toElId] = true;
                 }
 
                 if (fromEl == TopologyElementType.Queue && toEl == TopologyElementType.Node)
@@ -273,7 +273,7 @@ namespace Batch.Foreman
 
                     node.Input = queue;
                     node.IsConnected = true;
-                    queueIsFromEl[fromElId] = true;
+                    //queueIsFromEl[fromElId] = true;
                 }
 
                 if (fromEl == TopologyElementType.Node && toEl == TopologyElementType.Node)
@@ -318,19 +318,19 @@ namespace Batch.Foreman
             // several independent topologies can coexist in a single foreman
 
             // dispose of helpers
-            queueIsFromEl = null;
-            queueIsToEl = null;
+            //queueIsFromEl = null;
+            //queueIsToEl = null;
             nodeNameToId = null;
 
             IsLoaded = true;
         }
 
-        public void Run()
+        public void Run(bool IsTestForeman = false)
         {
             // if IsNodesLongRunning is true then Run() is expected to run once until Dispose() is executed
             // if IsNodesLongRunning is false then Run() is expected run again and again
 
-            if (Disposed)
+            if (IsDisposed)
                 return;
 
             if (!IsLoaded)
@@ -343,7 +343,7 @@ namespace Batch.Foreman
                 throw new Exception("Foreman is already running");
 
             if (IsNodesLongRunning && IsRanAtLeastOnce)
-                throw new Exception("Long running foremen (IsNodesLongRunning = true) cannot be run more than once");
+                throw new Exception("Long running foremen cannot be run more than once");
 
             IsRunning = true;
             IsRanAtLeastOnce = true;
@@ -367,7 +367,7 @@ namespace Batch.Foreman
 
                             try
                             {
-                                node.Run();
+                                node.Run(IsTestForeman);
                             }
                             catch (Exception ex)
                             {
@@ -409,7 +409,7 @@ namespace Batch.Foreman
 
                         try
                         {
-                            node.Run();
+                            node.Run(IsTestForeman);
 
                             // save local copy of last worker data result for next foreman's first node
                             Data = node.Data;
@@ -430,7 +430,7 @@ namespace Batch.Foreman
 
         public void Pause()
         {
-            if (Disposed)
+            if (IsDisposed)
                 return;
 
             if (IsPaused)
@@ -447,7 +447,7 @@ namespace Batch.Foreman
 
         public void Resume()
         {
-            if (Disposed)
+            if (IsDisposed)
                 return;
 
             if (!IsPaused)
@@ -461,7 +461,7 @@ namespace Batch.Foreman
 
         public bool SubmitData(string QueueName, object data)
         {
-            if (Disposed)
+            if (IsDisposed)
                 return false;
 
             if (!IsNodesLongRunning)
@@ -491,7 +491,7 @@ namespace Batch.Foreman
 
         public bool CompleteAdding(string QueueName)
         {
-            if (Disposed)
+            if (IsDisposed)
                 return false;
 
             if (!IsNodesLongRunning)
@@ -527,7 +527,7 @@ namespace Batch.Foreman
 
         public void Dispose()
         {
-            Disposed = true;
+            IsDisposed = true;
             IsPaused = true;
 
             // should do this in an orderly fashion to avoid exceptions?

@@ -60,6 +60,7 @@ namespace Batch.Foreman
             get;
             set;
         }
+
         public IEnumerable<WorkerNodeState> WorkerNodeStates
         {
             get
@@ -72,7 +73,7 @@ namespace Batch.Foreman
         }
 
         private ForemanBase foreman;
-        private bool Disposed;
+        private bool IsDisposed;
 
 
 
@@ -88,7 +89,7 @@ namespace Batch.Foreman
 
         public void Load()
         {
-            if (Disposed)
+            if (IsDisposed)
                 return;
 
             foreman = new Foreman(PathToConfigFile);
@@ -99,9 +100,9 @@ namespace Batch.Foreman
             IsLoaded = true;
         }
 
-        public void Run()
+        public void Run(bool IsTestForeman = false)
         {
-            if (Disposed)
+            if (IsDisposed)
                 return;
 
             if (!IsLoaded)
@@ -112,14 +113,14 @@ namespace Batch.Foreman
             foreman.TestForeman = TestForeman;
             foreman.TestForemanRequestWeight = TestForemanRequestWeight;
 
-            foreman.Run();
+            foreman.Run(IsTestForeman);
 
             Data = foreman.Data;
         }
 
         public void Pause()
         {
-            if (Disposed)
+            if (IsDisposed)
                 return;
 
             foreman.Pause();
@@ -127,7 +128,7 @@ namespace Batch.Foreman
 
         public void Resume()
         {
-            if (Disposed)
+            if (IsDisposed)
                 return;
 
             foreman.Resume();
@@ -135,7 +136,7 @@ namespace Batch.Foreman
 
         public bool SubmitData(string QueueName, object data)
         {
-            if (Disposed)
+            if (IsDisposed)
                 return false;
 
             if (!IsNodesLongRunning)
@@ -152,7 +153,7 @@ namespace Batch.Foreman
 
         public bool CompleteAdding(string QueueName)
         {
-            if (Disposed)
+            if (IsDisposed)
                 return false;
 
             if (!IsNodesLongRunning)
@@ -168,7 +169,7 @@ namespace Batch.Foreman
         {
             // AppDomain.Unload() must be executed on parent AppDomain
 
-            Disposed = true;
+            IsDisposed = true;
 
             if (foreman != null)
                 foreman.Dispose();

@@ -108,7 +108,8 @@ namespace BatchConsole
             c.ConnectForeman("frmn1", "frmn2");
 
             Person p = new Person();
-            object o = (object)p;
+            p.x = 0;
+            object o = (object)p; 
 
             o = c.Run("frmn1", o, true, true);
 
@@ -119,6 +120,10 @@ namespace BatchConsole
 
             p = (Person)o;
             Console.WriteLine(p.x);
+            Console.WriteLine(p.Name);
+
+            // isContinueOnError is by default set to false
+            // so following statements throw an error
 
             o = c.Run("frmn1", o);
             o = c.Run("frmn1", o);

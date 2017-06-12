@@ -12,7 +12,8 @@ namespace BatchFoundation.Worker
         public int Id;
         public string ClassName;
 
-        public bool Disposed { get; private set; }
+        public bool IsTest;
+        public bool IsDisposed { get; private set; }
 
 
 
@@ -28,8 +29,7 @@ namespace BatchFoundation.Worker
 
         public void Dispose()
         {
-            Disposed = true;
+            IsDisposed = true;
         }
-
     }
 }

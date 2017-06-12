@@ -19,6 +19,11 @@ namespace BatchTestBL.Test3
             set;
         }
 
+        public string Name
+        {
+            get;
+            set;
+        }
 
 
         public Person()
@@ -43,6 +48,7 @@ namespace BatchTestBL.Test3
 
             dynamic d = data;
             d.x++;
+            d.Name += "-1-";
 
             Console.WriteLine(DateTime.UtcNow + " - W1");
         }
@@ -57,19 +63,18 @@ namespace BatchTestBL.Test3
             //Console.WriteLine(DateTime.UtcNow + " - W2: " + p.x);
 
             dynamic d = data;
-            //d.x++;
+            
+            // these statements still have an effect on data
             d.addOne();
-            //d.addOne();
+            d.Name += "-2-";
 
             // this will trigger an error
-            //try
-            //{
-                d.addOne2();
-            //}
-            //catch (Exception ex)
-            //{
-                //Console.WriteLine(ex.Message);
-            //}
+            // everything before the following statement is committed to data
+            d.addOne2();
+
+            // NEVER GETS HERE
+
+            d.Name += "-3-";
 
             Console.WriteLine(DateTime.UtcNow + " - W2");
         }
@@ -81,6 +86,9 @@ namespace BatchTestBL.Test3
         {
 
             dynamic d = data;
+
+            d.Name += "-4-";
+
             d.x++;
             d.addOne();
             d.addOne();
