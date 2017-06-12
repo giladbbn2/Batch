@@ -29,13 +29,13 @@ namespace BatchTestBL.Test4
 
     public class MyWorker1 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
             //Person p = (Person)data;
             //p.x++;
             //Console.WriteLine(DateTime.UtcNow + " - W1: " + p.x);
 
-            dynamic d = data;
+            dynamic d = Data;
             d.x++;
 
             Console.WriteLine(DateTime.UtcNow + " - W1");
@@ -44,13 +44,13 @@ namespace BatchTestBL.Test4
 
     public class MyWorker2 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
             //Person p = (Person)data;
             //p.x++;
             //Console.WriteLine(DateTime.UtcNow + " - W2: " + p.x);
 
-            dynamic d = data;
+            dynamic d = Data;
             d.x++;
             d.addOne();
             d.addOne();

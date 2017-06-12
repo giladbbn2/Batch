@@ -27,7 +27,7 @@ namespace Batch.Foreman
 
         void Load();
 
-        void Run(bool IsTestForeman);
+        void Run(bool IsTestForeman = false);
 
         void Pause();
 

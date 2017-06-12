@@ -9,7 +9,7 @@ namespace BatchFoundation.Worker
 {
     public class Worker : WorkerBase
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
             throw new NotImplementedException("Inherited Worker must override the Run() method");
         }

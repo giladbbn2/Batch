@@ -37,8 +37,7 @@ namespace Batch.Worker
 
         public void Run(bool IsTest = false)
         {
-            Worker.IsTest = IsTest;
-            Worker.Run(Input, Output, ref Data);
+            Worker.Run(Input, Output, ref Data, IsTest);
 
             if (NextNode != null)
                 NextNode.Data = Data;

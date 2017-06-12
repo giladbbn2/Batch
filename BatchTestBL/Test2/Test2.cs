@@ -11,55 +11,55 @@ namespace BatchTestBL.Test2
 {
     public class MyWorker1 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            Console.WriteLine(DateTime.UtcNow + " - W1: " + data);
+            Console.WriteLine(DateTime.UtcNow + " - W1: " + Data);
         }
     }
 
     public class MyWorker2 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            data = (object)((int)data + 1);
-            Console.WriteLine(DateTime.UtcNow + " - W2: " + data);
+            Data = (object)((int)Data + 1);
+            Console.WriteLine(DateTime.UtcNow + " - W2: " + Data);
         }
     }
 
     public class MyWorker3 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            data = (object)((int)data + 1);
-            Console.WriteLine(DateTime.UtcNow + " - W3: " + data);
+            Data = (object)((int)Data + 1);
+            Console.WriteLine(DateTime.UtcNow + " - W3: " + Data);
         }
     }
 
     public class MyWorker4 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            data = (object)((int)data + 1);
-            Console.WriteLine(DateTime.UtcNow + " - W4: " + data);
+            Data = (object)((int)Data + 1);
+            Console.WriteLine(DateTime.UtcNow + " - W4: " + Data);
         }
     }
 
     public class MyWorker5 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            data = (object)((int)data + 1);
-            Console.WriteLine(DateTime.UtcNow + " - W5: " + data);
+            Data = (object)((int)Data + 1);
+            Console.WriteLine(DateTime.UtcNow + " - W5: " + Data);
         }
     }
 
     public class MyWorker6 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
             //Thread.Sleep(3000);
-            data = (object)((int)data + 1);
-            Console.WriteLine(DateTime.UtcNow + " - W6: " + data);
+            Data = (object)((int)Data + 1);
+            Console.WriteLine(DateTime.UtcNow + " - W6: " + Data);
         }
     }
 }

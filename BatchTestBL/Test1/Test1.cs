@@ -16,7 +16,7 @@ namespace BatchTestBL.Test1
 
     public class MyWorker1 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
             /*
             Console.WriteLine(DateTime.UtcNow + " - W1: " + data);
@@ -44,9 +44,9 @@ namespace BatchTestBL.Test1
 
     public class MyWorker2 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            Console.WriteLine(DateTime.UtcNow + " - W2: " + data);
+            Console.WriteLine(DateTime.UtcNow + " - W2: " + Data);
 
             try
             {
@@ -70,9 +70,9 @@ namespace BatchTestBL.Test1
 
     public class MyWorker3 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            Console.WriteLine(DateTime.UtcNow + " - W3: " + data);
+            Console.WriteLine(DateTime.UtcNow + " - W3: " + Data);
 
             foreach (var item in Input.GetConsumingEnumerable())
             {
@@ -89,13 +89,13 @@ namespace BatchTestBL.Test1
 
     public class MyWorker4 : Worker
     {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
             Console.WriteLine("w5 started");
 
             string val = (new Random()).Next(1000).ToString();
 
-            data = (object)val;
+            Data = (object)val;
 
             Console.WriteLine("sending in data: " + val);
 
@@ -107,13 +107,13 @@ namespace BatchTestBL.Test1
     {
         public static int counter;
 
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
             Console.WriteLine("w6/7 started");
 
             Interlocked.Increment(ref counter);
 
-            string val = data.ToString();
+            string val = Data.ToString();
 
             Console.WriteLine("rcvd in data: " + val);
             Console.WriteLine("counter: " + counter.ToString());

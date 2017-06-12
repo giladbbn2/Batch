@@ -22,7 +22,7 @@ namespace BatchFoundation.Worker
 
         }
 
-        public virtual void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object data)
+        public virtual void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
             throw new NotImplementedException("Inherited Worker must override the Run() method");
         }
