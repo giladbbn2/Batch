@@ -84,7 +84,7 @@ namespace BatchConsole
             var c = new Contractor();
             c.AddForeman("frmn1", @"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
             c.AddForeman("frmn2", @"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
-            c.ConnectForeman("frmn1", "frmn2");
+            c.ConnectForeman("frmn1", "frmn2", false, true);
 
             int x = 15;
             object o = (object)x;
@@ -105,7 +105,7 @@ namespace BatchConsole
             c.AddForeman("frmn1", @"C:\projects\Batch\BatchTestBL\Test3\frmn-test3.config");
             c.AddForeman("frmn2", @"C:\projects\Batch\BatchTestBL\Test3\frmn-test3.config");
 
-            c.ConnectForeman("frmn1", "frmn2");
+            c.ConnectForeman("frmn1", "frmn2", false, true);
 
             Person p = new Person();
             p.x = 0;

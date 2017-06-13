@@ -24,10 +24,10 @@ namespace Batch.Contractor
             get;
             private set;
         }
-        
-        private ConcurrentDictionary<string, IForeman> foremen;             // key is foremanId
 
+        private ConcurrentDictionary<string, IForeman> foremen;             // key is foremanId
         private TaskFactory tf;
+        private static Random rand;
 
         private bool IsDisposed;
 
@@ -36,6 +36,11 @@ namespace Batch.Contractor
         public Contractor()
         {
             foremen = new ConcurrentDictionary<string, IForeman>();
+            tf = new TaskFactory();
+
+            if (rand == null)
+                rand = new Random();
+
             IsLoaded = false;
         }
 
@@ -82,6 +87,9 @@ namespace Batch.Contractor
         {
             // max TestForemanRequestWeight is 1000000
 
+            if (TestForemanRequestWeight < 0 || TestForemanRequestWeight > 1000000)
+                throw new ArgumentException("TestForemanRequestWeight must be between 0 (inclusive) and 1000000 (inclusive)");
+
             if (ForemanIdFrom.Equals(ForemanIdTo))
                 throw new Exception("Can't connect Foreman to itself");
 
@@ -101,15 +109,27 @@ namespace Batch.Contractor
 
             if (!IsTestForeman)
             {
-                if (!IsForce && foremanFrom.NextForeman != null)
-                    throw new Exception("Foreman " + ForemanIdFrom + " was already assigned the next foreman");
+                if (foremanFrom.NextForeman != null)
+                {
+                    if (!IsForce)
+                        throw new Exception("Foreman " + ForemanIdFrom + " is already assigned the next foreman");
+
+                    if (foremanFrom.TestForeman != null && foremanFrom.TestForeman.Id.Equals(foremanTo.Id))
+                        throw new Exception("Foreman " + ForemanIdTo + " is already assigned as the test foreman to " + ForemanIdFrom);
+                }
 
                 foremanFrom.NextForeman = foremanTo;
             }
             else
             {
-                if (!IsForce && foremanFrom.TestForeman != null)
-                    throw new Exception("Foreman " + ForemanIdFrom + " was already assigned the test foreman");
+                if (foremanFrom.TestForeman != null)
+                {
+                    if (!IsForce)
+                        throw new Exception("Foreman " + ForemanIdFrom + " is already assigned the test foreman");
+
+                    if (foremanFrom.NextForeman != null && foremanFrom.NextForeman.Id.Equals(foremanTo.Id))
+                        throw new Exception("Foreman " + ForemanIdTo + " is already assigned as the next foreman to " + ForemanIdFrom);
+                }
 
                 foremanFrom.TestForeman = foremanTo;
                 foremanTo.TestForemanRequestWeight = TestForemanRequestWeight;
@@ -129,49 +149,15 @@ namespace Batch.Contractor
 
             if (foreman.IsNodesLongRunning)
             {
+                // long running foreman
+
                 foreman.Run();
                 return null;
             }
 
             // short running foreman
 
-            // dont follow short running foreman connections
-
-            if (!IsFollowConnections)
-            {
-                foreman.Data = Data;
-                foreman.Run();
-                return foreman.Data;
-            }
-
-            // follow short running foreman connections
-
-            while (foreman != null)
-            {
-                if (foreman.TestForeman != null)
-                {
-                    var task = tf.StartNew(() =>
-                    {
-                        foreman.TestForeman.Data = Data;
-                        foreman.Run();
-                    });
-                }
-
-                foreman.Data = Data;
-                foreman.Run();
-
-                // can get here after foreman threw an unhandled exception
-                if (!IsContinueOnError && foreman.IsError)
-                {
-                    throw new Exception("Foreman threw an error");
-                }
-
-                Data = foreman.Data;
-
-                foreman = foreman.NextForeman;
-            }
-
-            return Data;
+            return RunShortRunningForeman(foreman, Data, IsFollowConnections, IsContinueOnError, false);
         }
 
         public bool SubmitData(string ForemanId, string QueueName, object Data)
@@ -195,6 +181,59 @@ namespace Batch.Contractor
         public void Dispose()
         {
             IsDisposed = true;
+        }
+
+        private object RunShortRunningForeman(IForeman Foreman, object Data, bool IsFollowConnections, bool IsContinueOnError, bool IsTestForeman)
+        {
+            // don't follow short running foreman connections
+
+            if (!IsFollowConnections)
+            {
+                Foreman.Data = Data;
+                Foreman.Run();
+                return Foreman.Data;
+            }
+
+            // follow short running foreman connections
+
+            while (Foreman != null)
+            {
+                Foreman.Data = Data;
+                Foreman.Run(IsTestForeman);
+
+                // can get here after foreman threw an unhandled exception
+                if (!IsContinueOnError && Foreman.IsError)
+                    throw new Exception("Foreman threw an error");
+
+                Data = Foreman.Data;
+
+                if (Foreman.TestForeman != null)
+                {
+                    int w = Foreman.TestForeman.TestForemanRequestWeight;
+                    bool isRun = false;
+
+                    if (w == 1000000)
+                    {
+                        isRun = true;
+                    }
+                    else if (w > 0)
+                    {
+                        if (rand.Next(1000001) < w)
+                            isRun = true;
+                    }
+
+                    if (isRun)
+                    {
+                        // test foreman before next foreman
+                        // but it is blocking
+                        RunShortRunningForeman(Foreman.TestForeman, Data, true, IsContinueOnError, true);
+                    }
+                }
+
+                Foreman = Foreman.NextForeman;
+            }
+
+            return Data;
         }
     }
 }

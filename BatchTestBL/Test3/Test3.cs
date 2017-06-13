@@ -42,6 +42,11 @@ namespace BatchTestBL.Test3
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
+            if (IsTest)
+                Console.WriteLine("inside a test foreman");
+            else
+                Console.WriteLine("inside a regular foreman");
+
             //Person p = (Person)data;
             //p.x++;
             //Console.WriteLine(DateTime.UtcNow + " - W1: " + p.x);
@@ -58,6 +63,11 @@ namespace BatchTestBL.Test3
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
+            if (IsTest)
+                Console.WriteLine("inside a test foreman");
+            else
+                Console.WriteLine("inside a regular foreman");
+
             //Person p = (Person)data;
             //p.x++;
             //Console.WriteLine(DateTime.UtcNow + " - W2: " + p.x);
@@ -84,6 +94,11 @@ namespace BatchTestBL.Test3
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
+            if (IsTest)
+                Console.WriteLine("inside a test foreman");
+            else
+                Console.WriteLine("inside a regular foreman");
+
 
             dynamic d = Data;
 
