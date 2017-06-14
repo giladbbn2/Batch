@@ -1,4 +1,0 @@
-C:\projects\Batch\BatchFoundation\bin\Release\BatchFoundation.dll
-C:\projects\Batch\BatchFoundation\bin\Release\BatchFoundation.pdb
-C:\projects\Batch\BatchFoundation\obj\Release\BatchFoundation.dll
-C:\projects\Batch\BatchFoundation\obj\Release\BatchFoundation.pdb
