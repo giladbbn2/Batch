@@ -230,7 +230,7 @@ namespace Batch.Contractor
                     if (isRun)
                     {
                         // test foreman before next foreman
-                        // but it is blocking
+                        // blocking
                         RunShortRunningForeman(Foreman.TestForeman, ref Data, true, IsContinueOnError, true);
                     }
                 }
