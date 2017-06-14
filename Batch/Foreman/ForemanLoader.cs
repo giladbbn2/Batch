@@ -72,6 +72,17 @@ namespace Batch.Foreman
             }
         }
 
+        public Exception WorkerNodeException
+        {
+            get
+            {
+                if (foreman == null)
+                    return null;
+
+                return foreman.WorkerNodeException;
+            }
+        }
+
         private ForemanBase foreman;
         private bool IsDisposed;
 

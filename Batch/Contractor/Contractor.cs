@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Batch.Contractor
@@ -26,8 +27,18 @@ namespace Batch.Contractor
         }
 
         private ConcurrentDictionary<string, IForeman> foremen;             // key is foremanId
-        private TaskFactory tf;
-        private static Random rand;
+
+        private static Random _rand;
+        private static Random rand
+        {
+            get
+            {
+                if (_rand == null)
+                    Interlocked.CompareExchange(ref _rand, new Random(), null);
+
+                return _rand;
+            }
+        }
 
         private bool IsDisposed;
 
@@ -36,11 +47,6 @@ namespace Batch.Contractor
         public Contractor()
         {
             foremen = new ConcurrentDictionary<string, IForeman>();
-            tf = new TaskFactory();
-
-            if (rand == null)
-                rand = new Random();
-
             IsLoaded = false;
         }
 
@@ -86,6 +92,7 @@ namespace Batch.Contractor
         public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, bool IsForce = false, bool IsTestForeman = false, int TestForemanRequestWeight = 1000000)
         {
             // max TestForemanRequestWeight is 1000000
+            // a foreman can have more than one foreman connecting to it upstream
 
             if (TestForemanRequestWeight < 0 || TestForemanRequestWeight > 1000000)
                 throw new ArgumentException("TestForemanRequestWeight must be between 0 (inclusive) and 1000000 (inclusive)");
@@ -156,6 +163,8 @@ namespace Batch.Contractor
             }
 
             // short running foreman
+
+            // check if lock is necessary
 
             return RunShortRunningForeman(foreman, Data, IsFollowConnections, IsContinueOnError, false);
         }

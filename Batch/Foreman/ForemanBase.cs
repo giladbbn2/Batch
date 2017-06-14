@@ -87,6 +87,11 @@ namespace Batch.Foreman
                     yield return node.State;
             }
         }
+        public Exception WorkerNodeException
+        {
+            get;
+            private set;
+        }
 
         private ForemanConfigurationFile config;
         
@@ -615,6 +620,7 @@ namespace Batch.Foreman
         {
             nodes[NodeId].State = WorkerNodeState.Error;
             nodes[NodeId].Exception = ex;
+            WorkerNodeException = ex;
             IsError = true;
             IsRunning = false;
             //Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);

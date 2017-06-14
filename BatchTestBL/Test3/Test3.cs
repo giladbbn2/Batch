@@ -18,12 +18,12 @@ namespace BatchTestBL.Test3
             get;
             set;
         }
-
         public string Name
         {
             get;
             set;
         }
+
 
 
         public Person()
@@ -35,27 +35,20 @@ namespace BatchTestBL.Test3
         {
             x++;
         }
-
     }
 
     public class MyWorker1 : Worker
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            if (IsTest)
-                Console.WriteLine("inside a test foreman");
-            else
-                Console.WriteLine("inside a regular foreman");
-
-            //Person p = (Person)data;
-            //p.x++;
-            //Console.WriteLine(DateTime.UtcNow + " - W1: " + p.x);
-
             dynamic d = Data;
             d.x++;
             d.Name += "-1-";
 
-            Console.WriteLine(DateTime.UtcNow + " - W1");
+            if (IsTest)
+                Console.WriteLine(DateTime.UtcNow + " - W1 (TEST)");
+            else
+                Console.WriteLine(DateTime.UtcNow + " - W1");
         }
     }
 
@@ -63,30 +56,23 @@ namespace BatchTestBL.Test3
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            if (IsTest)
-                Console.WriteLine("inside a test foreman");
-            else
-                Console.WriteLine("inside a regular foreman");
-
-            //Person p = (Person)data;
-            //p.x++;
-            //Console.WriteLine(DateTime.UtcNow + " - W2: " + p.x);
-
             dynamic d = Data;
             
-            // these statements still have an effect on data
             d.addOne();
             d.Name += "-2-";
 
-            // this will trigger an error
-            // everything before the following statement is committed to data
-            d.addOne2();
+            // leaving the following statement uncommented will trigger an error
+            // and "-2-" will be added but not "-3-"
+            //d.addOne2();
 
             // NEVER GETS HERE
 
             d.Name += "-3-";
 
-            Console.WriteLine(DateTime.UtcNow + " - W2");
+            if (IsTest)
+                Console.WriteLine(DateTime.UtcNow + " - W2 (TEST)");
+            else
+                Console.WriteLine(DateTime.UtcNow + " - W2");
         }
     }
 
@@ -94,11 +80,6 @@ namespace BatchTestBL.Test3
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            if (IsTest)
-                Console.WriteLine("inside a test foreman");
-            else
-                Console.WriteLine("inside a regular foreman");
-
 
             dynamic d = Data;
 
@@ -114,9 +95,11 @@ namespace BatchTestBL.Test3
             d.addOne();
             d.addOne();
             d.addOne();
-
-
-            Console.WriteLine(DateTime.UtcNow + " - W3");
+            
+            if (IsTest)
+                Console.WriteLine(DateTime.UtcNow + " - W3 (TEST)");
+            else
+                Console.WriteLine(DateTime.UtcNow + " - W3");
         }
     }
 }

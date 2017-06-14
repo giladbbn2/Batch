@@ -104,8 +104,13 @@ namespace BatchConsole
             var c = new Contractor();
             c.AddForeman("frmn1", @"C:\projects\Batch\BatchTestBL\Test3\frmn-test3.config");
             c.AddForeman("frmn2", @"C:\projects\Batch\BatchTestBL\Test3\frmn-test3.config");
+            c.AddForeman("frmn3", @"C:\projects\Batch\BatchTestBL\Test4\frmn-test4.config");
 
-            c.ConnectForeman("frmn1", "frmn2", false, true);
+            c.ConnectForeman("frmn1", "frmn2", false, true, 100000);
+            c.ConnectForeman("frmn3", "frmn2");
+
+            // frmn2 is downstream both for frmn1 and frmn3
+            // it is possible to run directly "frmn2" without going through frmn1 or frmn3 first
 
             Person p = new Person();
             p.x = 0;
@@ -116,7 +121,7 @@ namespace BatchConsole
             p = (Person)o;
             Console.WriteLine(p.x);
 
-            o = c.Run("frmn1", o, true, true);
+            o = c.Run("frmn3", o, true, true);
 
             p = (Person)o;
             Console.WriteLine(p.x);

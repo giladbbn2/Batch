@@ -25,6 +25,8 @@ namespace Batch.Foreman
 
         IEnumerable<WorkerNodeState> WorkerNodeStates { get; }
 
+        Exception WorkerNodeException { get; }
+
         void Load();
 
         void Run(bool IsTestForeman = false);
