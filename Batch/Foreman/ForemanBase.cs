@@ -26,7 +26,7 @@ namespace Batch.Foreman
             get;
             private set;
         }
-        public string PathToConfigFile
+        public string ConfigString
         {
             get;
             private set;
@@ -112,9 +112,9 @@ namespace Batch.Foreman
         
 
 
-        public ForemanBase(string PathToConfigFile)
+        public ForemanBase(string ConfigString)
         {
-            this.PathToConfigFile = PathToConfigFile;
+            this.ConfigString = ConfigString;
             IsRunning = false;
             IsPaused = false;
             IsLoaded = false;
@@ -141,12 +141,12 @@ namespace Batch.Foreman
             if (IsRunning)
                 return;
 
-            if (PathToConfigFile == null && Config == null)
-                throw new ArgumentNullException("PathToConfigFile");
+            if (ConfigString == null && Config == null)
+                throw new ArgumentNullException("ConfigString");
 
             // load config file only if not already defined by Contractor
             if (Config == null)
-                Config = ParseConfigFile(PathToConfigFile);
+                Config = ParseConfigString(ConfigString);
             
             int NodeCounter = 0;
             int QueueCounter = 0;
@@ -528,7 +528,7 @@ namespace Batch.Foreman
             }
         }
 
-        public string ExportConfig()
+        public string ExportToConfigString()
         {
             string str = null;
 
@@ -538,7 +538,7 @@ namespace Batch.Foreman
             }
             catch (Exception ex)
             {
-                string err = "Can't serialize config file: " + PathToConfigFile + "(" + ex.Message + ")";
+                string err = "Can't serialize config string (" + ex.Message + ")";
                 throw new Exception(err, ex);
             }
 
@@ -623,18 +623,17 @@ namespace Batch.Foreman
             return TopologyElementType.None;
         }
 
-        private ForemanConfigurationFile ParseConfigFile(string PathToConfigFile)
+        private ForemanConfigurationFile ParseConfigString(string ConfigString)
         {
             ForemanConfigurationFile Config;
 
             try
             {
-                string settings = File.ReadAllText(PathToConfigFile);
-                Config = JsonConvert.DeserializeObject<ForemanConfigurationFile>(settings);
+                Config = JsonConvert.DeserializeObject<ForemanConfigurationFile>(ConfigString);
             }
             catch (Exception ex)
             {
-                string err = "Can't parse config file: " + PathToConfigFile + "(" + ex.Message + ")";
+                string err = "Can't parse config string (" + ex.Message + ")";
                 throw new Exception(err, ex);
             }
 

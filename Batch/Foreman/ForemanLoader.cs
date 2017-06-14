@@ -17,7 +17,7 @@ namespace Batch.Foreman
             get;
             set;
         }
-        public string PathToConfigFile;
+        public string ConfigString;
         public AppDomain AppDomain;
         public bool IsLoaded
         {
@@ -105,7 +105,7 @@ namespace Batch.Foreman
                 return;
 
             if (Config == null)
-                foreman = new Foreman(PathToConfigFile);
+                foreman = new Foreman(ConfigString);
             else
                 foreman = new Foreman(Config);
 
@@ -189,12 +189,12 @@ namespace Batch.Foreman
             return foreman.CompleteAdding(QueueName);
         }
 
-        public string ExportConfig()
+        public string ExportToConfigString()
         {
             if (IsDisposed)
                 return null;
 
-            return foreman.ExportConfig();
+            return foreman.ExportToConfigString();
         }
 
         public void Dispose()
@@ -354,7 +354,7 @@ namespace Batch.Foreman
         }
         */
 
-        public static ForemanLoader CreateInstance(string Id, string PathToConfigFile, ForemanConfigurationFile Config = null)
+        public static ForemanLoader CreateInstance(string Id, string ConfigString, ForemanConfigurationFile Config = null)
         {
             AppDomain ad = AppDomain.CreateDomain(Guid.NewGuid().ToString());
 
@@ -362,7 +362,7 @@ namespace Batch.Foreman
 
             fl.Id = Id;
             fl.AppDomain = ad;
-            fl.PathToConfigFile = PathToConfigFile;
+            fl.ConfigString = ConfigString;
             fl.Config = Config;
             fl.Load();
 

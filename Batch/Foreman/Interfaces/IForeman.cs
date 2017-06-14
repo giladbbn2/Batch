@@ -45,6 +45,6 @@ namespace Batch.Foreman
         // only for long running foremen
         bool CompleteAdding(string QueueName);
 
-        string ExportConfig();
+        string ExportToConfigString();
     }
 }

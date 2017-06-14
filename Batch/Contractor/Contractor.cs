@@ -53,9 +53,9 @@ namespace Batch.Contractor
             IsLoaded = false;
         }
 
-        public void ImportConfigFile(string PathToConfigFile)
+        public void ImportFromConfigString(string ConfigString)
         {
-            var config = ParseConfigFile(PathToConfigFile);
+            var config = ParseConfigString(ConfigString);
 
             foreach (var ccff in config.foremen)
                 AddForeman(ccff.id, null, ccff.config);
@@ -64,7 +64,7 @@ namespace Batch.Contractor
                 ConnectForeman(ccfc.from, ccfc.to, false, ccfc.IsTestForeman, ccfc.TestForemanRequestWeight);
         }
 
-        public string ExportConfigFile()
+        public string ExportToConfigString()
         {
             var ccf = new ContractorConfigurationFile();
             ccf.foremen = new List<CCFForeman>();
@@ -86,19 +86,19 @@ namespace Batch.Contractor
             return JsonConvert.SerializeObject(ccf);
         }
 
-        public void AddForeman(string ForemanId, string PathToConfigFile)
+        public void AddForeman(string ForemanId, string ConfigString)
         {
-            AddForeman(ForemanId, PathToConfigFile, null);
+            AddForeman(ForemanId, ConfigString, null);
         }
 
-        private void AddForeman(string ForemanId, string PathToConfigFile, ForemanConfigurationFile Config)
+        private void AddForeman(string ForemanId, string ConfigString, ForemanConfigurationFile Config)
         {
             // check that foremanId doesn't exist
 
             if (foremen.ContainsKey(ForemanId))
                 throw new Exception(ForemanId + " was already added");
 
-            var foreman = ForemanLoader.CreateInstance(ForemanId, PathToConfigFile, Config);
+            var foreman = ForemanLoader.CreateInstance(ForemanId, ConfigString, Config);
 
             foremen.AddOrUpdate(ForemanId, foreman, (k, v) => foreman);
         }
@@ -282,18 +282,17 @@ namespace Batch.Contractor
             return Data;
         }
 
-        private ContractorConfigurationFile ParseConfigFile(string PathToConfigFile)
+        private ContractorConfigurationFile ParseConfigString(string ConfigString)
         {
             ContractorConfigurationFile Config;
 
             try
             {
-                string settings = File.ReadAllText(PathToConfigFile);
-                Config = JsonConvert.DeserializeObject<ContractorConfigurationFile>(settings);
+                Config = JsonConvert.DeserializeObject<ContractorConfigurationFile>(ConfigString);
             }
             catch (Exception ex)
             {
-                string err = "Can't parse config file: " + PathToConfigFile + "(" + ex.Message + ")";
+                string err = "Can't parse config file: " + ConfigString + "(" + ex.Message + ")";
                 throw new Exception(err, ex);
             }
 

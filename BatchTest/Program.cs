@@ -3,6 +3,7 @@ using BatchTestBL.Test3;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -14,13 +15,15 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test5();
+            Test2();
         }
 
         public static void Test1()
         {
             var c = new Contractor();
-            c.AddForeman("frmn1", @"C:\projects\Batch\BatchTestBL\Test1\frmn-test1.config");
+
+            string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test1\frmn-test1.config");
+            c.AddForeman("frmn1", configString);
 
             c.Run("frmn1");
 
@@ -87,8 +90,11 @@ namespace BatchConsole
         public static void Test2()
         {
             var c = new Contractor();
-            c.AddForeman("frmn1", @"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
-            c.AddForeman("frmn2", @"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
+
+            string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
+            c.AddForeman("frmn1", configString);
+            c.AddForeman("frmn2", configString);
+
             c.ConnectForeman("frmn1", "frmn2", false);
 
             int x = 0;
@@ -107,9 +113,15 @@ namespace BatchConsole
         public static void Test3()
         {
             var c = new Contractor();
-            c.AddForeman("frmn1", @"C:\projects\Batch\BatchTestBL\Test3\frmn-test3.config");
-            c.AddForeman("frmn2", @"C:\projects\Batch\BatchTestBL\Test3\frmn-test3.config");
-            c.AddForeman("frmn3", @"C:\projects\Batch\BatchTestBL\Test4\frmn-test4.config");
+
+            string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test3\frmn-test3.config");
+
+            c.AddForeman("frmn1", configString);
+            c.AddForeman("frmn2", configString);
+
+            configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test4\frmn-test4.config");
+
+            c.AddForeman("frmn3", configString);
 
             c.ConnectForeman("frmn1", "frmn2", false); //, true, 100000);
             c.ConnectForeman("frmn3", "frmn2");
@@ -154,7 +166,10 @@ namespace BatchConsole
         public static void Test5()
         {
             var c = new Contractor();
-            c.ImportConfigFile(@"C:\projects\Batch\BatchTestBL\Test5\ctr-test5.config");
+
+            string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test5\ctr-test5.config");
+
+            c.ImportFromConfigString(configString);
 
             int x = 0;
             object o = (object)x;
@@ -163,7 +178,7 @@ namespace BatchConsole
 
             Console.WriteLine(o);
 
-            Console.WriteLine(c.ExportConfigFile());
+            Console.WriteLine(c.ExportToConfigString());
 
 
             c.RemoveForeman("frmn1");
