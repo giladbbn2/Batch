@@ -15,7 +15,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test5();
+            Test1();
         }
 
         public static void Test1()
@@ -100,7 +100,7 @@ namespace BatchConsole
             int x = 0;
             object o = (object)x;
 
-            o = c.Run("frmn1", o);
+            c.Run("frmn1", o);
 
             Console.WriteLine(o);
 
@@ -133,12 +133,12 @@ namespace BatchConsole
             p.x = 0;
             object o = (object)p; 
 
-            o = c.Run("frmn1", o, true, true);
+            c.Run("frmn1", o, true, true);
             
             p = (Person)o;
             Console.WriteLine(p.x);
 
-            o = c.Run("frmn3", o, true, true);
+            c.Run("frmn3", o, true, true);
 
             //Console.ReadLine();
             //return;
@@ -150,9 +150,9 @@ namespace BatchConsole
             // isContinueOnError is by default set to false
             // so following statements throw an error
 
-            o = c.Run("frmn1", o);
-            o = c.Run("frmn1", o);
-            o = c.Run("frmn1", o);
+            c.Run("frmn1", o);
+            c.Run("frmn1", o);
+            c.Run("frmn1", o);
 
             p = (Person)o;
             Console.WriteLine(p.x);
@@ -183,7 +183,7 @@ namespace BatchConsole
             Console.WriteLine("About to run");
             Console.ReadLine();
 
-            o = c.Run("frmn1", o);
+            c.Run("frmn1", o);
 
             Console.WriteLine(o);
 
@@ -196,7 +196,7 @@ namespace BatchConsole
             c = null;
 
 
-            GC.Collect();
+            
 
 
             Console.WriteLine("About to init Contractor again");
@@ -206,7 +206,7 @@ namespace BatchConsole
 
             c.ImportFromConfigString(configString);
 
-            o = c.Run("frmn1", o);
+            c.Run("frmn1", o);
 
             Console.WriteLine(o);
 

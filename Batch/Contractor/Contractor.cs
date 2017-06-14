@@ -183,7 +183,7 @@ namespace Batch.Contractor
             
         }
 
-        public object Run(string ForemanId, object Data = null, bool IsFollowConnections = true, bool IsContinueOnError = false)
+        public void Run(string ForemanId, object Data = null, bool IsFollowConnections = true, bool IsContinueOnError = false)
         {
             IForeman foreman;
             if (!foremen.TryGetValue(ForemanId, out foreman))
@@ -193,14 +193,14 @@ namespace Batch.Contractor
             {
                 // long running foreman
                 foreman.Run();
-                return null;
+                return;
             }
 
             // short running foreman
 
             // check if lock is necessary
 
-            return RunShortRunningForeman(foreman, ref Data, IsFollowConnections, IsContinueOnError, false);
+            RunShortRunningForeman(foreman, ref Data, IsFollowConnections, IsContinueOnError, false);
         }
 
         public bool SubmitData(string ForemanId, string QueueName, object Data)
@@ -235,15 +235,12 @@ namespace Batch.Contractor
             _rand = null;
         }
 
-        private object RunShortRunningForeman(IForeman Foreman, ref object Data, bool IsFollowConnections, bool IsContinueOnError, bool IsTestForeman)
+        private void RunShortRunningForeman(IForeman Foreman, ref object Data, bool IsFollowConnections, bool IsContinueOnError, bool IsTestForeman)
         {
             // don't follow short running foreman connections
 
             if (!IsFollowConnections)
-            {
                 Foreman.Run(ref Data);
-                return Data;
-            }
 
             // follow short running foreman connections
 
@@ -280,8 +277,6 @@ namespace Batch.Contractor
 
                 Foreman = Foreman.NextForeman;
             }
-
-            return Data;
         }
 
         private ContractorConfigurationFile ParseConfigString(string ConfigString)
