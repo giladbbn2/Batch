@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Batch.Foreman;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,19 +7,28 @@ using System.Threading.Tasks;
 
 namespace Batch.Contractor
 {
-    public class ContractorConfigurationFile
+    [Serializable]
+    internal class ContractorConfigurationFile
     {
-        public string contractorId = "";
-        public string contractorVer = "0.1.1";
-        public int NetMQPort = 5556;
+        public string contractorVer = "0.1";
 
-        public List<CCFForman> foremen;
-
-        
+        public List<CCFForeman> foremen;
+        public List<CCFConnection> connections;
     }
 
-    public class CCFForman
+    [Serializable]
+    internal class CCFConnection
     {
-        public string configFile;
+        public string from;
+        public string to;
+        public bool IsTestForeman = false;
+        public int TestForemanRequestWeight = 1000000;
+    }
+
+    [Serializable]
+    internal class CCFForeman
+    {
+        public string id;
+        public ForemanConfigurationFile config;
     }
 }

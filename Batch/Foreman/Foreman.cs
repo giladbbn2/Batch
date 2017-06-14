@@ -12,5 +12,10 @@ namespace Batch.Foreman
         {
 
         }
+
+        public Foreman(ForemanConfigurationFile Config) : base(Config)
+        {
+
+        }
     }
 }

@@ -99,8 +99,8 @@ namespace Batch.Foreman
 
         // helpers
         private Dictionary<string, int> nodeNameToId;
-        //private bool[] queueIsToEl;                                         // id is queueId
-        //private bool[] queueIsFromEl;                                       // id is queueId
+        //private bool[] queueIsToEl;                                       // id is queueId
+        //private bool[] queueIsFromEl;                                     // id is queueId
 
         private List<Task> orderedLongRunningNodeTasks;
 
@@ -111,6 +111,15 @@ namespace Batch.Foreman
         public ForemanBase(string PathToConfigFile)
         {
             this.PathToConfigFile = PathToConfigFile;
+            IsRunning = false;
+            IsPaused = false;
+            IsLoaded = false;
+            IsRanAtLeastOnce = false;
+        }
+
+        public ForemanBase(ForemanConfigurationFile Config)
+        {
+            config = Config;
             IsRunning = false;
             IsPaused = false;
             IsLoaded = false;
@@ -133,7 +142,7 @@ namespace Batch.Foreman
 
             // load config file only if not already defined by Contractor
             if (config == null)
-                config = LoadConfigFile(PathToConfigFile);
+                config = ParseConfigFile(PathToConfigFile);
             
             int NodeCounter = 0;
             int QueueCounter = 0;
@@ -186,11 +195,7 @@ namespace Batch.Foreman
             }
 
             // Register queues
-            if (config.queues == null || config.queues.Count == 0)
-            {
-                // no queues
-            } 
-            else
+            if (config.queues != null && config.queues.Count > 0)
             {
                 if (!IsNodesLongRunning)
                     throw new Exception("Can't define queues in short running foremen");
@@ -575,7 +580,7 @@ namespace Batch.Foreman
             return TopologyElementType.None;
         }
 
-        private ForemanConfigurationFile LoadConfigFile(string PathToConfigFile)
+        public static ForemanConfigurationFile ParseConfigFile(string PathToConfigFile)
         {
             ForemanConfigurationFile Config;
 

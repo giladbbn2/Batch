@@ -14,7 +14,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test1();
+            Test5();
         }
 
         public static void Test1()
@@ -69,12 +69,17 @@ namespace BatchConsole
                 Console.WriteLine("complete adding fail!");
 
             // trigger unload
-            Console.ReadLine();
-            c.RemoveForeman("frmn1");
+            //Console.ReadLine();
+            //c.RemoveForeman("frmn1");
 
             // trigger unload
+            //Console.ReadLine();
+            //c.RemoveForeman("frmn1");
+
+            // trigger contarctor dispose
             Console.ReadLine();
-            c.RemoveForeman("frmn1");
+
+            c.Dispose();
 
             Console.ReadLine();
         }
@@ -139,6 +144,24 @@ namespace BatchConsole
 
             p = (Person)o;
             Console.WriteLine(p.x);
+
+            c.RemoveForeman("frmn1");
+            c.RemoveForeman("frmn2");
+
+            Console.ReadLine();
+        }
+
+        public static void Test5()
+        {
+            var c = new Contractor();
+            c.Load(@"C:\projects\Batch\BatchTestBL\Test5\crtr-test5.config");
+
+            int x = 0;
+            object o = (object)x;
+
+            o = c.Run("frmn1", o);
+
+            Console.WriteLine(o);
 
             c.RemoveForeman("frmn1");
             c.RemoveForeman("frmn2");

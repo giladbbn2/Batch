@@ -9,9 +9,10 @@ namespace Batch.Foreman
 {
     // Default configuration
 
-    public class ForemanConfigurationFile
+    [Serializable]
+    internal class ForemanConfigurationFile
     {
-        public string foremanVer = "0.1.1";
+        public string foremanVer = "0.1";
         public bool isNodesLongRunning = false;
         public string assemblyPath = "";
         
@@ -22,7 +23,8 @@ namespace Batch.Foreman
         public List<FCFConnection> connections;
     }
 
-    public class FCFNode
+    [Serializable]
+    internal class FCFNode
     {
         public int id;
         public string name;
@@ -30,14 +32,16 @@ namespace Batch.Foreman
         public int exeOrderId;
     }
 
-    public class FCFQueue
+    [Serializable]
+    internal class FCFQueue
     {
         public int id;
         public string name;
         public int bufferLimit = 0;
     }
 
-    public class FCFConnection
+    [Serializable]
+    internal class FCFConnection
     {
         public string from;
         public string to;

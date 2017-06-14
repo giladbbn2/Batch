@@ -1,7 +1,9 @@
 ﻿using Batch.Foreman;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -51,28 +53,30 @@ namespace Batch.Contractor
             IsLoaded = false;
         }
 
-        public void ImportConfigFile(string PathToConfigFile)
+        public void Load(string PathToConfigFile)
         {
-            // Contractor's config file
-        }
+            var config = ParseConfigFile(PathToConfigFile);
 
-        public ContractorConfigurationFile ExportConfigFile()
-        {
-            var ccf = new ContractorConfigurationFile();
+            foreach (var ccff in config.foremen)
+                AddForeman(ccff.id, null, ccff.config);
 
-            // ...
-
-            return ccf;
+            foreach (var ccfc in config.connections)
+                ConnectForeman(ccfc.from, ccfc.to, false, ccfc.IsTestForeman, ccfc.TestForemanRequestWeight);
         }
 
         public void AddForeman(string ForemanId, string PathToConfigFile)
+        {
+            AddForeman(ForemanId, PathToConfigFile, null);
+        }
+
+        private void AddForeman(string ForemanId, string PathToConfigFile, ForemanConfigurationFile Config)
         {
             // check that foremanId doesn't exist
 
             if (foremen.ContainsKey(ForemanId))
                 throw new Exception(ForemanId + " was already added");
 
-            var foreman = ForemanLoader.CreateInstance(ForemanId, PathToConfigFile);
+            var foreman = ForemanLoader.CreateInstance(ForemanId, PathToConfigFile, Config);
 
             foremen.AddOrUpdate(ForemanId, foreman, (k, v) => foreman);
         }
@@ -94,6 +98,12 @@ namespace Batch.Contractor
         {
             // max TestForemanRequestWeight is 1000000
             // a foreman can have more than one foreman connecting to it upstream
+
+            if (ForemanIdFrom == null || ForemanIdFrom.Length == 0)
+                throw new ArgumentException("ForemanIdFrom");
+
+            if (ForemanIdTo == null || ForemanIdTo.Length == 0)
+                throw new ArgumentException("ForemanIdTo");
 
             if (TestForemanRequestWeight < 0 || TestForemanRequestWeight > 1000000)
                 throw new ArgumentException("TestForemanRequestWeight must be between 0 (inclusive) and 1000000 (inclusive)");
@@ -190,6 +200,15 @@ namespace Batch.Contractor
         public void Dispose()
         {
             IsDisposed = true;
+
+            if (foremen == null)
+                return;
+
+            foreach (var foreman in foremen)
+                ForemanLoader.Unload((ForemanLoader)foreman.Value);
+
+            foremen = null;
+            _rand = null;
         }
 
         private object RunShortRunningForeman(IForeman Foreman, ref object Data, bool IsFollowConnections, bool IsContinueOnError, bool IsTestForeman)
@@ -239,6 +258,24 @@ namespace Batch.Contractor
             }
 
             return Data;
+        }
+
+        private ContractorConfigurationFile ParseConfigFile(string PathToConfigFile)
+        {
+            ContractorConfigurationFile Config;
+
+            try
+            {
+                string settings = File.ReadAllText(PathToConfigFile);
+                Config = JsonConvert.DeserializeObject<ContractorConfigurationFile>(settings);
+            }
+            catch (Exception ex)
+            {
+                string err = "Can't parse config file: " + PathToConfigFile + "(" + ex.Message + ")";
+                throw new Exception(err, ex);
+            }
+
+            return Config;
         }
     }
 }
