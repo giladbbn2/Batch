@@ -15,7 +15,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test2();
+            Test5();
         }
 
         public static void Test1()
@@ -165,21 +165,34 @@ namespace BatchConsole
 
         public static void Test5()
         {
+            int x = 0;
+            object o = (object)x;
+
+
+
             var c = new Contractor();
 
             string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test5\ctr-test5.config");
 
             c.ImportFromConfigString(configString);
 
-            int x = 0;
-            object o = (object)x;
-
             o = c.Run("frmn1", o);
 
             Console.WriteLine(o);
 
-            Console.WriteLine(c.ExportToConfigString());
+            configString = c.ExportToConfigString();
 
+            c.Dispose();
+
+
+
+            c = new Contractor();
+
+            c.ImportFromConfigString(configString);
+
+            o = c.Run("frmn1", o);
+
+            Console.WriteLine(o);
 
             c.RemoveForeman("frmn1");
             c.RemoveForeman("frmn2");
