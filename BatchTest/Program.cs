@@ -154,7 +154,7 @@ namespace BatchConsole
         public static void Test5()
         {
             var c = new Contractor();
-            c.Import(@"C:\projects\Batch\BatchTestBL\Test5\crtr-test5.config");
+            c.ImportConfigFile(@"C:\projects\Batch\BatchTestBL\Test5\crtr-test5.config");
 
             int x = 0;
             object o = (object)x;
@@ -163,11 +163,13 @@ namespace BatchConsole
 
             Console.WriteLine(o);
 
-            Console.WriteLine(c.Export());
+            Console.WriteLine(c.ExportConfigFile());
 
 
             c.RemoveForeman("frmn1");
             c.RemoveForeman("frmn2");
+
+            c.Dispose();
 
             Console.ReadLine();
         }

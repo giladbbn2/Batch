@@ -53,7 +53,7 @@ namespace Batch.Contractor
             IsLoaded = false;
         }
 
-        public void Import(string PathToConfigFile)
+        public void ImportConfigFile(string PathToConfigFile)
         {
             var config = ParseConfigFile(PathToConfigFile);
 
@@ -64,7 +64,7 @@ namespace Batch.Contractor
                 ConnectForeman(ccfc.from, ccfc.to, false, ccfc.IsTestForeman, ccfc.TestForemanRequestWeight);
         }
 
-        public string Export()
+        public string ExportConfigFile()
         {
             var ccf = new ContractorConfigurationFile();
             ccf.foremen = new List<CCFForeman>();
