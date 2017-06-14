@@ -168,13 +168,20 @@ namespace BatchConsole
             int x = 0;
             object o = (object)x;
 
-
+            Console.WriteLine("About to init Contractor");
+            Console.ReadLine();
 
             var c = new Contractor();
+
+            Console.WriteLine("About to load Contractor from config file");
+            Console.ReadLine();
 
             string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test5\ctr-test5.config");
 
             c.ImportFromConfigString(configString);
+
+            Console.WriteLine("About to run");
+            Console.ReadLine();
 
             o = c.Run("frmn1", o);
 
@@ -182,9 +189,18 @@ namespace BatchConsole
 
             configString = c.ExportToConfigString();
 
+            Console.WriteLine("About to dispose Contractor");
+            Console.ReadLine();
+
             c.Dispose();
+            c = null;
 
 
+            GC.Collect();
+
+
+            Console.WriteLine("About to init Contractor again");
+            Console.ReadLine();
 
             c = new Contractor();
 
@@ -197,7 +213,13 @@ namespace BatchConsole
             c.RemoveForeman("frmn1");
             c.RemoveForeman("frmn2");
 
+            Console.WriteLine("About to dispose Contractor");
+            Console.ReadLine();
+
             c.Dispose();
+
+            Console.WriteLine("About to finish");
+            Console.ReadLine();
 
             Console.ReadLine();
         }

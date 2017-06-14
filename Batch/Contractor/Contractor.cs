@@ -105,7 +105,7 @@ namespace Batch.Contractor
 
         public void RemoveForeman(string ForemanId)
         {
-            // prevent removal if foreman is connected to endpoint or another foreman
+            // prevent removal if foreman is connected to another foreman
 
 
             // unload if ForemanLoader
@@ -114,6 +114,8 @@ namespace Batch.Contractor
                 ForemanLoader.Unload((ForemanLoader)foreman);
 
             foreman = null;
+
+            GC.Collect();
         }
 
         public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, bool IsForce = false, bool IsTestForeman = false, int TestForemanRequestWeight = 1000000)
@@ -226,8 +228,8 @@ namespace Batch.Contractor
             if (foremen == null)
                 return;
 
-            foreach (var foreman in foremen)
-                ForemanLoader.Unload((ForemanLoader)foreman.Value);
+            foreach (var kvp in foremen)
+                RemoveForeman(kvp.Value.Id);
 
             foremen = null;
             _rand = null;
