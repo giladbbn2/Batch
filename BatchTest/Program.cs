@@ -154,7 +154,7 @@ namespace BatchConsole
         public static void Test5()
         {
             var c = new Contractor();
-            c.ImportConfigFile(@"C:\projects\Batch\BatchTestBL\Test5\crtr-test5.config");
+            c.ImportConfigFile(@"C:\projects\Batch\BatchTestBL\Test5\ctr-test5.config");
 
             int x = 0;
             object o = (object)x;

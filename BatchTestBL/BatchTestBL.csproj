@@ -52,7 +52,7 @@
     <None Include="Test2\frmn-test2.config" />
     <None Include="Test3\frmn-test3.config" />
     <None Include="Test4\frmn-test4.config" />
-    <None Include="Test5\crtr-test5.config" />
+    <None Include="Test5\ctr-test5.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BatchFoundation\BatchFoundation.csproj">
