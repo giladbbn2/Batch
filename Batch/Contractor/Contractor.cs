@@ -95,6 +95,12 @@ namespace Batch.Contractor
         {
             // check that foremanId doesn't exist
 
+            if (ForemanId == null || ForemanId.Length == 0)
+                throw new ArgumentException("ForemanId");
+
+            if (ConfigString == null || ConfigString.Length == 0)
+                throw new ArgumentException("ConfigString");
+
             if (foremen.ContainsKey(ForemanId))
                 throw new Exception(ForemanId + " was already added");
 

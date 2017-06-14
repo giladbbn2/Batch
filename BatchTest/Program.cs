@@ -37,6 +37,16 @@ namespace BatchConsole
             else
                 Console.WriteLine("Data wasn't submitted!");
 
+            try
+            {
+                c.AddForeman(null, null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An exception is thrown from Contractor but it doesn't crash it! (" + ex.Message + ")");
+            }
+            
+
             // trigger SubmitData
             Console.ReadLine();
             int x2 = 24;
