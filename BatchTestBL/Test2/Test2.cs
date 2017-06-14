@@ -13,6 +13,7 @@ namespace BatchTestBL.Test2
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
+            Data = (object)((int)Data + 5);
             Console.WriteLine(DateTime.UtcNow + " - W1: " + Data);
         }
     }

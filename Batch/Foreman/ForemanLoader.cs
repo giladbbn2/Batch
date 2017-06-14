@@ -39,11 +39,6 @@ namespace Batch.Foreman
                 return foreman.IsError;
             }
         }
-        public object Data
-        {
-            get;
-            set;
-        }
 
         public IForeman NextForeman
         {
@@ -111,7 +106,7 @@ namespace Batch.Foreman
             IsLoaded = true;
         }
 
-        public void Run(bool IsTestForeman = false)
+        public void Run()
         {
             if (IsDisposed)
                 return;
@@ -119,14 +114,22 @@ namespace Batch.Foreman
             if (!IsLoaded)
                 throw new Exception("ForemanLoader not loaded yet");
 
-            foreman.Data = Data;
+            foreman.Run();
+        }
+
+        public void Run(ref object Data, bool IsTestForeman = false)
+        {
+            if (IsDisposed)
+                return;
+
+            if (!IsLoaded)
+                throw new Exception("ForemanLoader not loaded yet");
+
             foreman.NextForeman = NextForeman;
             foreman.TestForeman = TestForeman;
             foreman.TestForemanRequestWeight = TestForemanRequestWeight;
 
-            foreman.Run(IsTestForeman);
-
-            Data = foreman.Data;
+            foreman.Run(ref Data, IsTestForeman);
         }
 
         public void Pause()

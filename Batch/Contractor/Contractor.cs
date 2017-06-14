@@ -27,6 +27,7 @@ namespace Batch.Contractor
         }
 
         private ConcurrentDictionary<string, IForeman> foremen;             // key is foremanId
+        private object emptyObj = new { };
 
         private static Random _rand;
         private static Random rand
@@ -157,7 +158,6 @@ namespace Batch.Contractor
             if (foreman.IsNodesLongRunning)
             {
                 // long running foreman
-
                 foreman.Run();
                 return null;
             }
@@ -166,7 +166,7 @@ namespace Batch.Contractor
 
             // check if lock is necessary
 
-            return RunShortRunningForeman(foreman, Data, IsFollowConnections, IsContinueOnError, false);
+            return RunShortRunningForeman(foreman, ref Data, IsFollowConnections, IsContinueOnError, false);
         }
 
         public bool SubmitData(string ForemanId, string QueueName, object Data)
@@ -192,29 +192,25 @@ namespace Batch.Contractor
             IsDisposed = true;
         }
 
-        private object RunShortRunningForeman(IForeman Foreman, object Data, bool IsFollowConnections, bool IsContinueOnError, bool IsTestForeman)
+        private object RunShortRunningForeman(IForeman Foreman, ref object Data, bool IsFollowConnections, bool IsContinueOnError, bool IsTestForeman)
         {
             // don't follow short running foreman connections
 
             if (!IsFollowConnections)
             {
-                Foreman.Data = Data;
-                Foreman.Run();
-                return Foreman.Data;
+                Foreman.Run(ref Data);
+                return Data;
             }
 
             // follow short running foreman connections
 
             while (Foreman != null)
             {
-                Foreman.Data = Data;
-                Foreman.Run(IsTestForeman);
+                Foreman.Run(ref Data, IsTestForeman);
 
                 // can get here after foreman threw an unhandled exception
                 if (!IsContinueOnError && Foreman.IsError)
                     throw new Exception("Foreman threw an error");
-
-                Data = Foreman.Data;
 
                 if (Foreman.TestForeman != null)
                 {
@@ -235,7 +231,7 @@ namespace Batch.Contractor
                     {
                         // test foreman before next foreman
                         // but it is blocking
-                        RunShortRunningForeman(Foreman.TestForeman, Data, true, IsContinueOnError, true);
+                        RunShortRunningForeman(Foreman.TestForeman, ref Data, true, IsContinueOnError, true);
                     }
                 }
 

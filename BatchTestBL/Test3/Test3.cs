@@ -80,7 +80,6 @@ namespace BatchTestBL.Test3
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-
             dynamic d = Data;
 
             d.Name += "-4-";

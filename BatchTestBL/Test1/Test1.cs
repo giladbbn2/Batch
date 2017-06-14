@@ -38,7 +38,7 @@ namespace BatchTestBL.Test1
 
             // do nothing
 
-            Console.WriteLine("W1 was here");
+            Console.WriteLine("W1 ran once and terminated when the long running foreman was started");
         }
     }
 
@@ -46,7 +46,7 @@ namespace BatchTestBL.Test1
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            Console.WriteLine(DateTime.UtcNow + " - W2: " + Data);
+            Console.WriteLine(DateTime.UtcNow + " - W2: ");
 
             try
             {
@@ -72,7 +72,7 @@ namespace BatchTestBL.Test1
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
-            Console.WriteLine(DateTime.UtcNow + " - W3: " + Data);
+            Console.WriteLine(DateTime.UtcNow + " - W3: ");
 
             foreach (var item in Input.GetConsumingEnumerable())
             {

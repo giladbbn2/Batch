@@ -35,12 +35,9 @@ namespace Batch.Worker
 
         }
 
-        public void Run(bool IsTest = false)
+        public void Run(ref object Data, bool IsTest = false)
         {
             Worker.Run(Input, Output, ref Data, IsTest);
-
-            if (NextNode != null)
-                NextNode.Data = Data;
         }
     }
 }

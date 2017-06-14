@@ -15,8 +15,6 @@ namespace Batch.Foreman
 
         bool IsError { get; }
 
-        object Data { get; set; }
-
         IForeman NextForeman { get; set; }
 
         IForeman TestForeman { get; set; }
@@ -29,7 +27,11 @@ namespace Batch.Foreman
 
         void Load();
 
-        void Run(bool IsTestForeman = false);
+        // long running
+        void Run();
+
+        // short running
+        void Run(ref object Data, bool IsTestForeman = false);
 
         void Pause();
 

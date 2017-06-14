@@ -56,11 +56,6 @@ namespace Batch.Foreman
             get;
             private set;
         }
-        public object Data
-        {
-            get;
-            set;
-        }
 
         // short running foreman to short running foreman connection
         public IForeman NextForeman
@@ -100,6 +95,7 @@ namespace Batch.Foreman
         private BlockingCollection<object>[] queues;                        // id is queueId
         private Dictionary<string, int> queueNameToId;
         private Assembly asm;
+        private object emptyObj = new { };
 
         // helpers
         private Dictionary<string, int> nodeNameToId;
@@ -330,7 +326,12 @@ namespace Batch.Foreman
             IsLoaded = true;
         }
 
-        public void Run(bool IsTestForeman = false)
+        public void Run()
+        {
+            Run(ref emptyObj);
+        }
+
+        public void Run(ref object Data, bool IsTestForeman = false)
         {
             // if IsNodesLongRunning is true then Run() is expected to run once until Dispose() is executed
             // if IsNodesLongRunning is false then Run() is expected run again and again
@@ -366,13 +367,12 @@ namespace Batch.Foreman
 
                     foreach (var node in nodes)
                     {
-                        orderedLongRunningNodeTasks.Add(f.StartNew(() =>
-                        {
+                        orderedLongRunningNodeTasks.Add(f.StartNew(() => {
                             OnWorkerNodeStarted(node.Id);
 
                             try
                             {
-                                node.Run(IsTestForeman);
+                                node.Run(ref emptyObj);
                             }
                             catch (Exception ex)
                             {
@@ -414,10 +414,7 @@ namespace Batch.Foreman
 
                         try
                         {
-                            node.Run(IsTestForeman);
-
-                            // save local copy of last worker data result for next foreman's first node
-                            Data = node.Data;
+                            node.Run(ref Data, IsTestForeman);
                         }
                         catch (Exception ex)
                         {
@@ -607,13 +604,13 @@ namespace Batch.Foreman
         public void OnWorkerNodeStarted(int NodeId)
         {
             nodes[NodeId].State = WorkerNodeState.Running;
-            //Console.WriteLine(NodeId.ToString() + " started");
+            //Console.WriteLine("Node " + NodeId.ToString() + " started");
         }
 
         public void OnWorkerNodeEnded(int NodeId)
         {
             nodes[NodeId].State = WorkerNodeState.Done;
-            //Console.WriteLine(NodeId.ToString() + " finished");
+            //Console.WriteLine("Node " + NodeId.ToString() + " finished");
         }
 
         public void OnWorkerNodeError(int NodeId, Exception ex)
