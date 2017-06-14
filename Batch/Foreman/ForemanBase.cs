@@ -511,14 +511,6 @@ namespace Batch.Foreman
             try
             {
                 q.CompleteAdding();
-            }
-            catch (Exception ex)
-            {
-                return true;
-            }
-
-            try
-            {
                 return q.IsAddingCompleted;
             }
             catch (Exception ex)
