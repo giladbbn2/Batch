@@ -15,7 +15,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test1();
+            Test3();
         }
 
         public static void Test1()
@@ -43,10 +43,9 @@ namespace BatchConsole
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An exception is thrown from Contractor but it doesn't crash it! (" + ex.Message + ")");
+                Console.WriteLine("An exception is thrown from Contractor but it is not crashed! (" + ex.Message + ")");
             }
             
-
             // trigger SubmitData
             Console.ReadLine();
             int x2 = 24;
@@ -133,25 +132,37 @@ namespace BatchConsole
 
             c.AddForeman("frmn3", configString);
 
-            c.ConnectForeman("frmn1", "frmn2", false); //, true, 100000);
+            c.ConnectForeman("frmn1", "frmn2", false, true, 1000000);
             c.ConnectForeman("frmn3", "frmn2");
+            c.ConnectForeman("frmn3", "frmn1", false, true, 1000000);
+
+            // it is possible to connect frmn2 to frmn1 (or other circular pattern) that would run infinitely
+            // or until stack overflow might occur as currently the test foreman is run in recursion
 
             // frmn2 is downstream both after frmn1 and frmn3
-            // it is possible to run directly "frmn2" without going through frmn1 or frmn3 first
+            // it is possible to run directly frmn2 without going through frmn1 or frmn3 first
 
             Person p = new Person();
             p.x = 0;
             object o = (object)p; 
 
-            c.Run("frmn1", o, true, true);
+            // the following statement will actually run:
+            // 1. frmn3
+            // 2. frmn1 (test)
+            // 3. frmn2 (test)
+            // 4. frmn2
+
+            c.Run("frmn3", o, true, true);
             
             p = (Person)o;
             Console.WriteLine(p.x);
 
-            c.Run("frmn3", o, true, true);
+            Console.ReadLine();
 
-            //Console.ReadLine();
-            //return;
+            c.Run("frmn1", o, true, true);
+
+            Console.ReadLine();
+
 
             p = (Person)o;
             Console.WriteLine(p.x);
