@@ -25,6 +25,8 @@ namespace Batch.Foreman
 
         Exception WorkerNodeException { get; }
 
+        ForemanConfigurationFile Config { get; set; }
+
         void Load();
 
         // long running
@@ -42,5 +44,7 @@ namespace Batch.Foreman
 
         // only for long running foremen
         bool CompleteAdding(string QueueName);
+
+        string ExportConfig();
     }
 }

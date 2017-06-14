@@ -53,7 +53,7 @@ namespace Batch.Contractor
             IsLoaded = false;
         }
 
-        public void Load(string PathToConfigFile)
+        public void Import(string PathToConfigFile)
         {
             var config = ParseConfigFile(PathToConfigFile);
 
@@ -62,6 +62,28 @@ namespace Batch.Contractor
 
             foreach (var ccfc in config.connections)
                 ConnectForeman(ccfc.from, ccfc.to, false, ccfc.IsTestForeman, ccfc.TestForemanRequestWeight);
+        }
+
+        public string Export()
+        {
+            var ccf = new ContractorConfigurationFile();
+            ccf.foremen = new List<CCFForeman>();
+            ccf.connections = new List<CCFConnection>();
+
+            foreach (var kvp in foremen)
+            {
+                var foreman = kvp.Value;
+
+                ccf.foremen.Add(new CCFForeman() { id = kvp.Key, config = foreman.Config });
+
+                if (foreman.NextForeman != null)
+                    ccf.connections.Add(new CCFConnection() { from = foreman.Id, to = foreman.NextForeman.Id, IsTestForeman = false, TestForemanRequestWeight = 0 });
+
+                if (foreman.TestForeman != null)
+                    ccf.connections.Add(new CCFConnection() { from = foreman.Id, to = foreman.TestForeman.Id, IsTestForeman = true, TestForemanRequestWeight = foreman.TestForemanRequestWeight });
+            }
+
+            return JsonConvert.SerializeObject(ccf);
         }
 
         public void AddForeman(string ForemanId, string PathToConfigFile)

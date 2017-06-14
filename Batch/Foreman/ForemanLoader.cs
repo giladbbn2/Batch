@@ -18,7 +18,6 @@ namespace Batch.Foreman
             set;
         }
         public string PathToConfigFile;
-        public ForemanConfigurationFile Config;
         public AppDomain AppDomain;
         public bool IsLoaded
         {
@@ -77,6 +76,12 @@ namespace Batch.Foreman
 
                 return foreman.WorkerNodeException;
             }
+        }
+
+        public ForemanConfigurationFile Config
+        {
+            get;
+            set;
         }
 
         private ForemanBase foreman;
@@ -182,6 +187,14 @@ namespace Batch.Foreman
                 throw new ArgumentNullException("QueueName");
 
             return foreman.CompleteAdding(QueueName);
+        }
+
+        public string ExportConfig()
+        {
+            if (IsDisposed)
+                return null;
+
+            return foreman.ExportConfig();
         }
 
         public void Dispose()

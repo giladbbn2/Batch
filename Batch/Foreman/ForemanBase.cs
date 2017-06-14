@@ -88,7 +88,11 @@ namespace Batch.Foreman
             private set;
         }
 
-        private ForemanConfigurationFile config;
+        public ForemanConfigurationFile Config
+        {
+            get;
+            set;
+        }
         
         private WorkerNode[] nodes;                                         // id is nodeId
         private Dictionary<int, List<WorkerNode>> workerNodeExeOrder;       // key is orderId
@@ -119,7 +123,7 @@ namespace Batch.Foreman
 
         public ForemanBase(ForemanConfigurationFile Config)
         {
-            config = Config;
+            this.Config = Config;
             IsRunning = false;
             IsPaused = false;
             IsLoaded = false;
@@ -137,32 +141,32 @@ namespace Batch.Foreman
             if (IsRunning)
                 return;
 
-            if (PathToConfigFile == null && config == null)
+            if (PathToConfigFile == null && Config == null)
                 throw new ArgumentNullException("PathToConfigFile");
 
             // load config file only if not already defined by Contractor
-            if (config == null)
-                config = ParseConfigFile(PathToConfigFile);
+            if (Config == null)
+                Config = ParseConfigFile(PathToConfigFile);
             
             int NodeCounter = 0;
             int QueueCounter = 0;
 
-            IsNodesLongRunning = config.isNodesLongRunning;
+            IsNodesLongRunning = Config.isNodesLongRunning;
 
             // register assembly
-            if (config.assemblyPath == null || config.assemblyPath.Length == 0)
+            if (Config.assemblyPath == null || Config.assemblyPath.Length == 0)
                 throw new Exception("assemblyPath field in Foreman configuration file cannot be empty");
 
-            asm = Assembly.LoadFile(config.assemblyPath);
+            asm = Assembly.LoadFile(Config.assemblyPath);
 
             // Register nodes
-            if (config.nodes == null || config.nodes.Count == 0)
+            if (Config.nodes == null || Config.nodes.Count == 0)
                 throw new ArgumentException("No nodes in config file");
 
-            nodes = new WorkerNode[config.nodes.Count];
+            nodes = new WorkerNode[Config.nodes.Count];
             workerNodeExeOrder = new Dictionary<int, List<WorkerNode>>();
-            nodeNameToId = new Dictionary<string, int>(config.nodes.Count);
-            foreach (var configNode in config.nodes)
+            nodeNameToId = new Dictionary<string, int>(Config.nodes.Count);
+            foreach (var configNode in Config.nodes)
             {
                 var node = new WorkerNode();
                 node.Id = NodeCounter;
@@ -195,16 +199,16 @@ namespace Batch.Foreman
             }
 
             // Register queues
-            if (config.queues != null && config.queues.Count > 0)
+            if (Config.queues != null && Config.queues.Count > 0)
             {
                 if (!IsNodesLongRunning)
                     throw new Exception("Can't define queues in short running foremen");
 
-                queues = new BlockingCollection<object>[config.queues.Count];
-                queueNameToId = new Dictionary<string, int>(config.queues.Count);
+                queues = new BlockingCollection<object>[Config.queues.Count];
+                queueNameToId = new Dictionary<string, int>(Config.queues.Count);
                 //queueIsToEl = new bool[config.queues.Count];
                 //queueIsFromEl = new bool[config.queues.Count];
-                foreach (var configQueue in config.queues)
+                foreach (var configQueue in Config.queues)
                 {
                     if (queueNameToId.ContainsKey(configQueue.name))
                     {
@@ -226,7 +230,7 @@ namespace Batch.Foreman
             }
 
             // Register connections
-            foreach (var configConnection in config.connections)
+            foreach (var configConnection in Config.connections)
             {
                 string fromName = configConnection.from;
                 string toName = configConnection.to;
@@ -524,6 +528,23 @@ namespace Batch.Foreman
             }
         }
 
+        public string ExportConfig()
+        {
+            string str = null;
+
+            try
+            {
+                str = JsonConvert.SerializeObject(Config);
+            }
+            catch (Exception ex)
+            {
+                string err = "Can't serialize config file: " + PathToConfigFile + "(" + ex.Message + ")";
+                throw new Exception(err, ex);
+            }
+
+            return str;
+        }
+
         public void Dispose()
         {
             IsDisposed = true;
@@ -541,6 +562,28 @@ namespace Batch.Foreman
             workerNodeExeOrder = null;
             nodeNameToId = null;
             queueNameToId = null;
+        }
+
+        public void OnWorkerNodeStarted(int NodeId)
+        {
+            nodes[NodeId].State = WorkerNodeState.Running;
+            //Console.WriteLine("Node " + NodeId.ToString() + " started");
+        }
+
+        public void OnWorkerNodeEnded(int NodeId)
+        {
+            nodes[NodeId].State = WorkerNodeState.Done;
+            //Console.WriteLine("Node " + NodeId.ToString() + " finished");
+        }
+
+        public void OnWorkerNodeError(int NodeId, Exception ex)
+        {
+            nodes[NodeId].State = WorkerNodeState.Error;
+            nodes[NodeId].Exception = ex;
+            WorkerNodeException = ex;
+            IsError = true;
+            IsRunning = false;
+            //Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);
         }
 
         private TopologyElementType GetTopologyTypeByName(string Name, out int id)
@@ -580,7 +623,7 @@ namespace Batch.Foreman
             return TopologyElementType.None;
         }
 
-        public static ForemanConfigurationFile ParseConfigFile(string PathToConfigFile)
+        private ForemanConfigurationFile ParseConfigFile(string PathToConfigFile)
         {
             ForemanConfigurationFile Config;
 
@@ -596,28 +639,6 @@ namespace Batch.Foreman
             }
 
             return Config;
-        }
-
-        public void OnWorkerNodeStarted(int NodeId)
-        {
-            nodes[NodeId].State = WorkerNodeState.Running;
-            //Console.WriteLine("Node " + NodeId.ToString() + " started");
-        }
-
-        public void OnWorkerNodeEnded(int NodeId)
-        {
-            nodes[NodeId].State = WorkerNodeState.Done;
-            //Console.WriteLine("Node " + NodeId.ToString() + " finished");
-        }
-
-        public void OnWorkerNodeError(int NodeId, Exception ex)
-        {
-            nodes[NodeId].State = WorkerNodeState.Error;
-            nodes[NodeId].Exception = ex;
-            WorkerNodeException = ex;
-            IsError = true;
-            IsRunning = false;
-            //Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);
         }
     }
 }
