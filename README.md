@@ -12,7 +12,7 @@ In Batch terms each dll logical unit is called a __Foreman__ and it may run in t
 1. Short Running Foreman - This logical unit is intended to be executed over and over again.
 In this mode multiple Foremen may be chained, so the output of the a Foreman becomes the input for the Foreman 
 connected downstream. Besides the regular downstream connected Foreman there's an option to connect another one
-for testing while controlling the percent of actual traffic reacing the test Foreman. E.g.: frmn2 is connected 
+for testing while controlling the percent of actual traffic reaching the test Foreman. E.g.: frmn2 is connected 
 downstream to frmn1. frmn3 can also be connected to frmn1 in a restricted testing mode with a routing weight 
 equal to 30% (meaning that 30% of the time output from frmn1 will be delivered first to frmn3 and then also to
 frmn2 like it supposed to).
