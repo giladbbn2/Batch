@@ -5,7 +5,7 @@ __A framework written in C# for big data processing__
 ## General
 
 Batch is a _Layer Oriented Programming_ system that enables the division of the business logic into externally
-controlled modules which can be loaded and unloaded in runtime. The logical units are external dlls that are each 
+controlled modules which can be loaded and unloaded at runtime. The logical units are external dlls that are each 
 loaded into a separate logical process and can be chained or either run in a long running blocking thread.
 
 In Batch terms each dll logical unit is called a __Foreman__ and it may run in two ways:
