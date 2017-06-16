@@ -29,7 +29,6 @@ namespace Batch.Contractor
         }
 
         private ConcurrentDictionary<string, IForeman> foremen;             // key is foremanId
-        private object emptyObj = new { };
 
         private static Random _rand;
         private static Random rand
