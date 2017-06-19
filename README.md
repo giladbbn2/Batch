@@ -72,7 +72,7 @@ Distributed Batch
 
 ## License
 
-Batch is license under MIT license. For full license see the LICENSE file.
+Batch is licensed under MIT license. For full license see the LICENSE file.
 
 
 
