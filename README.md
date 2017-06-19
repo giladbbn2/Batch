@@ -59,7 +59,7 @@ the ability to connect between them on demand, e.g.: a company analyst may pass 
 frmn1 which then outputs a matrix holding financial calculations for each month of that year. frmn1 is a 
 short running Foreman and connected to another short running Foreman, frmn2, which is responsible to compare
 its input monthly financial calculations to history data stored on some db and outputs the resulting trends and
-conclusions for that year. The analyst may choose to connect another Foreman that knows how to do aggreagations
+conclusions for that year. The analyst may choose to connect another Foreman that knows how to do aggregations
 and/or filtering according to some criteria. These analytics Foremen are ready to be reused by a different 
 analyst that wants to slice the data differently and choose a different combination of preexisting Foremen to 
 do so.
