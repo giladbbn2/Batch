@@ -2,7 +2,7 @@
 
 __A framework written in C# for big data processing__
 
-## General
+## Overview
 
 Batch is a _Layer Oriented Programming_ system that enables the division of the business logic into externally
 controlled modules which can be loaded and unloaded at runtime. The logical units are external dlls that are each 
