@@ -1,4 +1,5 @@
-﻿using Batch.Foreman;
+﻿using Batch.Contractor;
+using Batch.Foreman;
 using Batch.Worker;
 using System;
 using System.Collections.Concurrent;
@@ -109,6 +110,9 @@ namespace Batch.Foreman
             else
                 foreman = new Foreman(Config);
 
+            if (ContractorSettings.IsAppDomainMonitoringEnabled)
+                AppDomain.MonitoringIsEnabled = true;
+            
             foreman.Id = Id;
             foreman.Load();
             IsNodesLongRunning = foreman.IsNodesLongRunning;
@@ -195,6 +199,11 @@ namespace Batch.Foreman
                 return null;
 
             return foreman.ExportToConfigString();
+        }
+
+        public Tuple<long, long, long, TimeSpan> GetAppDomainMonitoringData()
+        {
+            return new Tuple<long, long, long, TimeSpan>(AppDomain.MonitoringSurvivedMemorySize, AppDomain.MonitoringSurvivedProcessMemorySize, AppDomain.MonitoringTotalAllocatedMemorySize, AppDomain.MonitoringTotalProcessorTime);
         }
 
         public void Dispose()
@@ -353,6 +362,8 @@ namespace Batch.Foreman
             }
         }
         */
+
+        //public static 
 
         public static ForemanLoader CreateInstance(string Id, string ConfigString, ForemanConfigurationFile Config = null)
         {

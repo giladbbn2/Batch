@@ -46,5 +46,7 @@ namespace Batch.Foreman
         bool CompleteAdding(string QueueName);
 
         string ExportToConfigString();
+
+        Tuple<long, long, long, TimeSpan> GetAppDomainMonitoringData();
     }
 }

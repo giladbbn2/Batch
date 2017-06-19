@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Contractor\ContractorSettings.cs" />
     <Compile Include="Contractor\Contractor.cs" />
     <Compile Include="Contractor\ContractorConfigurationFile.cs" />
     <Compile Include="Foreman\Enums\TopologyElementType.cs" />

@@ -15,7 +15,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test3();
+            Test5();
         }
 
         public static void Test1()
@@ -186,13 +186,17 @@ namespace BatchConsole
 
         public static void Test5()
         {
-            int x = 0;
-            object o = (object)x;
+            // 1.4MB
 
             Console.WriteLine("About to init Contractor");
             Console.ReadLine();
 
+            int x = 0;
+            object o = (object)x;
+
             var c = new Contractor();
+
+            // 1.4MB
 
             Console.WriteLine("About to load Contractor from config file");
             Console.ReadLine();
@@ -200,6 +204,14 @@ namespace BatchConsole
             string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test5\ctr-test5.config");
 
             c.ImportFromConfigString(configString);
+
+            // 4.3MB - 4.4MB
+
+            GC.Collect();
+            Console.WriteLine("Foremen (App Domains) Monitoring (in bytes):");
+            Console.WriteLine(c.GetForemanMonitoring("frmn1"));
+            Console.WriteLine(c.GetForemanMonitoring("frmn2"));
+            Console.WriteLine("Application total memory (bytes) usage: " + GC.GetTotalMemory(false));
 
             Console.WriteLine("About to run");
             Console.ReadLine();
@@ -210,16 +222,27 @@ namespace BatchConsole
 
             configString = c.ExportToConfigString();
 
+            // 5.0MB - 5.2MB
+
+            GC.Collect();
+            Console.WriteLine("Foremen (App Domains) Monitoring (in bytes):");
+            Console.WriteLine(c.GetForemanMonitoring("frmn1"));
+            Console.WriteLine(c.GetForemanMonitoring("frmn2"));
+            Console.WriteLine("Application total memory (bytes) usage: " + GC.GetTotalMemory(false));
+
+
             Console.WriteLine("About to dispose Contractor");
             Console.ReadLine();
+
+            //c.RemoveForeman("frmn1");
+            //c.RemoveForeman("frmn2");
 
             c.Dispose();
             c = null;
 
+            // 4.3MB - 4.5MB
 
-            
-
-
+            Console.WriteLine("Application total memory (bytes) usage: " + GC.GetTotalMemory(false));
             Console.WriteLine("About to init Contractor again");
             Console.ReadLine();
 
@@ -234,11 +257,17 @@ namespace BatchConsole
             c.RemoveForeman("frmn1");
             c.RemoveForeman("frmn2");
 
+            // 4.3MB - 4.5MB
+
+            Console.WriteLine("Application total memory (bytes) usage: " + GC.GetTotalMemory(false));
             Console.WriteLine("About to dispose Contractor");
             Console.ReadLine();
 
             c.Dispose();
 
+            // 4.3MB - 4.5MB
+
+            Console.WriteLine("Application total memory (bytes) usage: " + GC.GetTotalMemory(true));
             Console.WriteLine("About to finish");
             Console.ReadLine();
 

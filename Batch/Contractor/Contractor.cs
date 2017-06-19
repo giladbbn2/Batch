@@ -97,8 +97,9 @@ namespace Batch.Contractor
             if (ForemanId == null || ForemanId.Length == 0)
                 throw new ArgumentException("ForemanId");
 
-            if (ConfigString == null || ConfigString.Length == 0)
-                throw new ArgumentException("ConfigString");
+            if (Config == null)
+                if (ConfigString == null || ConfigString.Length == 0)
+                    throw new ArgumentException("ConfigString");
 
             if (foremen.ContainsKey(ForemanId))
                 throw new Exception(ForemanId + " was already added");
@@ -120,7 +121,7 @@ namespace Batch.Contractor
 
             foreman = null;
 
-            GC.Collect();
+            //GC.Collect();
         }
 
         public void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, bool IsForce = false, bool IsTestForeman = false, int TestForemanRequestWeight = 1000000)
@@ -224,6 +225,21 @@ namespace Batch.Contractor
                 throw new Exception("Foreman not found");
 
             return foreman.CompleteAdding(QueueName);
+        }
+
+        public Tuple<long, long, long, TimeSpan> GetForemanMonitoring(string ForemanId)
+        {
+            if (!ContractorSettings.IsAppDomainMonitoringEnabled)
+                throw new Exception("IsAppDomainMonitoringEnables is set to false in Contrator Settings");
+
+            if (ForemanId == null || ForemanId.Length == 0)
+                throw new ArgumentException("ForemanId");
+
+            IForeman foreman;
+            if (!foremen.TryGetValue(ForemanId, out foreman))
+                throw new Exception("Foreman " + ForemanId + " not found");
+
+            return foreman.GetAppDomainMonitoringData();
         }
 
         public void Dispose()

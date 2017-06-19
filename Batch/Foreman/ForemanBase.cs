@@ -545,23 +545,9 @@ namespace Batch.Foreman
             return str;
         }
 
-        public void Dispose()
+        public Tuple<long, long, long, TimeSpan> GetAppDomainMonitoringData()
         {
-            IsDisposed = true;
-            IsPaused = true;
-
-            // should do this in an orderly fashion to avoid exceptions?
-            if (queues != null)
-                foreach (var q in queues)
-                    q.CompleteAdding();
-
-            // terminate tasks
-
-            queues = null;
-            asm = null;
-            workerNodeExeOrder = null;
-            nodeNameToId = null;
-            queueNameToId = null;
+            return null;
         }
 
         public void OnWorkerNodeStarted(int NodeId)
@@ -584,6 +570,25 @@ namespace Batch.Foreman
             IsError = true;
             IsRunning = false;
             //Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);
+        }
+
+        public void Dispose()
+        {
+            IsDisposed = true;
+            IsPaused = true;
+
+            // should do this in an orderly fashion to avoid exceptions?
+            if (queues != null)
+                foreach (var q in queues)
+                    q.CompleteAdding();
+
+            // terminate tasks
+
+            queues = null;
+            asm = null;
+            workerNodeExeOrder = null;
+            nodeNameToId = null;
+            queueNameToId = null;
         }
 
         private TopologyElementType GetTopologyTypeByName(string Name, out int id)
