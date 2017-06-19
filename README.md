@@ -70,6 +70,10 @@ do so.
 
 Distributed Batch
 
+## License
+
+Batch is license under MIT license. For full license see the LICENSE file.
+
 
 
 
