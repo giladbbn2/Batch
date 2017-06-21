@@ -81,8 +81,19 @@ namespace Batch.Foreman
                 foreach (var node in nodes)
                     yield return node.State;
             }
+            /*
+            get
+            {
+                return nodes.Select(x => x.State);
+            }
+            */
         }
         public Exception WorkerNodeException
+        {
+            get;
+            private set;
+        }
+        public string WorkerNodeExceptionString
         {
             get;
             private set;
@@ -567,6 +578,7 @@ namespace Batch.Foreman
             nodes[NodeId].State = WorkerNodeState.Error;
             nodes[NodeId].Exception = ex;
             WorkerNodeException = ex;
+            WorkerNodeExceptionString = nodes[NodeId].Name + " error: " + ex.Message;
             IsError = true;
             IsRunning = false;
             //Console.WriteLine("Node " + NodeId.ToString() + " exception: " + ex.Message);

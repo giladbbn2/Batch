@@ -227,11 +227,8 @@ namespace Batch.Contractor
             return foreman.CompleteAdding(QueueName);
         }
 
-        public Tuple<long, long, long, TimeSpan> GetForemanMonitoring(string ForemanId)
+        public ForemanStats GetForemanStats(string ForemanId)
         {
-            if (!ContractorSettings.IsAppDomainMonitoringEnabled)
-                throw new Exception("IsAppDomainMonitoringEnables is set to false in Contrator Settings");
-
             if (ForemanId == null || ForemanId.Length == 0)
                 throw new ArgumentException("ForemanId");
 
@@ -239,7 +236,15 @@ namespace Batch.Contractor
             if (!foremen.TryGetValue(ForemanId, out foreman))
                 throw new Exception("Foreman " + ForemanId + " not found");
 
-            return foreman.GetAppDomainMonitoringData();
+            var mon = foreman.GetAppDomainMonitoringData();
+
+            ForemanStats stats;
+            if (mon != null)
+                stats = new ForemanStats(ForemanId, mon.Item1, mon.Item2, mon.Item3, mon.Item4, foreman.IsError, foreman.WorkerNodeExceptionString);
+            else
+                stats = new ForemanStats(ForemanId, 0L, 0L, 0L, new TimeSpan(), foreman.IsError, foreman.WorkerNodeExceptionString);
+
+            return stats;
         }
 
         public void Dispose()

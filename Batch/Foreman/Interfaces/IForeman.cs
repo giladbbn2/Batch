@@ -21,9 +21,7 @@ namespace Batch.Foreman
 
         int TestForemanRequestWeight { get; set; }
 
-        IEnumerable<WorkerNodeState> WorkerNodeStates { get; }
-
-        Exception WorkerNodeException { get; }
+        string WorkerNodeExceptionString { get; }
 
         ForemanConfigurationFile Config { get; set; }
 

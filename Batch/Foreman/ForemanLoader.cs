@@ -57,25 +57,14 @@ namespace Batch.Foreman
             set;
         }
 
-        public IEnumerable<WorkerNodeState> WorkerNodeStates
+        public string WorkerNodeExceptionString
         {
             get
             {
                 if (foreman == null)
                     return null;
 
-                return foreman.WorkerNodeStates;
-            }
-        }
-
-        public Exception WorkerNodeException
-        {
-            get
-            {
-                if (foreman == null)
-                    return null;
-
-                return foreman.WorkerNodeException;
+                return foreman.WorkerNodeExceptionString;
             }
         }
 

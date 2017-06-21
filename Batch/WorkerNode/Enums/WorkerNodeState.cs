@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Batch.Worker
 {
-    internal enum WorkerNodeState : sbyte
+    public enum WorkerNodeState : sbyte
     {
         Idle = 0,
         Running = 1,

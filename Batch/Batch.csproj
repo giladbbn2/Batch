@@ -54,6 +54,7 @@
     <Compile Include="Foreman\ForemanBase.cs" />
     <Compile Include="Foreman\ForemanConfigurationFile.cs" />
     <Compile Include="Foreman\ForemanLoader.cs" />
+    <Compile Include="Foreman\ForemanStats.cs" />
     <Compile Include="Foreman\Interfaces\IForeman.cs" />
     <Compile Include="WorkerNode\Enums\WorkerNodeState.cs" />
     <Compile Include="WorkerNode\WorkerNode.cs" />

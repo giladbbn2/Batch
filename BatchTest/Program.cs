@@ -203,14 +203,17 @@ namespace BatchConsole
 
             string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test5\ctr-test5.config");
 
-            c.ImportFromConfigString(configString);
+            c.ImportFromConfigString(configString); 
 
             // 4.3MB - 4.4MB
 
             GC.Collect();
             Console.WriteLine("Foremen (App Domains) Monitoring (in bytes):");
-            Console.WriteLine(c.GetForemanMonitoring("frmn1"));
-            Console.WriteLine(c.GetForemanMonitoring("frmn2"));
+
+
+
+            Console.WriteLine(c.GetForemanStats("frmn1"));
+            Console.WriteLine(c.GetForemanStats("frmn2"));
             Console.WriteLine("Application total memory (bytes) usage: " + GC.GetTotalMemory(false));
 
             Console.WriteLine("About to run");
@@ -226,8 +229,8 @@ namespace BatchConsole
 
             GC.Collect();
             Console.WriteLine("Foremen (App Domains) Monitoring (in bytes):");
-            Console.WriteLine(c.GetForemanMonitoring("frmn1"));
-            Console.WriteLine(c.GetForemanMonitoring("frmn2"));
+            Console.WriteLine(c.GetForemanStats("frmn1"));
+            Console.WriteLine(c.GetForemanStats("frmn2"));
             Console.WriteLine("Application total memory (bytes) usage: " + GC.GetTotalMemory(false));
 
 
