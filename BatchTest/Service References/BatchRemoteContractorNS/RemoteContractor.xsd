@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.batch.com/agent/remote/contractor" elementFormDefault="qualified" targetNamespace="http://schemas.batch.com/agent/remote/contractor" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:54249/RemoteContractor.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BatchAgent" />
+  <xs:element name="ImportFromConfigString">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ConfigString" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImportFromConfigStringResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExportToConfigString">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExportToConfigStringResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ExportToConfigStringResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddForeman">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ForemanId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="ConfigString" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddForemanResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveForeman">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ForemanId" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveForemanResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ConnectForeman">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ForemanIdFrom" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="ForemanIdTo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="IsForce" type="xs:boolean" />
+        <xs:element minOccurs="0" name="IsTestForeman" type="xs:boolean" />
+        <xs:element minOccurs="0" name="TestForemanRequestWeight" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ConnectForemanResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DisconnectForeman">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ForemanIdFrom" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="ForemanIdTo" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DisconnectForemanResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Run">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ForemanId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="Data" nillable="true" type="xs:anyType" />
+        <xs:element minOccurs="0" name="IsFollowConnections" type="xs:boolean" />
+        <xs:element minOccurs="0" name="IsContinueOnError" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RunResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubmitData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ForemanId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="QueueName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="Data" nillable="true" type="xs:anyType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubmitDataResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SubmitDataResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CompleteAdding">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ForemanId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="QueueName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CompleteAddingResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="CompleteAddingResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRemoteForemanStats">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ForemanId" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRemoteForemanStatsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/BatchAgent" minOccurs="0" name="GetRemoteForemanStatsResult" nillable="true" type="q1:ForemanStats" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

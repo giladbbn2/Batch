@@ -16,7 +16,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test6();
+            Test7();
         }
 
         public static void Test1()
@@ -334,6 +334,31 @@ namespace BatchConsole
             c.Run("frmn1", o);
 
             Console.WriteLine(o.Number);
+            Console.ReadLine();
+        }
+
+        public static void Test7()
+        {
+            BatchTest.BatchRemoteContractorNS.BatchRemoteContractorClient c = new BatchTest.BatchRemoteContractorNS.BatchRemoteContractorClient("SOAP_XML");
+
+            string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
+            c.AddForeman("frmn1", configString);
+            c.AddForeman("frmn2", configString);
+
+            c.ConnectForeman("frmn1", "frmn2", false, false, 0);
+
+            int x = 0;
+            object o = (object)x;
+
+            c.Run("frmn1", o, true, false);
+
+            Console.WriteLine(o);
+
+            c.RemoveForeman("frmn1");
+            c.RemoveForeman("frmn2");
+
+            Console.ReadLine();
+
             Console.ReadLine();
         }
     }

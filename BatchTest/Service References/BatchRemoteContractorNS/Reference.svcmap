@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="f3bfd9d0-1b53-42be-8d50-c48bdc9bd430" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:54249/RemoteContractor.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="RemoteContractor.xsd" MetadataType="Schema" ID="6c040651-219b-4304-97d7-b8b51a30fbb0" SourceId="1" SourceUrl="http://localhost:54249/RemoteContractor.svc?xsd=xsd0" />
+    <MetadataFile FileName="RemoteContractor1.xsd" MetadataType="Schema" ID="a92d6671-6d63-49c5-98e1-c8dd361cae80" SourceId="1" SourceUrl="http://localhost:54249/RemoteContractor.svc?xsd=xsd2" />
+    <MetadataFile FileName="RemoteContractor2.xsd" MetadataType="Schema" ID="f6c21424-2a4d-4a3e-89c7-a7608b0bdab6" SourceId="1" SourceUrl="http://localhost:54249/RemoteContractor.svc?xsd=xsd1" />
+    <MetadataFile FileName="RemoteContractor.disco" MetadataType="Disco" ID="cace12b4-e59f-42f6-94ac-f716cc15bd6d" SourceId="1" SourceUrl="http://localhost:54249/RemoteContractor.svc?disco" />
+    <MetadataFile FileName="RemoteContractor.wsdl" MetadataType="Wsdl" ID="27e48d7c-b777-4b21-989c-cd2820cfbdf3" SourceId="1" SourceUrl="http://localhost:54249/RemoteContractor.svc?wsdl=wsdl0" />
+    <MetadataFile FileName="BatchRemoteContractor.wsdl" MetadataType="Wsdl" ID="4fb5b016-46e3-43fd-9d42-d7a09f72a4bf" SourceId="1" SourceUrl="http://localhost:54249/RemoteContractor.svc?wsdl" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

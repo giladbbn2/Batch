@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://schemas.batch.com/agent/remote/contractor" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:i0="batch.com/agent/remote/contractor" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="BatchRemoteContractor" targetNamespace="http://schemas.batch.com/agent/remote/contractor" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:import namespace="batch.com/agent/remote/contractor" location="http://localhost:54249/RemoteContractor.svc?wsdl=wsdl0" />
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://schemas.batch.com/agent/remote/contractor/Imports">
+      <xsd:import schemaLocation="http://localhost:54249/RemoteContractor.svc?xsd=xsd0" namespace="http://schemas.batch.com/agent/remote/contractor" />
+      <xsd:import schemaLocation="http://localhost:54249/RemoteContractor.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BatchAgent" />
+      <xsd:import schemaLocation="http://localhost:54249/RemoteContractor.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="BatchRemoteContractor_ImportFromConfigString_InputMessage">
+    <wsdl:part name="parameters" element="tns:ImportFromConfigString" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_ImportFromConfigString_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ImportFromConfigStringResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_ImportFromConfigString_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q1="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q1:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_ExportToConfigString_InputMessage">
+    <wsdl:part name="parameters" element="tns:ExportToConfigString" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_ExportToConfigString_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ExportToConfigStringResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_ExportToConfigString_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q2="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q2:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_AddForeman_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddForeman" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_AddForeman_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddForemanResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_AddForeman_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q3="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q3:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_RemoveForeman_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveForeman" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_RemoveForeman_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveForemanResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_RemoveForeman_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q4="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q4:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_ConnectForeman_InputMessage">
+    <wsdl:part name="parameters" element="tns:ConnectForeman" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_ConnectForeman_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ConnectForemanResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_ConnectForeman_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q5="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q5:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_DisconnectForeman_InputMessage">
+    <wsdl:part name="parameters" element="tns:DisconnectForeman" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_DisconnectForeman_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DisconnectForemanResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_DisconnectForeman_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q6="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q6:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_Run_InputMessage">
+    <wsdl:part name="parameters" element="tns:Run" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_Run_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RunResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_Run_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q7="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q7:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_SubmitData_InputMessage">
+    <wsdl:part name="parameters" element="tns:SubmitData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_SubmitData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SubmitDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_SubmitData_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q8="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q8:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_CompleteAdding_InputMessage">
+    <wsdl:part name="parameters" element="tns:CompleteAdding" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_CompleteAdding_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CompleteAddingResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_CompleteAdding_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q9="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q9:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_GetRemoteForemanStats_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetRemoteForemanStats" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_GetRemoteForemanStats_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetRemoteForemanStatsResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_GetRemoteForemanStats_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q10="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q10:FaultData" />
+  </wsdl:message>
+  <wsdl:portType name="BatchRemoteContractor">
+    <wsdl:operation name="ImportFromConfigString">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ImportFromConfigString" message="tns:BatchRemoteContractor_ImportFromConfigString_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ImportFromConfigStringResponse" message="tns:BatchRemoteContractor_ImportFromConfigString_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ImportFromConfigStringFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_ImportFromConfigString_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ExportToConfigString">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ExportToConfigString" message="tns:BatchRemoteContractor_ExportToConfigString_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ExportToConfigStringResponse" message="tns:BatchRemoteContractor_ExportToConfigString_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ExportToConfigStringFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_ExportToConfigString_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddForeman">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/AddForeman" message="tns:BatchRemoteContractor_AddForeman_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/AddForemanResponse" message="tns:BatchRemoteContractor_AddForeman_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/AddForemanFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_AddForeman_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveForeman">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RemoveForeman" message="tns:BatchRemoteContractor_RemoveForeman_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RemoveForemanResponse" message="tns:BatchRemoteContractor_RemoveForeman_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RemoveForemanFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_RemoveForeman_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ConnectForeman">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ConnectForeman" message="tns:BatchRemoteContractor_ConnectForeman_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ConnectForemanResponse" message="tns:BatchRemoteContractor_ConnectForeman_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ConnectForemanFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_ConnectForeman_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DisconnectForeman">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/DisconnectForeman" message="tns:BatchRemoteContractor_DisconnectForeman_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/DisconnectForemanResponse" message="tns:BatchRemoteContractor_DisconnectForeman_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/DisconnectForemanFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_DisconnectForeman_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Run">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/Run" message="tns:BatchRemoteContractor_Run_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RunResponse" message="tns:BatchRemoteContractor_Run_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RunFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_Run_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SubmitData">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SubmitData" message="tns:BatchRemoteContractor_SubmitData_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SubmitDataResponse" message="tns:BatchRemoteContractor_SubmitData_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SubmitDataFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_SubmitData_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CompleteAdding">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/CompleteAdding" message="tns:BatchRemoteContractor_CompleteAdding_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/CompleteAddingResponse" message="tns:BatchRemoteContractor_CompleteAdding_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/CompleteAddingFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_CompleteAdding_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRemoteForemanStats">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetRemoteForemanStats" message="tns:BatchRemoteContractor_GetRemoteForemanStats_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetRemoteForemanStatsResponse" message="tns:BatchRemoteContractor_GetRemoteForemanStats_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetRemoteForemanStatsFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_GetRemoteForemanStats_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:service name="BatchRemoteContractor">
+    <wsdl:port name="SOAP_XML" binding="i0:SOAP_XML">
+      <soap:address location="http://localhost:54249/RemoteContractor.svc/SOAP" />
+    </wsdl:port>
+    <wsdl:port name="SOAP_MTOM" binding="i0:SOAP_MTOM">
+      <soap12:address location="http://localhost:54249/RemoteContractor.svc/MTOM" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>http://localhost:54249/RemoteContractor.svc/MTOM</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

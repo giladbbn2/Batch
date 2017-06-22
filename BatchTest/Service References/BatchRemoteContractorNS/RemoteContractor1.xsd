@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/BatchAgent" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BatchAgent" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:54249/RemoteContractor.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:complexType name="FaultData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DetailedInformation" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="FaultData" nillable="true" type="tns:FaultData" />
+  <xs:complexType name="ForemanStats">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AppDomainMonitoringSurvivedMemorySize" type="xs:long" />
+      <xs:element minOccurs="0" name="AppDomainMonitoringSurvivedProcessMemorySize" type="xs:long" />
+      <xs:element minOccurs="0" name="AppDomainMonitoringTotalAllocatedMemorySize" type="xs:long" />
+      <xs:element minOccurs="0" name="AppDomainMonitoringTotalProcessorTime" type="ser:duration" />
+      <xs:element minOccurs="0" name="ForemanId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsError" type="xs:boolean" />
+      <xs:element minOccurs="0" name="WorkerNodeExceptionString" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ForemanStats" nillable="true" type="tns:ForemanStats" />
+</xs:schema>

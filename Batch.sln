@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchAgent", "BatchAgent\BatchAgent.csproj", "{25AA8045-4A9C-4DE4-9E4A-008DF9A5B8C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchTest", "BatchTest\BatchTest.csproj", "{F59E1757-F68A-4372-B863-813FCAD58EA2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{25AA8045-4A9C-4DE4-9E4A-008DF9A5B8C4} = {25AA8045-4A9C-4DE4-9E4A-008DF9A5B8C4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchTestBL", "BatchTestBL\BatchTestBL.csproj", "{D4C8B9CB-F0D2-448D-95F2-EAFA015BC6B8}"
 EndProject
