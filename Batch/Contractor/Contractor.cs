@@ -22,6 +22,12 @@ namespace Batch.Contractor
         // the foreman should be loaded and unloaded manually by Contractor
         // a foreman can have only one assembly defining all workers
 
+        public ContractorSettings Settings
+        {
+            get;
+            private set;
+        }
+
         public bool IsLoaded
         {
             get;
@@ -50,10 +56,14 @@ namespace Batch.Contractor
         {
             foremen = new ConcurrentDictionary<string, IForeman>();
             IsLoaded = false;
+            Settings = new ContractorSettings();
         }
 
         public void ImportFromConfigString(string ConfigString)
         {
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
+
             var config = ParseConfigString(ConfigString);
 
             foreach (var ccff in config.foremen)
@@ -65,6 +75,9 @@ namespace Batch.Contractor
 
         public string ExportToConfigString()
         {
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
+
             var ccf = new ContractorConfigurationFile();
             ccf.foremen = new List<CCFForeman>();
             ccf.connections = new List<CCFConnection>();
@@ -94,6 +107,9 @@ namespace Batch.Contractor
         {
             // check that foremanId doesn't exist
 
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
+
             if (ForemanId == null || ForemanId.Length == 0)
                 throw new ArgumentException("ForemanId");
 
@@ -104,7 +120,7 @@ namespace Batch.Contractor
             if (foremen.ContainsKey(ForemanId))
                 throw new Exception(ForemanId + " was already added");
 
-            var foreman = ForemanLoader.CreateInstance(ForemanId, ConfigString, Config);
+            var foreman = ForemanLoader.CreateInstance(ForemanId, ConfigString, Config, Settings);
 
             foremen.AddOrUpdate(ForemanId, foreman, (k, v) => foreman);
         }
@@ -113,6 +129,8 @@ namespace Batch.Contractor
         {
             // prevent removal if foreman is connected to another foreman
 
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
 
             // unload if ForemanLoader
             IForeman foreman;
@@ -128,6 +146,9 @@ namespace Batch.Contractor
         {
             // max TestForemanRequestWeight is 1000000
             // a foreman can have more than one foreman connecting to it upstream
+
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
 
             if (ForemanIdFrom == null || ForemanIdFrom.Length == 0)
                 throw new ArgumentException("ForemanIdFrom");
@@ -186,11 +207,16 @@ namespace Batch.Contractor
 
         public void DisconnectForeman(string ForemanIdFrom, string ForemanIdTo)
         {
-            
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
+
         }
 
         public void Run(string ForemanId, object Data = null, bool IsFollowConnections = true, bool IsContinueOnError = false)
         {
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
+
             IForeman foreman;
             if (!foremen.TryGetValue(ForemanId, out foreman))
                 throw new Exception("Foreman not found");
@@ -211,6 +237,9 @@ namespace Batch.Contractor
 
         public bool SubmitData(string ForemanId, string QueueName, object Data)
         {
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
+
             IForeman foreman;
             if (!foremen.TryGetValue(ForemanId, out foreman))
                 throw new Exception("Foreman not found");
@@ -220,6 +249,9 @@ namespace Batch.Contractor
 
         public bool CompleteAdding(string ForemanId, string QueueName)
         {
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
+
             IForeman foreman;
             if (!foremen.TryGetValue(ForemanId, out foreman))
                 throw new Exception("Foreman not found");
@@ -229,6 +261,9 @@ namespace Batch.Contractor
 
         public ForemanStats GetForemanStats(string ForemanId)
         {
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
+
             if (ForemanId == null || ForemanId.Length == 0)
                 throw new ArgumentException("ForemanId");
 
@@ -264,6 +299,9 @@ namespace Batch.Contractor
         private void RunShortRunningForeman(IForeman Foreman, ref object Data, bool IsFollowConnections, bool IsContinueOnError, bool IsTestForeman)
         {
             // don't follow short running foreman connections
+
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
 
             if (!IsFollowConnections)
                 Foreman.Run(ref Data);
@@ -307,6 +345,9 @@ namespace Batch.Contractor
 
         private ContractorConfigurationFile ParseConfigString(string ConfigString)
         {
+            if (IsDisposed)
+                throw new ObjectDisposedException("Contractor");
+
             ContractorConfigurationFile Config;
 
             try

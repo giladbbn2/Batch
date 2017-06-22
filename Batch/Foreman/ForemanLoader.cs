@@ -74,6 +74,12 @@ namespace Batch.Foreman
             set;
         }
 
+        public ContractorSettings ContractorSettings
+        {
+            get;
+            set;
+        }
+
         private ForemanBase foreman;
         private bool IsDisposed;
 
@@ -103,6 +109,7 @@ namespace Batch.Foreman
                 AppDomain.MonitoringIsEnabled = true;
             
             foreman.Id = Id;
+            foreman.ContractorSettings = ContractorSettings;
             foreman.Load();
             IsNodesLongRunning = foreman.IsNodesLongRunning;
 
@@ -354,15 +361,19 @@ namespace Batch.Foreman
 
         //public static 
 
-        public static ForemanLoader CreateInstance(string Id, string ConfigString, ForemanConfigurationFile Config = null)
+        public static ForemanLoader CreateInstance(string Id, string ConfigString, ForemanConfigurationFile Config = null, ContractorSettings ContractorSettings = null)
         {
             AppDomain ad = AppDomain.CreateDomain(Guid.NewGuid().ToString());
 
             var fl = (ForemanLoader)ad.CreateInstanceAndUnwrap(typeof(ForemanLoader).Assembly.FullName, typeof(ForemanLoader).FullName);
 
-            fl.Id = Id;
+            if (ContractorSettings == null)
+                ContractorSettings = new ContractorSettings();
+
+            fl.Id = Id; 
             fl.AppDomain = ad;
             fl.ConfigString = ConfigString;
+            fl.ContractorSettings = ContractorSettings;
             fl.Config = Config;
             fl.Load();
 

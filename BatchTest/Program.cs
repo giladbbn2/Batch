@@ -1,5 +1,6 @@
 ﻿using Batch.Contractor;
 using BatchTestBL.Test3;
+using BatchTestBL.Test6;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test5();
+            Test6();
         }
 
         public static void Test1()
@@ -274,6 +275,54 @@ namespace BatchConsole
             Console.WriteLine("About to finish");
             Console.ReadLine();
 
+            Console.ReadLine();
+        }
+
+        public static void Test6()
+        {
+            // this test demonstrates how to replace a Foreman
+
+            var c = new Contractor();
+
+            c.Settings.ForemanDllBaseDir = "C:\\projects\\Batch\\BatchTestBL\\bin\\Debug";
+
+            string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test6\frmn-test6-1.config");
+
+            c.AddForeman("frmn1-1", configString);
+            c.AddForeman("frmn1-2", configString);
+            c.AddForeman("frmn1-3", configString);
+
+            configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test6\frmn-test6-2.config");
+
+            c.AddForeman("frmn2", configString);
+
+            c.ConnectForeman("frmn1-1", "frmn1-2");
+            c.ConnectForeman("frmn1-2", "frmn1-3");
+
+            var o = new NumberHolder();
+            o.Number = 0;
+
+            c.Run("frmn1-1", o);
+
+            Console.WriteLine(o.Number);
+            Console.ReadLine();
+
+            // first connect the new Foreman to the Foreman downstream
+
+            c.ConnectForeman("frmn2", "frmn1-3");
+
+            c.Run("frmn1-1", o);
+
+            Console.WriteLine(o.Number);
+            Console.ReadLine();
+
+            // now replace the connection between the Foreman upstream to the new Foreman
+
+            c.ConnectForeman("frmn1-1", "frmn2", true);
+
+            c.Run("frmn1-1", o);
+
+            Console.WriteLine(o.Number);
             Console.ReadLine();
         }
     }

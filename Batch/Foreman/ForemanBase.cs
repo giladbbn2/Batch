@@ -1,4 +1,5 @@
-﻿using Batch.Worker;
+﻿using Batch.Contractor;
+using Batch.Worker;
 using BatchFoundation.Worker;
 using Newtonsoft.Json;
 using System;
@@ -104,7 +105,13 @@ namespace Batch.Foreman
             get;
             set;
         }
-        
+
+        public ContractorSettings ContractorSettings
+        {
+            get;
+            set;
+        }
+
         private WorkerNode[] nodes;                                         // id is nodeId
         private Dictionary<int, List<WorkerNode>> workerNodeExeOrder;       // key is orderId
         private BlockingCollection<object>[] queues;                        // id is queueId
@@ -155,6 +162,9 @@ namespace Batch.Foreman
             if (ConfigString == null && Config == null)
                 throw new ArgumentNullException("ConfigString");
 
+            if (ContractorSettings == null)
+                ContractorSettings = new ContractorSettings();
+
             // load config file only if not already defined by Contractor
             if (Config == null)
                 Config = ParseConfigString(ConfigString);
@@ -167,6 +177,14 @@ namespace Batch.Foreman
             // register assembly
             if (Config.assemblyPath == null || Config.assemblyPath.Length == 0)
                 throw new Exception("assemblyPath field in Foreman configuration file cannot be empty");
+
+            if (!Path.IsPathRooted(Config.assemblyPath))
+            {
+                if (ContractorSettings.ForemanDllBaseDir == null)
+                    throw new Exception("if the assemblyPath field is a relative path then ContractorSettings.ForemanDllBaseDir must be defined");
+
+                Config.assemblyPath = Path.Combine(ContractorSettings.ForemanDllBaseDir, Config.assemblyPath);
+            }
 
             asm = Assembly.LoadFile(Config.assemblyPath);
 
@@ -309,6 +327,10 @@ namespace Batch.Foreman
                         node1.NextNode = node2;
                 }
             }
+
+            // a single node may not be connected
+            if (nodes.Length == 1)
+                nodes[0].IsConnected = true;
 
             // iterate over all tree and check if there are any unconnected nodes
             foreach (var node in nodes)

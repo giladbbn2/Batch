@@ -6,8 +6,22 @@ using System.Threading.Tasks;
 
 namespace Batch.Contractor
 {
-    public static class ContractorSettings
+    [Serializable]
+    public class ContractorSettings
     {
-        public static bool IsAppDomainMonitoringEnabled = true;
+        private bool _IsAppDomainMonitoringEnabled = true;
+        public bool IsAppDomainMonitoringEnabled
+        {
+            get
+            {
+                return _IsAppDomainMonitoringEnabled;
+            }
+            internal set
+            {
+                _IsAppDomainMonitoringEnabled = value;
+            }
+        }
+
+        public string ForemanDllBaseDir = null;
     }
 }

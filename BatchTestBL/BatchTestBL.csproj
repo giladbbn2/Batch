@@ -45,6 +45,7 @@
     <Compile Include="Test2\Test2.cs" />
     <Compile Include="Test3\Test3.cs" />
     <Compile Include="Test4\Test4.cs" />
+    <Compile Include="Test6\Test6.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Test1\frmn-test1-old.config" />
@@ -53,6 +54,8 @@
     <None Include="Test3\frmn-test3.config" />
     <None Include="Test4\frmn-test4.config" />
     <None Include="Test5\ctr-test5.config" />
+    <None Include="Test6\frmn-test6-2.config" />
+    <None Include="Test6\frmn-test6-1.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BatchFoundation\BatchFoundation.csproj">

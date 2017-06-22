@@ -1,4 +1,5 @@
-﻿using Batch.Worker;
+﻿using Batch.Contractor;
+using Batch.Worker;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace Batch.Foreman
         string WorkerNodeExceptionString { get; }
 
         ForemanConfigurationFile Config { get; set; }
+
+        ContractorSettings ContractorSettings { get; set; }
 
         void Load();
 
