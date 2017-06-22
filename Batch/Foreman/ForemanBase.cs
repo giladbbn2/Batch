@@ -180,10 +180,36 @@ namespace Batch.Foreman
 
             if (!Path.IsPathRooted(Config.assemblyPath))
             {
-                if (ContractorSettings.ForemanDllBaseDir == null)
+                if (ContractorSettings.ForemanFetchDLLBaseDir == null)
                     throw new Exception("if the assemblyPath field is a relative path then ContractorSettings.ForemanDllBaseDir must be defined");
 
-                Config.assemblyPath = Path.Combine(ContractorSettings.ForemanDllBaseDir, Config.assemblyPath);
+                Config.assemblyPath = Path.Combine(ContractorSettings.ForemanFetchDLLBaseDir, Config.assemblyPath);
+            }
+
+            if (!File.Exists(Config.assemblyPath))
+                throw new Exception("assemblyPath not a real file");
+
+            if (ContractorSettings.IsKeepLocalForemanDLL)
+            {
+                // copy file locally
+
+                if (ContractorSettings.IsKeepLocalForemanDLL && ContractorSettings.ForemanLocalDLLBaseDir == null)
+                    throw new Exception("Storing a local copy of the Foremen DLL is set to true but local DLL base dir is not defined");
+
+                string destPath = Path.Combine(ContractorSettings.ForemanLocalDLLBaseDir, "frmn_" + Id);
+
+                Directory.CreateDirectory(destPath);
+
+                string destFile = Path.Combine(destPath, Path.GetFileName(Config.assemblyPath));
+
+                // will throw if the local file exists and in use
+
+                if (!ContractorSettings.IsOverwriteLocalForemanDLL && File.Exists(destFile))
+                    throw new Exception("Local Foreman DLL file already exists so clear local cache or allow local overwrite");
+
+                File.Copy(Config.assemblyPath, destFile, ContractorSettings.IsOverwriteLocalForemanDLL);
+
+                Config.assemblyPath = destFile;
             }
 
             asm = Assembly.LoadFile(Config.assemblyPath);

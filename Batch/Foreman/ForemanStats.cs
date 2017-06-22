@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Batch.Foreman
 {
+    [Serializable]
     public sealed class ForemanStats
     {
         public string ForemanId

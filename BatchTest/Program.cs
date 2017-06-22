@@ -282,45 +282,56 @@ namespace BatchConsole
         {
             // this test demonstrates how to replace a Foreman
 
+            // also how to use ContractSettings to set a default directory for all Foremen Dlls which can be a UNC path 
+            // on the local area network!
+
             var c = new Contractor();
 
-            c.Settings.ForemanDllBaseDir = "C:\\projects\\Batch\\BatchTestBL\\bin\\Debug";
+            c.Settings.ForemanFetchDLLBaseDir = "C:\\projects\\Batch\\BatchTestBL\\bin\\Debug";
+            c.Settings.IsKeepLocalForemanDLL = true;
+            c.Settings.IsOverwriteLocalForemanDLL = true;
+            c.Settings.ForemanLocalDLLBaseDir = "C:\\projects\\Batch\\Local";
 
             string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test6\frmn-test6-1.config");
 
-            c.AddForeman("frmn1-1", configString);
-            c.AddForeman("frmn1-2", configString);
-            c.AddForeman("frmn1-3", configString);
+            c.AddForeman("frmn1", configString);
+            c.AddForeman("frmn2", configString);
+            c.AddForeman("frmn3", configString);
 
             configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test6\frmn-test6-2.config");
 
-            c.AddForeman("frmn2", configString);
+            c.AddForeman("frmn4", configString);
 
-            c.ConnectForeman("frmn1-1", "frmn1-2");
-            c.ConnectForeman("frmn1-2", "frmn1-3");
+            c.ConnectForeman("frmn1", "frmn2");
+            c.ConnectForeman("frmn2", "frmn3");
 
             var o = new NumberHolder();
             o.Number = 0;
 
-            c.Run("frmn1-1", o);
+            c.Run("frmn1", o);
 
             Console.WriteLine(o.Number);
             Console.ReadLine();
 
             // first connect the new Foreman to the Foreman downstream
 
-            c.ConnectForeman("frmn2", "frmn1-3");
+            c.ConnectForeman("frmn4", "frmn3");
 
-            c.Run("frmn1-1", o);
+            c.Run("frmn1", o);
 
             Console.WriteLine(o.Number);
             Console.ReadLine();
 
             // now replace the connection between the Foreman upstream to the new Foreman
 
-            c.ConnectForeman("frmn1-1", "frmn2", true);
+            c.ConnectForeman("frmn1", "frmn4", true);
 
-            c.Run("frmn1-1", o);
+            c.Run("frmn1", o);
+
+            Console.WriteLine(o.Number);
+            Console.ReadLine();
+
+            c.Run("frmn1", o);
 
             Console.WriteLine(o.Number);
             Console.ReadLine();

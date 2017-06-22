@@ -65,14 +65,20 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Faults\FaultData.cs" />
+    <Compile Include="Contracts\IRemoteContractor.cs" />
+    <Compile Include="Models\ForemanStats.cs" />
+    <Compile Include="RemoteContractor.cs" />
     <Compile Include="Service1.svc.cs">
       <DependentUpon>Service1.svc</DependentUpon>
     </Compile>
-    <Compile Include="IService1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
+    <ProjectReference Include="..\Batch\Batch.csproj">
+      <Project>{5C151424-929B-40A9-BEC1-939CD9397B0D}</Project>
+      <Name>Batch</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Web.Debug.config">

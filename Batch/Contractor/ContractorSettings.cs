@@ -9,19 +9,21 @@ namespace Batch.Contractor
     [Serializable]
     public class ContractorSettings
     {
-        private bool _IsAppDomainMonitoringEnabled = true;
         public bool IsAppDomainMonitoringEnabled
         {
             get
             {
-                return _IsAppDomainMonitoringEnabled;
-            }
-            internal set
-            {
-                _IsAppDomainMonitoringEnabled = value;
+                return true;
             }
         }
 
-        public string ForemanDllBaseDir = null;
+        public string ForemanFetchDLLBaseDir = null;
+
+        // if this is true then Batch copies the DLL file to a a local directory (to ForemanLocalDLLBaseDir)
+        public bool IsKeepLocalForemanDLL = false;
+
+        public bool IsOverwriteLocalForemanDLL = false;
+
+        public string ForemanLocalDLLBaseDir = null;
     }
 }

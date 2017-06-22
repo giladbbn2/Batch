@@ -1,0 +1,12 @@
+C:\projects\Batch\BatchAgent\bin\BatchAgent.dll.config
+C:\projects\Batch\BatchAgent\bin\BatchAgent.dll
+C:\projects\Batch\BatchAgent\bin\BatchAgent.pdb
+C:\projects\Batch\BatchAgent\obj\Debug\BatchAgent.csprojResolveAssemblyReference.cache
+C:\projects\Batch\BatchAgent\obj\Debug\BatchAgent.dll
+C:\projects\Batch\BatchAgent\obj\Debug\BatchAgent.pdb
+C:\projects\Batch\BatchAgent\bin\Batch.dll
+C:\projects\Batch\BatchAgent\bin\BatchFoundation.dll
+C:\projects\Batch\BatchAgent\bin\Newtonsoft.Json.dll
+C:\projects\Batch\BatchAgent\bin\Batch.pdb
+C:\projects\Batch\BatchAgent\bin\BatchFoundation.pdb
+C:\projects\Batch\BatchAgent\bin\Newtonsoft.Json.xml
