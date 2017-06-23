@@ -82,9 +82,9 @@ are numbered according to BatchTest unit tests.
 
 ## A Simple Example
 
-~~~~
-
 __frmn1-bl.dll:__
+
+~~~~
 
 namespace Foreman1
 {
@@ -100,8 +100,11 @@ namespace Foreman1
     }	
 }
 
+~~~~
 
 __static void Main(string[] args):__
+
+~~~~
 
 var c = new Contractor();
 
