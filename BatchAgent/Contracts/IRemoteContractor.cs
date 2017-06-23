@@ -16,19 +16,19 @@ namespace BatchAgent
     )]
     public interface IRemoteContractor
     {
-        // added
+        // different from regular Contractor
         [OperationContract]
         [FaultContract(typeof(FaultData))]
         [WebInvoke(Method = "*")]
         ContractorSettings GetSettings();
 
-        // added
+        // different from regular Contractor
         [OperationContract]
         [FaultContract(typeof(FaultData))]
         [WebInvoke(Method = "*")]
         void SetSettings(ContractorSettings Settings);
 
-        // added
+        // different from regular Contractor
         [OperationContract]
         [FaultContract(typeof(FaultData))]
         [WebInvoke(Method = "*")]
@@ -64,7 +64,7 @@ namespace BatchAgent
         [WebInvoke(Method = "*")]
         void DisconnectForeman(string ForemanIdFrom, string ForemanIdTo);
 
-        // changed
+        // different from regular Contractor
         [OperationContract]
         [FaultContract(typeof(FaultData))]
         [WebInvoke(Method = "*")]
