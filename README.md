@@ -95,7 +95,7 @@ namespace Foreman1
             Data = (object)((int)Data + 5);
             Console.WriteLine(DateTime.UtcNow + " - W1: " + Data);
 			
-			/* Data will be passed to downstream Foremen*/
+			//Data will be passed to downstream Foremen
         }
     }	
 }
