@@ -86,7 +86,7 @@ __static void Main(string[] args):__
 
 var c = new Contractor();
 
-string configString = File.ReadAllText("c:\\batchtest\\frmn1.config");
+string configString = File.ReadAllText("c:\\\\batchtest\\\\frmn1.config");
 
 // create two Foremen with the same BL
 c.AddForeman("frmn1", configString);
@@ -98,7 +98,7 @@ frmn1.config:
 
 {
 	"foremanVer": "0.1",
-	"assemblyPath": "C:\\batchtest\\frmn1-bl.dll",
+	"assemblyPath": "C:\\\\batchtest\\\\frmn1-bl.dll",
 	"nodes": [{
 		"name": "n1",
 		"exeOrderId": 1,
