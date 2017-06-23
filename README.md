@@ -86,7 +86,7 @@ __static void Main(string[] args):__
 
 var c = new Contractor();
 
-string configString = File.ReadAllText("c:\\\\batchtest\\\\frmn1.config");
+string configString = File.ReadAllText("C:\\\\batchtest\\\\frmn1.config");
 
 // create two Foremen with the same BL
 c.AddForeman("frmn1", configString);
