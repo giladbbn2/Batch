@@ -1,6 +1,6 @@
 # Batch
 
-__A framework written in C# for big data processing__
+__A framework written in C# for distributed big data processing__
 
 ## Overview
 
@@ -66,20 +66,19 @@ do so.
 
 ## File Tree
 
-* BatchFoundation class lib - contains definition to the Worker class. This lib must be referenced in order to 
+* BatchFoundation directory - contains definition to the Worker class. This lib must be referenced in order to 
 extend the Worker class operating inside a Foreman and to override its Run() method. If your solution doesn't
 require using the BatchAgent (controlling Batch on a remote computer) then this lib would be the only one 
 referenced in your Foreman DLL lib.
-* Batch directory - contains all code related to the Batch server, with which some Foremen DLL's may be
-loaded/unloaded.
-
-
-
-
-
-## What's Next
-
-Distributed Batch
+* Batch directory - contains all code related to the Batch server, including the Contractor and Foreman definitions.
+This class lib may be referenced in your project if you plan to use the Contractor directly and let your project
+the capability of loading/unloading external DLL's as Foremen.
+* BatchAgent directory - contains a WCF application for controlling a remote Batch server. Includes definition
+for RemoteContractor.
+* BachTest directory - a console app with various testing units. Some units test long running Foremen or short
+running Foremen and another one tests communication with BatchAgent by using JSON inside Run()'s Data parameter.
+* BatchTestBL directory - contains some business logic to be loaded as Foremen by BatchTest. Inner test directories
+are numbered according to BatchTest unit tests.
 
 ## License
 
