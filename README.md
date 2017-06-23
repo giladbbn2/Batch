@@ -91,6 +91,7 @@ string configString = File.ReadAllText("C:\\\\batchtest\\\\frmn1.config");
 // create two Foremen with the same BL
 
 c.AddForeman("frmn1", configString);
+
 c.AddForeman("frmn2", configString);
 
 /*
@@ -113,7 +114,7 @@ there's only one Worker (Foreman1.MyWorker). This is a simple short running Fore
 
 */
 
-// the output of frmn1 shall be the input of frmn2
+// the output of frmn1 shall be the input for frmn2
 
 c.ConnectForeman("frmn1", "frmn2");
 
