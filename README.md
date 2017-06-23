@@ -80,6 +80,48 @@ running Foremen and another one tests communication with BatchAgent by using JSO
 * BatchTestBL directory - contains some business logic to be loaded as Foremen by BatchTest. Inner test directories
 are numbered according to BatchTest unit tests.
 
+## A Simple Example
+
+__static void Main(string[] args):__
+
+var c = new Contractor();
+
+string configString = File.ReadAllText("c:\\batchtest\\frmn1.config");
+
+// create two Foremen with the same BL
+c.AddForeman("frmn1", configString);
+c.AddForeman("frmn2", configString);
+
+/*
+
+frmn1.config:
+
+{
+	"foremanVer": "0.1",
+	"assemblyPath": "C:\\batchtest\\frmn1-bl.dll",
+	"nodes": [{
+		"name": "n1",
+		"exeOrderId": 1,
+		"className": "Foreman1.MyWorker"    
+	}],
+	"queues": [],
+	"connections": []
+}
+
+there's only one Worker (Foreman1.MyWorker). This is a simple short running Foreman.
+
+*/
+
+// the output of frmn1 shall be the input of frmn2
+c.ConnectForeman("frmn1", "frmn2");
+
+int x = 5;
+object o = (object)x;
+
+// a simple object in this case is not serializable so we won't get anything back (one-way)
+// this will automatically run frmn2 immediately after frmn1 ends.
+c.Run("frmn1", o);
+
 ## License
 
 Batch is licensed under MIT license. For full license see the LICENSE file.
