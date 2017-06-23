@@ -89,6 +89,7 @@ var c = new Contractor();
 string configString = File.ReadAllText("C:\\\\batchtest\\\\frmn1.config");
 
 // create two Foremen with the same BL
+
 c.AddForeman("frmn1", configString);
 c.AddForeman("frmn2", configString);
 
@@ -113,13 +114,17 @@ there's only one Worker (Foreman1.MyWorker). This is a simple short running Fore
 */
 
 // the output of frmn1 shall be the input of frmn2
+
 c.ConnectForeman("frmn1", "frmn2");
 
 int x = 5;
+
 object o = (object)x;
 
 // a simple object in this case is not serializable so we won't get anything back (one-way)
+
 // this will automatically run frmn2 immediately after frmn1 ends.
+
 c.Run("frmn1", o);
 
 ## License
