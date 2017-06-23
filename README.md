@@ -84,19 +84,19 @@ are numbered according to BatchTest unit tests.
 
 __frmn1-bl.dll:__
 
-namespace Foreman1
-{
-    public class MyWorker : Worker
-    {
-        public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
-        {
-            Data = (object)((int)Data + 5);
-            Console.WriteLine(DateTime.UtcNow + " - W1: " + Data);
-			
-			// Data will be passed to downstream Foremen
-        }
-    }	
-}
+  namespace Foreman1
+  {
+      public class MyWorker : Worker
+      {
+          public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
+          {
+              Data = (object)((int)Data + 5);
+              Console.WriteLine(DateTime.UtcNow + " - W1: " + Data);
+  			
+  			  //Data will be passed to downstream Foremen*/
+          }
+      }	
+  }
 
 
 __static void Main(string[] args):__
