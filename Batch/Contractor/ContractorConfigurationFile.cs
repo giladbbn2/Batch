@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Batch.Contractor
 {
     [Serializable]
-    internal class ContractorConfigurationFile
+    internal sealed class ContractorConfigurationFile
     {
         public string contractorVer = "0.1";
 
@@ -17,7 +17,7 @@ namespace Batch.Contractor
     }
 
     [Serializable]
-    internal class CCFConnection
+    internal sealed class CCFConnection
     {
         public string from;
         public string to;
@@ -26,7 +26,7 @@ namespace Batch.Contractor
     }
 
     [Serializable]
-    internal class CCFForeman
+    internal sealed class CCFForeman
     {
         public string id;
         public ForemanConfigurationFile config;

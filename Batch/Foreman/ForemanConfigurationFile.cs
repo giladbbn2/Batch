@@ -10,7 +10,7 @@ namespace Batch.Foreman
     // Default configuration
 
     [Serializable]
-    internal class ForemanConfigurationFile
+    internal sealed class ForemanConfigurationFile
     {
         public string foremanVer = "0.1";
         public bool isNodesLongRunning = false;
@@ -24,7 +24,7 @@ namespace Batch.Foreman
     }
 
     [Serializable]
-    internal class FCFNode
+    internal sealed class FCFNode
     {
         public int id;
         public string name;
@@ -33,7 +33,7 @@ namespace Batch.Foreman
     }
 
     [Serializable]
-    internal class FCFQueue
+    internal sealed class FCFQueue
     {
         public int id;
         public string name;
@@ -41,7 +41,7 @@ namespace Batch.Foreman
     }
 
     [Serializable]
-    internal class FCFConnection
+    internal sealed class FCFConnection
     {
         public string from;
         public string to;

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Batch.Foreman
 {
-    internal class ForemanLoader : MarshalByRefObject, IForeman, IDisposable
+    internal sealed class ForemanLoader : MarshalByRefObject, IForeman, IDisposable
     {
         public string Id
         {

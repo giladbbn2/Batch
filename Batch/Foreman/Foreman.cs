@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Batch.Foreman
 {
-    internal class Foreman : ForemanBase
+    internal sealed class Foreman : ForemanBase
     {
         public Foreman(string Id, string ConfigString) : base(Id, ConfigString)
         {

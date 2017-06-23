@@ -180,9 +180,7 @@ namespace Batch.Foreman
             
             asm = Assembly.LoadFile(Config.assemblyPath);
 
-
-            // loading an app domain solves the referenced assemblies problem
-            // a problem to load referenced assemblies without loading an app domain
+            // loading an app domain solves the referenced assemblies problem?
 
             /*
             AssemblyName[] ReferencedAssemblies = asm.GetReferencedAssemblies();

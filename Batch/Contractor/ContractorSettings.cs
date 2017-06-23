@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Batch.Contractor
 {
     [Serializable]
-    public class ContractorSettings
+    public sealed class ContractorSettings
     {
         public bool IsAppDomainMonitoringEnabled
         {

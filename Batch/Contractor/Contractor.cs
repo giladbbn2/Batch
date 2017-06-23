@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Batch.Contractor
 {
-    public class Contractor : ContractorBase
+    public sealed class Contractor : ContractorBase
     {
         public Contractor() : base()
         {

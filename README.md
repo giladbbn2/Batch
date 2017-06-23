@@ -64,7 +64,18 @@ and/or filtering according to some criteria. These analytics Foremen are ready t
 analyst that wants to slice the data differently and choose a different combination of preexisting Foremen to 
 do so.
 
-## Anatomy of a Foreman
+## File Tree
+
+* BatchFoundation class lib - contains definition to the Worker class. This lib must be referenced in order to 
+extend the Worker class operating inside a Foreman and to override its Run() method. If your solution doesn't
+require using the BatchAgent (controlling Batch on a remote computer) then this lib would be the only one 
+referenced in your Foreman DLL lib.
+* Batch directory - contains all code related to the Batch server, with which some Foremen DLL's may be
+loaded/unloaded.
+
+
+
+
 
 ## What's Next
 
