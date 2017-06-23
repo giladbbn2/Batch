@@ -1,4 +1,5 @@
 ﻿using BatchFoundation.Worker;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace BatchTestBL.Test2
         {
             Data = (object)((int)Data + 5);
             Console.WriteLine(DateTime.UtcNow + " - W1: " + Data);
+
+            var json = JsonConvert.SerializeObject(null);
         }
     }
 

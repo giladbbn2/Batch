@@ -1,4 +1,5 @@
 C:\projects\Batch\BatchFoundation\bin\Debug\BatchFoundation.dll
 C:\projects\Batch\BatchFoundation\bin\Debug\BatchFoundation.pdb
+C:\projects\Batch\BatchFoundation\obj\Debug\BatchFoundation.csprojResolveAssemblyReference.cache
 C:\projects\Batch\BatchFoundation\obj\Debug\BatchFoundation.dll
 C:\projects\Batch\BatchFoundation\obj\Debug\BatchFoundation.pdb

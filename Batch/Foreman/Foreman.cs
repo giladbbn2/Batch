@@ -8,12 +8,12 @@ namespace Batch.Foreman
 {
     internal class Foreman : ForemanBase
     {
-        public Foreman(string ConfigString) : base(ConfigString)
+        public Foreman(string Id, string ConfigString) : base(Id, ConfigString)
         {
 
         }
 
-        public Foreman(ForemanConfigurationFile Config) : base(Config)
+        public Foreman(string Id, ForemanConfigurationFile Config) : base(Id, Config)
         {
 
         }

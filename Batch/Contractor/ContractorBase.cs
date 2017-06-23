@@ -22,11 +22,7 @@ namespace Batch.Contractor
         // the foreman should be loaded and unloaded manually by Contractor
         // a foreman can have only one assembly defining all workers
 
-        public ContractorSettings Settings
-        {
-            get;
-            private set;
-        }
+        public ContractorSettings Settings;
 
         public bool IsLoaded
         {
@@ -152,7 +148,7 @@ namespace Batch.Contractor
             if (Config == null)
                 if (ConfigString == null || ConfigString.Length == 0)
                     throw new ArgumentException("ConfigString");
-
+            
             if (foremen.ContainsKey(ForemanId))
                 throw new Exception(ForemanId + " was already added");
 
@@ -256,6 +252,16 @@ namespace Batch.Contractor
         }
 
         public void Run(string ForemanId, object Data = null, bool IsFollowConnections = true, bool IsContinueOnError = false)
+        {
+            // passing the Data object without the ref keyword still passes it as reference inside the same assembly
+            // but when invoking a method on another assembly the object becomes a ref to a ref thereby doesn't change
+            // the actual ref on the assembly where it is created, that's why RunObjectByRef() is invoked directly from
+            // the wcf assembly (BatchAgent)
+
+            RunObjectByRef(ForemanId, ref Data, IsFollowConnections, IsContinueOnError);
+        }
+
+        public void RunObjectByRef(string ForemanId, ref object Data, bool IsFollowConnections = true, bool IsContinueOnError = false)
         {
             if (IsDisposed)
                 throw new ObjectDisposedException("Contractor");

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configurationSnapshot xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:schemas-microsoft-com:xml-wcfconfigurationsnapshot">
+  <behaviors />
+  <bindings>
+    <binding digest="System.ServiceModel.Configuration.BasicHttpBindingElement, System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089:&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data name=&quot;SOAP_XML&quot; /&gt;" bindingType="basicHttpBinding" name="SOAP_XML" />
+    <binding digest="System.ServiceModel.Configuration.WSHttpBindingElement, System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089:&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data messageEncoding=&quot;Mtom&quot; name=&quot;SOAP_MTOM&quot;&gt;&lt;security mode=&quot;None&quot; /&gt;&lt;/Data&gt;" bindingType="wsHttpBinding" name="SOAP_MTOM" />
+  </bindings>
+  <endpoints>
+    <endpoint normalizedDigest="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data address=&quot;http://localhost:54249/RemoteContractor.svc/SOAP&quot; binding=&quot;basicHttpBinding&quot; bindingConfiguration=&quot;SOAP_XML&quot; contract=&quot;BatchRemoteContractor.BatchRemoteContractor&quot; name=&quot;SOAP_XML&quot; /&gt;" digest="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data address=&quot;http://localhost:54249/RemoteContractor.svc/SOAP&quot; binding=&quot;basicHttpBinding&quot; bindingConfiguration=&quot;SOAP_XML&quot; contract=&quot;BatchRemoteContractor.BatchRemoteContractor&quot; name=&quot;SOAP_XML&quot; /&gt;" contractName="BatchRemoteContractor.BatchRemoteContractor" name="SOAP_XML" />
+    <endpoint normalizedDigest="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data address=&quot;http://localhost:54249/RemoteContractor.svc/MTOM&quot; binding=&quot;wsHttpBinding&quot; bindingConfiguration=&quot;SOAP_MTOM&quot; contract=&quot;BatchRemoteContractor.BatchRemoteContractor&quot; name=&quot;SOAP_MTOM&quot; /&gt;" digest="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data address=&quot;http://localhost:54249/RemoteContractor.svc/MTOM&quot; binding=&quot;wsHttpBinding&quot; bindingConfiguration=&quot;SOAP_MTOM&quot; contract=&quot;BatchRemoteContractor.BatchRemoteContractor&quot; name=&quot;SOAP_MTOM&quot; /&gt;" contractName="BatchRemoteContractor.BatchRemoteContractor" name="SOAP_MTOM" />
+  </endpoints>
+</configurationSnapshot>

@@ -8,6 +8,33 @@
       <xsd:import schemaLocation="http://localhost:54249/RemoteContractor.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
     </xsd:schema>
   </wsdl:types>
+  <wsdl:message name="BatchRemoteContractor_GetSettings_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetSettings" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_GetSettings_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetSettingsResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_GetSettings_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q1="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q1:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_SetSettings_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetSettings" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_SetSettings_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetSettingsResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_SetSettings_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q2="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q2:FaultData" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_GetIsLoaded_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetIsLoaded" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_GetIsLoaded_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetIsLoadedResponse" />
+  </wsdl:message>
+  <wsdl:message name="BatchRemoteContractor_GetIsLoaded_FaultDataFault_FaultMessage">
+    <wsdl:part xmlns:q3="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q3:FaultData" />
+  </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_ImportFromConfigString_InputMessage">
     <wsdl:part name="parameters" element="tns:ImportFromConfigString" />
   </wsdl:message>
@@ -15,7 +42,7 @@
     <wsdl:part name="parameters" element="tns:ImportFromConfigStringResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_ImportFromConfigString_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q1="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q1:FaultData" />
+    <wsdl:part xmlns:q4="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q4:FaultData" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_ExportToConfigString_InputMessage">
     <wsdl:part name="parameters" element="tns:ExportToConfigString" />
@@ -24,7 +51,7 @@
     <wsdl:part name="parameters" element="tns:ExportToConfigStringResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_ExportToConfigString_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q2="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q2:FaultData" />
+    <wsdl:part xmlns:q5="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q5:FaultData" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_AddForeman_InputMessage">
     <wsdl:part name="parameters" element="tns:AddForeman" />
@@ -33,7 +60,7 @@
     <wsdl:part name="parameters" element="tns:AddForemanResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_AddForeman_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q3="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q3:FaultData" />
+    <wsdl:part xmlns:q6="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q6:FaultData" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_RemoveForeman_InputMessage">
     <wsdl:part name="parameters" element="tns:RemoveForeman" />
@@ -42,7 +69,7 @@
     <wsdl:part name="parameters" element="tns:RemoveForemanResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_RemoveForeman_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q4="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q4:FaultData" />
+    <wsdl:part xmlns:q7="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q7:FaultData" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_ConnectForeman_InputMessage">
     <wsdl:part name="parameters" element="tns:ConnectForeman" />
@@ -51,7 +78,7 @@
     <wsdl:part name="parameters" element="tns:ConnectForemanResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_ConnectForeman_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q5="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q5:FaultData" />
+    <wsdl:part xmlns:q8="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q8:FaultData" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_DisconnectForeman_InputMessage">
     <wsdl:part name="parameters" element="tns:DisconnectForeman" />
@@ -60,7 +87,7 @@
     <wsdl:part name="parameters" element="tns:DisconnectForemanResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_DisconnectForeman_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q6="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q6:FaultData" />
+    <wsdl:part xmlns:q9="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q9:FaultData" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_Run_InputMessage">
     <wsdl:part name="parameters" element="tns:Run" />
@@ -69,7 +96,7 @@
     <wsdl:part name="parameters" element="tns:RunResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_Run_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q7="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q7:FaultData" />
+    <wsdl:part xmlns:q10="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q10:FaultData" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_SubmitData_InputMessage">
     <wsdl:part name="parameters" element="tns:SubmitData" />
@@ -78,7 +105,7 @@
     <wsdl:part name="parameters" element="tns:SubmitDataResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_SubmitData_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q8="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q8:FaultData" />
+    <wsdl:part xmlns:q11="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q11:FaultData" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_CompleteAdding_InputMessage">
     <wsdl:part name="parameters" element="tns:CompleteAdding" />
@@ -87,7 +114,7 @@
     <wsdl:part name="parameters" element="tns:CompleteAddingResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_CompleteAdding_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q9="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q9:FaultData" />
+    <wsdl:part xmlns:q12="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q12:FaultData" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_GetRemoteForemanStats_InputMessage">
     <wsdl:part name="parameters" element="tns:GetRemoteForemanStats" />
@@ -96,9 +123,24 @@
     <wsdl:part name="parameters" element="tns:GetRemoteForemanStatsResponse" />
   </wsdl:message>
   <wsdl:message name="BatchRemoteContractor_GetRemoteForemanStats_FaultDataFault_FaultMessage">
-    <wsdl:part xmlns:q10="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q10:FaultData" />
+    <wsdl:part xmlns:q13="http://schemas.datacontract.org/2004/07/BatchAgent" name="detail" element="q13:FaultData" />
   </wsdl:message>
   <wsdl:portType name="BatchRemoteContractor">
+    <wsdl:operation name="GetSettings">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetSettings" message="tns:BatchRemoteContractor_GetSettings_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetSettingsResponse" message="tns:BatchRemoteContractor_GetSettings_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetSettingsFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_GetSettings_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetSettings">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SetSettings" message="tns:BatchRemoteContractor_SetSettings_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SetSettingsResponse" message="tns:BatchRemoteContractor_SetSettings_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SetSettingsFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_SetSettings_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetIsLoaded">
+      <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetIsLoaded" message="tns:BatchRemoteContractor_GetIsLoaded_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetIsLoadedResponse" message="tns:BatchRemoteContractor_GetIsLoaded_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetIsLoadedFaultDataFault" name="FaultDataFault" message="tns:BatchRemoteContractor_GetIsLoaded_FaultDataFault_FaultMessage" />
+    </wsdl:operation>
     <wsdl:operation name="ImportFromConfigString">
       <wsdl:input wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ImportFromConfigString" message="tns:BatchRemoteContractor_ImportFromConfigString_InputMessage" />
       <wsdl:output wsaw:Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ImportFromConfigStringResponse" message="tns:BatchRemoteContractor_ImportFromConfigString_OutputMessage" />

@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://schemas.batch.com/agent/remote/contractor" elementFormDefault="qualified" targetNamespace="http://schemas.batch.com/agent/remote/contractor" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="http://localhost:54249/RemoteContractor.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BatchAgent" />
+  <xs:element name="GetSettings">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSettingsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/BatchAgent" minOccurs="0" name="GetSettingsResult" nillable="true" type="q1:ContractorSettings" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetSettings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/BatchAgent" minOccurs="0" name="Settings" nillable="true" type="q2:ContractorSettings" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetSettingsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetIsLoaded">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetIsLoadedResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetIsLoadedResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="ImportFromConfigString">
     <xs:complexType>
       <xs:sequence>
@@ -91,7 +127,9 @@
   </xs:element>
   <xs:element name="RunResponse">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="RunResult" nillable="true" type="xs:anyType" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="SubmitData">
@@ -135,7 +173,7 @@
   <xs:element name="GetRemoteForemanStatsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/BatchAgent" minOccurs="0" name="GetRemoteForemanStatsResult" nillable="true" type="q1:ForemanStats" />
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/BatchAgent" minOccurs="0" name="GetRemoteForemanStatsResult" nillable="true" type="q3:ForemanStats" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="m4UxjJ8kqQFbJOnhQMuD9dUwEL0=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="J1+obJUeWoz6PecI5XzskKEBkzs=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="SOAP_XML">
       <properties>
@@ -236,7 +236,7 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="SOAP_XML" contract="BatchRemoteContractorNS.BatchRemoteContractor" bindingType="basicHttpBinding" address="http://localhost:54249/RemoteContractor.svc/SOAP" bindingConfiguration="SOAP_XML">
+    <endpoint name="SOAP_XML" contract="BatchRemoteContractor.BatchRemoteContractor" bindingType="basicHttpBinding" address="http://localhost:54249/RemoteContractor.svc/SOAP" bindingConfiguration="SOAP_XML">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>http://localhost:54249/RemoteContractor.svc/SOAP</serializedValue>
@@ -251,7 +251,7 @@
           <serializedValue>SOAP_XML</serializedValue>
         </property>
         <property path="/contract" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>BatchRemoteContractorNS.BatchRemoteContractor</serializedValue>
+          <serializedValue>BatchRemoteContractor.BatchRemoteContractor</serializedValue>
         </property>
         <property path="/headers" isComplexType="true" isExplicitlyDefined="false" clrType="System.ServiceModel.Configuration.AddressHeaderCollectionElement, System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>System.ServiceModel.Configuration.AddressHeaderCollectionElement</serializedValue>
@@ -321,7 +321,7 @@
         </property>
       </properties>
     </endpoint>
-    <endpoint name="SOAP_MTOM" contract="BatchRemoteContractorNS.BatchRemoteContractor" bindingType="wsHttpBinding" address="http://localhost:54249/RemoteContractor.svc/MTOM" bindingConfiguration="SOAP_MTOM">
+    <endpoint name="SOAP_MTOM" contract="BatchRemoteContractor.BatchRemoteContractor" bindingType="wsHttpBinding" address="http://localhost:54249/RemoteContractor.svc/MTOM" bindingConfiguration="SOAP_MTOM">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>http://localhost:54249/RemoteContractor.svc/MTOM</serializedValue>
@@ -336,7 +336,7 @@
           <serializedValue>SOAP_MTOM</serializedValue>
         </property>
         <property path="/contract" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>BatchRemoteContractorNS.BatchRemoteContractor</serializedValue>
+          <serializedValue>BatchRemoteContractor.BatchRemoteContractor</serializedValue>
         </property>
         <property path="/headers" isComplexType="true" isExplicitlyDefined="false" clrType="System.ServiceModel.Configuration.AddressHeaderCollectionElement, System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>System.ServiceModel.Configuration.AddressHeaderCollectionElement</serializedValue>

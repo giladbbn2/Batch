@@ -4,6 +4,7 @@ using Batch.Worker;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -101,14 +102,13 @@ namespace Batch.Foreman
                 return;
 
             if (Config == null)
-                foreman = new Foreman(ConfigString);
+                foreman = new Foreman(Id, ConfigString);
             else
-                foreman = new Foreman(Config);
+                foreman = new Foreman(Id, Config);
 
             if (ContractorSettings.IsAppDomainMonitoringEnabled)
                 AppDomain.MonitoringIsEnabled = true;
             
-            foreman.Id = Id;
             foreman.ContractorSettings = ContractorSettings;
             foreman.Load();
             IsNodesLongRunning = foreman.IsNodesLongRunning;
@@ -359,18 +359,34 @@ namespace Batch.Foreman
         }
         */
 
-        //public static 
-
-        public static ForemanLoader CreateInstance(string Id, string ConfigString, ForemanConfigurationFile Config = null, ContractorSettings ContractorSettings = null)
+        public static ForemanLoader CreateInstance(string ForemanId, string ConfigString, ForemanConfigurationFile Config = null, ContractorSettings ContractorSettings = null)
         {
-            AppDomain ad = AppDomain.CreateDomain(Guid.NewGuid().ToString());
+            if (Config == null)
+                Config = ForemanBase.ParseAndLoadConfigString(ForemanId, ConfigString, ContractorSettings);
 
-            var fl = (ForemanLoader)ad.CreateInstanceAndUnwrap(typeof(ForemanLoader).Assembly.FullName, typeof(ForemanLoader).FullName);
+            var baseDir = Path.GetDirectoryName(Config.assemblyPath);
+
+            AppDomainSetup setup = new AppDomainSetup();
+            setup.ApplicationBase = baseDir;
+            AppDomain ad = AppDomain.CreateDomain(Guid.NewGuid().ToString(), AppDomain.CurrentDomain.Evidence, setup);
+            //AppDomain ad = AppDomain.CreateDomain(Guid.NewGuid().ToString());
+
+            ForemanLoader fl = null;
+
+            //try
+            //{
+                fl = (ForemanLoader)ad.CreateInstanceAndUnwrap(typeof(ForemanLoader).Assembly.FullName, typeof(ForemanLoader).FullName);
+                //fl = new ForemanLoader();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.Message);
+            //}
 
             if (ContractorSettings == null)
                 ContractorSettings = new ContractorSettings();
 
-            fl.Id = Id; 
+            fl.Id = ForemanId; 
             fl.AppDomain = ad;
             fl.ConfigString = ConfigString;
             fl.ContractorSettings = ContractorSettings;
@@ -399,6 +415,11 @@ namespace Batch.Foreman
                 // apparently because a finally block or unmanaged code which didn't finish running
             }
             
+        }
+
+        public static void AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Batch.Contractor;
 using BatchTestBL.Test3;
 using BatchTestBL.Test6;
+using BatchTestBL.Test7;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -112,6 +114,8 @@ namespace BatchConsole
 
             c.Run("frmn1", o);
 
+            // writes 0 (as x is init'd with 0) because we're not passing a serializable object
+            // or an object inheriting from MarshalByRefObject
             Console.WriteLine(o);
 
             c.RemoveForeman("frmn1");
@@ -339,20 +343,48 @@ namespace BatchConsole
 
         public static void Test7()
         {
-            BatchTest.BatchRemoteContractorNS.BatchRemoteContractorClient c = new BatchTest.BatchRemoteContractorNS.BatchRemoteContractorClient("SOAP_XML");
+            BatchTest.BatchRemoteContractor.BatchRemoteContractorClient c = new BatchTest.BatchRemoteContractor.BatchRemoteContractorClient("SOAP_XML");
 
-            string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
+            Console.WriteLine(c.GetIsLoaded());
+            Console.WriteLine(c.GetSettings().ForemanLocalDLLBaseDir);
+
+            /*
+            BatchTest.BatchRemoteContractor.ContractorSettings settings = new BatchTest.BatchRemoteContractor.ContractorSettings();
+            settings.ForemanLocalDLLBaseDir = "c:\\localdir";
+            c.SetSettings(settings);
+
+            Console.WriteLine(c.GetSettings().ForemanLocalDLLBaseDir);
+            */
+
+            // verify these foremen do not exist
+            c.RemoveForeman("frmn1");
+            c.RemoveForeman("frmn2");
+
+            string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test7\frmn-test7.config");
             c.AddForeman("frmn1", configString);
             c.AddForeman("frmn2", configString);
 
             c.ConnectForeman("frmn1", "frmn2", false, false, 0);
 
-            int x = 0;
-            object o = (object)x;
+            // because we're using BatchAgent we can't pass complex types like a class we define on the client side
+            // but we can still pass simple objects like strings so we can pass JSON
 
-            c.Run("frmn1", o, true, false);
+            // this works
+            //int x = 0;
+            //object o = (object)x;
 
-            Console.WriteLine(o);
+            // pass json
+            Test7Object innerObj = new Test7Object();
+            innerObj.a = 15;
+            string json = JsonConvert.SerializeObject(innerObj);
+            Console.WriteLine(json);
+            
+            var o = c.Run("frmn1", json, true, false);
+
+            // json received
+            json = o.ToString();
+
+            Console.WriteLine(json);
 
             c.RemoveForeman("frmn1");
             c.RemoveForeman("frmn2");

@@ -8,10 +8,119 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BatchTest.BatchRemoteContractorNS {
+namespace BatchTest.BatchRemoteContractor {
     using System.Runtime.Serialization;
     using System;
     
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ContractorSettings", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
+    [System.SerializableAttribute()]
+    public partial class ContractorSettings : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ForemanFetchDLLBaseDirField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ForemanLocalDLLBaseDirField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsAppDomainMonitoringEnabledField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsKeepLocalForemanDLLField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsOverwriteLocalForemanDLLField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ForemanFetchDLLBaseDir {
+            get {
+                return this.ForemanFetchDLLBaseDirField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ForemanFetchDLLBaseDirField, value) != true)) {
+                    this.ForemanFetchDLLBaseDirField = value;
+                    this.RaisePropertyChanged("ForemanFetchDLLBaseDir");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ForemanLocalDLLBaseDir {
+            get {
+                return this.ForemanLocalDLLBaseDirField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ForemanLocalDLLBaseDirField, value) != true)) {
+                    this.ForemanLocalDLLBaseDirField = value;
+                    this.RaisePropertyChanged("ForemanLocalDLLBaseDir");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsAppDomainMonitoringEnabled {
+            get {
+                return this.IsAppDomainMonitoringEnabledField;
+            }
+            set {
+                if ((this.IsAppDomainMonitoringEnabledField.Equals(value) != true)) {
+                    this.IsAppDomainMonitoringEnabledField = value;
+                    this.RaisePropertyChanged("IsAppDomainMonitoringEnabled");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsKeepLocalForemanDLL {
+            get {
+                return this.IsKeepLocalForemanDLLField;
+            }
+            set {
+                if ((this.IsKeepLocalForemanDLLField.Equals(value) != true)) {
+                    this.IsKeepLocalForemanDLLField = value;
+                    this.RaisePropertyChanged("IsKeepLocalForemanDLL");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsOverwriteLocalForemanDLL {
+            get {
+                return this.IsOverwriteLocalForemanDLLField;
+            }
+            set {
+                if ((this.IsOverwriteLocalForemanDLLField.Equals(value) != true)) {
+                    this.IsOverwriteLocalForemanDLLField = value;
+                    this.RaisePropertyChanged("IsOverwriteLocalForemanDLL");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
@@ -216,13 +325,49 @@ namespace BatchTest.BatchRemoteContractorNS {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://schemas.batch.com/agent/remote/contractor", ConfigurationName="BatchRemoteContractorNS.BatchRemoteContractor")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="http://schemas.batch.com/agent/remote/contractor", ConfigurationName="BatchRemoteContractor.BatchRemoteContractor")]
     public interface BatchRemoteContractor {
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetSetting" +
+            "s", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetSetting" +
+            "sResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetSetting" +
+            "sFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
+        BatchTest.BatchRemoteContractor.ContractorSettings GetSettings();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetSetting" +
+            "s", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetSetting" +
+            "sResponse")]
+        System.Threading.Tasks.Task<BatchTest.BatchRemoteContractor.ContractorSettings> GetSettingsAsync();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SetSetting" +
+            "s", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SetSetting" +
+            "sResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SetSetting" +
+            "sFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
+        void SetSettings(BatchTest.BatchRemoteContractor.ContractorSettings Settings);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SetSetting" +
+            "s", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SetSetting" +
+            "sResponse")]
+        System.Threading.Tasks.Task SetSettingsAsync(BatchTest.BatchRemoteContractor.ContractorSettings Settings);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetIsLoade" +
+            "d", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetIsLoade" +
+            "dResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetIsLoade" +
+            "dFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
+        bool GetIsLoaded();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetIsLoade" +
+            "d", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetIsLoade" +
+            "dResponse")]
+        System.Threading.Tasks.Task<bool> GetIsLoadedAsync();
         
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ImportFrom" +
             "ConfigString", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ImportFrom" +
             "ConfigStringResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ImportFrom" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ImportFrom" +
             "ConfigStringFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
         void ImportFromConfigString(string ConfigString);
         
@@ -234,7 +379,7 @@ namespace BatchTest.BatchRemoteContractorNS {
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ExportToCo" +
             "nfigString", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ExportToCo" +
             "nfigStringResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ExportToCo" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ExportToCo" +
             "nfigStringFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
         string ExportToConfigString();
         
@@ -246,7 +391,7 @@ namespace BatchTest.BatchRemoteContractorNS {
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/AddForeman" +
             "", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/AddForeman" +
             "Response")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/AddForeman" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/AddForeman" +
             "FaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
         void AddForeman(string ForemanId, string ConfigString);
         
@@ -258,7 +403,7 @@ namespace BatchTest.BatchRemoteContractorNS {
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RemoveFore" +
             "man", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RemoveFore" +
             "manResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RemoveFore" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RemoveFore" +
             "manFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
         void RemoveForeman(string ForemanId);
         
@@ -270,7 +415,7 @@ namespace BatchTest.BatchRemoteContractorNS {
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ConnectFor" +
             "eman", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ConnectFor" +
             "emanResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ConnectFor" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/ConnectFor" +
             "emanFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
         void ConnectForeman(string ForemanIdFrom, string ForemanIdTo, bool IsForce, bool IsTestForeman, int TestForemanRequestWeight);
         
@@ -282,7 +427,7 @@ namespace BatchTest.BatchRemoteContractorNS {
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/Disconnect" +
             "Foreman", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/Disconnect" +
             "ForemanResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/Disconnect" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/Disconnect" +
             "ForemanFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
         void DisconnectForeman(string ForemanIdFrom, string ForemanIdTo);
         
@@ -293,23 +438,25 @@ namespace BatchTest.BatchRemoteContractorNS {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/Run", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RunRespons" +
             "e")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RunFaultDa" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RunFaultDa" +
             "taFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractorNS.ForemanStats))]
-        void Run(string ForemanId, object Data, bool IsFollowConnections, bool IsContinueOnError);
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractor.ContractorSettings))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractor.ForemanStats))]
+        object Run(string ForemanId, object Data, bool IsFollowConnections, bool IsContinueOnError);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/Run", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/RunRespons" +
             "e")]
-        System.Threading.Tasks.Task RunAsync(string ForemanId, object Data, bool IsFollowConnections, bool IsContinueOnError);
+        System.Threading.Tasks.Task<object> RunAsync(string ForemanId, object Data, bool IsFollowConnections, bool IsContinueOnError);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SubmitData" +
             "", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SubmitData" +
             "Response")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SubmitData" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SubmitData" +
             "FaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractorNS.ForemanStats))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractor.ContractorSettings))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(BatchTest.BatchRemoteContractor.ForemanStats))]
         bool SubmitData(string ForemanId, string QueueName, object Data);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/SubmitData" +
@@ -320,7 +467,7 @@ namespace BatchTest.BatchRemoteContractorNS {
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/CompleteAd" +
             "ding", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/CompleteAd" +
             "dingResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/CompleteAd" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/CompleteAd" +
             "dingFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
         bool CompleteAdding(string ForemanId, string QueueName);
         
@@ -332,23 +479,23 @@ namespace BatchTest.BatchRemoteContractorNS {
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetRemoteF" +
             "oremanStats", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetRemoteF" +
             "oremanStatsResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractorNS.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetRemoteF" +
+        [System.ServiceModel.FaultContractAttribute(typeof(BatchTest.BatchRemoteContractor.FaultData), Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetRemoteF" +
             "oremanStatsFaultDataFault", Name="FaultData", Namespace="http://schemas.datacontract.org/2004/07/BatchAgent")]
-        BatchTest.BatchRemoteContractorNS.ForemanStats GetRemoteForemanStats(string ForemanId);
+        BatchTest.BatchRemoteContractor.ForemanStats GetRemoteForemanStats(string ForemanId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetRemoteF" +
             "oremanStats", ReplyAction="http://schemas.batch.com/agent/remote/contractor/BatchRemoteContractor/GetRemoteF" +
             "oremanStatsResponse")]
-        System.Threading.Tasks.Task<BatchTest.BatchRemoteContractorNS.ForemanStats> GetRemoteForemanStatsAsync(string ForemanId);
+        System.Threading.Tasks.Task<BatchTest.BatchRemoteContractor.ForemanStats> GetRemoteForemanStatsAsync(string ForemanId);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface BatchRemoteContractorChannel : BatchTest.BatchRemoteContractorNS.BatchRemoteContractor, System.ServiceModel.IClientChannel {
+    public interface BatchRemoteContractorChannel : BatchTest.BatchRemoteContractor.BatchRemoteContractor, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class BatchRemoteContractorClient : System.ServiceModel.ClientBase<BatchTest.BatchRemoteContractorNS.BatchRemoteContractor>, BatchTest.BatchRemoteContractorNS.BatchRemoteContractor {
+    public partial class BatchRemoteContractorClient : System.ServiceModel.ClientBase<BatchTest.BatchRemoteContractor.BatchRemoteContractor>, BatchTest.BatchRemoteContractor.BatchRemoteContractor {
         
         public BatchRemoteContractorClient() {
         }
@@ -367,6 +514,30 @@ namespace BatchTest.BatchRemoteContractorNS {
         
         public BatchRemoteContractorClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
+        }
+        
+        public BatchTest.BatchRemoteContractor.ContractorSettings GetSettings() {
+            return base.Channel.GetSettings();
+        }
+        
+        public System.Threading.Tasks.Task<BatchTest.BatchRemoteContractor.ContractorSettings> GetSettingsAsync() {
+            return base.Channel.GetSettingsAsync();
+        }
+        
+        public void SetSettings(BatchTest.BatchRemoteContractor.ContractorSettings Settings) {
+            base.Channel.SetSettings(Settings);
+        }
+        
+        public System.Threading.Tasks.Task SetSettingsAsync(BatchTest.BatchRemoteContractor.ContractorSettings Settings) {
+            return base.Channel.SetSettingsAsync(Settings);
+        }
+        
+        public bool GetIsLoaded() {
+            return base.Channel.GetIsLoaded();
+        }
+        
+        public System.Threading.Tasks.Task<bool> GetIsLoadedAsync() {
+            return base.Channel.GetIsLoadedAsync();
         }
         
         public void ImportFromConfigString(string ConfigString) {
@@ -417,11 +588,11 @@ namespace BatchTest.BatchRemoteContractorNS {
             return base.Channel.DisconnectForemanAsync(ForemanIdFrom, ForemanIdTo);
         }
         
-        public void Run(string ForemanId, object Data, bool IsFollowConnections, bool IsContinueOnError) {
-            base.Channel.Run(ForemanId, Data, IsFollowConnections, IsContinueOnError);
+        public object Run(string ForemanId, object Data, bool IsFollowConnections, bool IsContinueOnError) {
+            return base.Channel.Run(ForemanId, Data, IsFollowConnections, IsContinueOnError);
         }
         
-        public System.Threading.Tasks.Task RunAsync(string ForemanId, object Data, bool IsFollowConnections, bool IsContinueOnError) {
+        public System.Threading.Tasks.Task<object> RunAsync(string ForemanId, object Data, bool IsFollowConnections, bool IsContinueOnError) {
             return base.Channel.RunAsync(ForemanId, Data, IsFollowConnections, IsContinueOnError);
         }
         
@@ -441,11 +612,11 @@ namespace BatchTest.BatchRemoteContractorNS {
             return base.Channel.CompleteAddingAsync(ForemanId, QueueName);
         }
         
-        public BatchTest.BatchRemoteContractorNS.ForemanStats GetRemoteForemanStats(string ForemanId) {
+        public BatchTest.BatchRemoteContractor.ForemanStats GetRemoteForemanStats(string ForemanId) {
             return base.Channel.GetRemoteForemanStats(ForemanId);
         }
         
-        public System.Threading.Tasks.Task<BatchTest.BatchRemoteContractorNS.ForemanStats> GetRemoteForemanStatsAsync(string ForemanId) {
+        public System.Threading.Tasks.Task<BatchTest.BatchRemoteContractor.ForemanStats> GetRemoteForemanStatsAsync(string ForemanId) {
             return base.Channel.GetRemoteForemanStatsAsync(ForemanId);
         }
     }

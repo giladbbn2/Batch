@@ -67,7 +67,7 @@
   <ItemGroup>
     <Compile Include="Faults\FaultData.cs" />
     <Compile Include="Contracts\IRemoteContractor.cs" />
-    <Compile Include="IBatchAgent.cs" />
+    <Compile Include="Models\ContractorSettings.cs" />
     <Compile Include="Models\ForemanStats.cs" />
     <Compile Include="RemoteContractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

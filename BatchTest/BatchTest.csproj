@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -47,7 +51,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service References\BatchRemoteContractorNS\Reference.cs">
+    <Compile Include="Service References\BatchRemoteContractor\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
@@ -55,18 +59,23 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Service References\BatchRemoteContractorNS\BatchRemoteContractor.wsdl" />
-    <None Include="Service References\BatchRemoteContractorNS\BatchTest.BatchRemoteContractorNS.ForemanStats.datasource">
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\Batch.Contractor.ContractorSettings.datasource" />
+    <None Include="Service References\BatchRemoteContractor\BatchRemoteContractor.wsdl" />
+    <None Include="Service References\BatchRemoteContractor\BatchTest.BatchRemoteContractor.ContractorSettings.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\BatchRemoteContractorNS\RemoteContractor.wsdl" />
-    <None Include="Service References\BatchRemoteContractorNS\RemoteContractor.xsd">
+    <None Include="Service References\BatchRemoteContractor\BatchTest.BatchRemoteContractor.ForemanStats.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BatchRemoteContractor\RemoteContractor.wsdl" />
+    <None Include="Service References\BatchRemoteContractor\RemoteContractor.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BatchRemoteContractorNS\RemoteContractor1.xsd">
+    <None Include="Service References\BatchRemoteContractor\RemoteContractor1.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BatchRemoteContractorNS\RemoteContractor2.xsd">
+    <None Include="Service References\BatchRemoteContractor\RemoteContractor2.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
@@ -84,19 +93,19 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadataStorage Include="Service References\BatchRemoteContractorNS\" />
+    <WCFMetadataStorage Include="Service References\BatchRemoteContractor\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\BatchRemoteContractorNS\RemoteContractor.disco" />
+    <None Include="Service References\BatchRemoteContractor\RemoteContractor.disco" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\BatchRemoteContractorNS\configuration91.svcinfo" />
+    <None Include="Service References\BatchRemoteContractor\configuration91.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\BatchRemoteContractorNS\configuration.svcinfo" />
+    <None Include="Service References\BatchRemoteContractor\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\BatchRemoteContractorNS\Reference.svcmap">
+    <None Include="Service References\BatchRemoteContractor\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>

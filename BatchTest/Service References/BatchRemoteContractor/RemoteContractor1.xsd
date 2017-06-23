@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/BatchAgent" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BatchAgent" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="http://localhost:54249/RemoteContractor.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:complexType name="ContractorSettings">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ForemanFetchDLLBaseDir" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ForemanLocalDLLBaseDir" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsAppDomainMonitoringEnabled" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsKeepLocalForemanDLL" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsOverwriteLocalForemanDLL" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ContractorSettings" nillable="true" type="tns:ContractorSettings" />
   <xs:complexType name="FaultData">
     <xs:sequence>
       <xs:element minOccurs="0" name="DetailedInformation" nillable="true" type="xs:string" />

@@ -16,9 +16,23 @@ namespace BatchAgent
     )]
     public interface IRemoteContractor
     {
-        ContractorSettings Settings { get; }
+        // added
+        [OperationContract]
+        [FaultContract(typeof(FaultData))]
+        [WebInvoke(Method = "*")]
+        ContractorSettings GetSettings();
 
-        bool IsLoaded { get; }
+        // added
+        [OperationContract]
+        [FaultContract(typeof(FaultData))]
+        [WebInvoke(Method = "*")]
+        void SetSettings(ContractorSettings Settings);
+
+        // added
+        [OperationContract]
+        [FaultContract(typeof(FaultData))]
+        [WebInvoke(Method = "*")]
+        bool GetIsLoaded();
 
         [OperationContract]
         [FaultContract(typeof(FaultData))]
@@ -50,10 +64,11 @@ namespace BatchAgent
         [WebInvoke(Method = "*")]
         void DisconnectForeman(string ForemanIdFrom, string ForemanIdTo);
 
+        // changed
         [OperationContract]
         [FaultContract(typeof(FaultData))]
         [WebInvoke(Method = "*")]
-        void Run(string ForemanId, object Data = null, bool IsFollowConnections = true, bool IsContinueOnError = false);
+        object Run(string ForemanId, object Data = null, bool IsFollowConnections = true, bool IsContinueOnError = false);
 
         [OperationContract]
         [FaultContract(typeof(FaultData))]
