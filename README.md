@@ -86,16 +86,18 @@ __frmn1.dll (Class lib):__
 
 ~~~~
 
+/* Add a reference to BatchFoundation */
+
 namespace Foreman1
 {
-    public class MyWorker : Worker
+	public class MyWorker : Worker
     {
         public override void Run(BlockingCollection<object> Input, BlockingCollection<object> Output, ref object Data, bool IsTest)
         {
             Data = (object)((int)Data + 5);
             Console.WriteLine(DateTime.UtcNow + " - W1: " + Data);
 			
-			// Data will be passed to downstream Foremen
+			// Data will be passed to connected downstream Foremen
         }
     }	
 }
@@ -105,6 +107,8 @@ namespace Foreman1
 __Console App:__
 
 ~~~~
+
+/* Add a reference to Batch */
 
 namespace ConsoleApp1
 {
@@ -150,7 +154,9 @@ namespace ConsoleApp1
 
 			object o = (object)x;
 
-			// a simple object in this case is not serializable so we won't get anything back (one-way)
+			// a simple object in this case is not serializable so we won't get anything back - it's a one way
+			// communication to the Foreman. If we need to get a result back we would have to create a class that
+			// extends MarshalByRefObject OR apply the SerializableAttribute to the class
 
 			// this will automatically run frmn2 immediately after frmn1 ends.
 
@@ -158,6 +164,7 @@ namespace ConsoleApp1
 		}
 	}
 }
+
 ~~~~
 
 ## License
