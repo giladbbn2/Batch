@@ -80,7 +80,7 @@ running Foremen and another one tests communication with BatchAgent by using JSO
 * BatchTestBL directory - contains some business logic to be loaded as Foremen by BatchTest. Inner test directories
 are numbered according to BatchTest unit tests.
 
-## A Simple Example
+## A Simple Example (One-way communication to a short running Foreman)
 
 __frmn1.dll (Class lib):__
 
