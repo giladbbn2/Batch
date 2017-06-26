@@ -85,7 +85,6 @@ are numbered according to BatchTest unit tests.
 __frmn1.dll (Class lib):__
 
 ~~~~
-
 /* Add a reference to BatchFoundation */
 
 namespace Foreman1
@@ -107,7 +106,6 @@ namespace Foreman1
 __Console App:__
 
 ~~~~
-
 /* Add a reference to Batch */
 
 namespace ConsoleApp1
@@ -160,7 +158,14 @@ namespace ConsoleApp1
 
 			// this will automatically run frmn2 immediately after frmn1 ends.
 
-			c.Run("frmn1", o);		
+			c.Run("frmn1", o);
+
+			/*
+				The console window shows:
+				
+				{DateTime.UtcNow} - W1: 5
+				{DateTime.UtcNow} - W1: 10
+			*/
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace BatchConsole
     {
         static void Main(string[] args)
         {
-            Test7();
+            Test2();
         }
 
         public static void Test1()
