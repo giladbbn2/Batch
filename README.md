@@ -116,36 +116,19 @@ namespace ConsoleApp1
 		{
 			var c = new Contractor();
 
-			string configString = File.ReadAllText("C:\\batchtest\\frmn1.config");
-
+			string configString = "{ \"foremanVer\": \"0.1\", \"assemblyPath\": \"C:\\\\batchtest\\\\frmn1.dll\", \"nodes\": [{ \"name\": \"n1\", \"className\": \"Foreman1.MyWorker\" }] }";
+			
 			// create two Foremen with the same BL
 
 			c.AddForeman("frmn1", configString);
 
 			c.AddForeman("frmn2", configString);
 
-			/*
-
-			frmn1.config:
-
-			{
-				"foremanVer": "0.1",
-				"assemblyPath": "C:\\batchtest\\frmn1.dll",
-				"nodes": [{
-					"name": "n1",
-					"className": "Foreman1.MyWorker"    
-				}]
-			}
-
-			there's only one Worker (Foreman1.MyWorker). This is a simple short running Foreman.
-
-			*/
-
 			// the output of frmn1 shall be the input for frmn2
 
 			c.ConnectForeman("frmn1", "frmn2");
 
-			int x = 5;
+			int x = 100;
 
 			object o = (object)x;
 
@@ -160,8 +143,8 @@ namespace ConsoleApp1
 			/*
 				The console window shows:
 				
-				{DateTime.UtcNow} - W1: 5
-				{DateTime.UtcNow} - W1: 10
+				{DateTime.UtcNow} - W1: 105
+				{DateTime.UtcNow} - W1: 110
 			*/
 		}
 	}

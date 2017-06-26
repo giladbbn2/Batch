@@ -102,7 +102,7 @@ namespace BatchConsole
         public static void Test2()
         {
             var c = new Contractor();
-
+            
             string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test2\frmn-test2.config");
             c.AddForeman("frmn1", configString);
             c.AddForeman("frmn2", configString);
@@ -361,6 +361,8 @@ namespace BatchConsole
             c.RemoveForeman("frmn2");
 
             string configString = File.ReadAllText(@"C:\projects\Batch\BatchTestBL\Test7\frmn-test7.config");
+            //string configString = "{\"foremanVer\": \"0.1\", \"assemblyPath\": \"C:\\\\projects\\\\Batch\\\\BatchTestBL\\\\bin\\\\Debug\\\\BatchTestBL.dll\", \"nodes\": [{\"name\": \"n1\", \"className\": \"BatchTestBL.Test7.MyWorker1\"}]}";
+
             c.AddForeman("frmn1", configString);
             c.AddForeman("frmn2", configString);
 
