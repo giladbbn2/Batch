@@ -133,7 +133,6 @@ namespace ConsoleApp1
 				"assemblyPath": "C:\\batchtest\\frmn1.dll",
 				"nodes": [{
 					"name": "n1",
-					"exeOrderId": 1,
 					"className": "Foreman1.MyWorker"    
 				}]
 			}

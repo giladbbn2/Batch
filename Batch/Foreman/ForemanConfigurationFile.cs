@@ -29,7 +29,7 @@ namespace Batch.Foreman
         public int id;
         public string name;
         public string className;
-        public int exeOrderId;
+        public int exeOrderId = 1;
     }
 
     [Serializable]
