@@ -80,7 +80,7 @@ running Foremen and another one tests communication with BatchAgent by using JSO
 * BatchTestBL directory - contains some business logic to be loaded as Foremen by BatchTest. Inner test directories
 are numbered according to BatchTest unit tests.
 
-## A Simple Example (One-way communication to a short running Foreman)
+## A Simple Example (one-way communication to a short running Foreman)
 
 __frmn1.dll (Class lib):__
 
@@ -135,9 +135,7 @@ namespace ConsoleApp1
 					"name": "n1",
 					"exeOrderId": 1,
 					"className": "Foreman1.MyWorker"    
-				}],
-				"queues": [],
-				"connections": []
+				}]
 			}
 
 			there's only one Worker (Foreman1.MyWorker). This is a simple short running Foreman.

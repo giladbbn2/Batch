@@ -229,37 +229,40 @@ namespace Batch.Foreman
             }
 
             // Register queues
-            if (Config.queues != null && Config.queues.Count > 0)
+            if (Config.queues == null || Config.queues.Count == 0)
+                Config.queues = new List<FCFQueue>();
+
+            if (Config.queues.Count > 0 && !IsNodesLongRunning)
+                throw new Exception("Can't define queues in short running foremen");
+
+            queues = new BlockingCollection<object>[Config.queues.Count];
+            queueNameToId = new Dictionary<string, int>(Config.queues.Count);
+            //queueIsToEl = new bool[config.queues.Count];
+            //queueIsFromEl = new bool[config.queues.Count];
+            foreach (var configQueue in Config.queues)
             {
-                if (!IsNodesLongRunning)
-                    throw new Exception("Can't define queues in short running foremen");
-
-                queues = new BlockingCollection<object>[Config.queues.Count];
-                queueNameToId = new Dictionary<string, int>(Config.queues.Count);
-                //queueIsToEl = new bool[config.queues.Count];
-                //queueIsFromEl = new bool[config.queues.Count];
-                foreach (var configQueue in Config.queues)
+                if (queueNameToId.ContainsKey(configQueue.name))
                 {
-                    if (queueNameToId.ContainsKey(configQueue.name))
-                    {
-                        string err = "The queue name '" + configQueue.name + "' is already registered";
-                        throw new ArgumentException(err);
-                    }
-
-                    int queueId = QueueCounter;
-
-                    if (configQueue.bufferLimit == 0)
-                        queues[queueId] = new BlockingCollection<object>();
-                    else
-                        queues[queueId] = new BlockingCollection<object>(configQueue.bufferLimit);
-
-                    queueNameToId.Add(configQueue.name, queueId);
-
-                    QueueCounter++;
+                    string err = "The queue name '" + configQueue.name + "' is already registered";
+                    throw new ArgumentException(err);
                 }
+
+                int queueId = QueueCounter;
+
+                if (configQueue.bufferLimit == 0)
+                    queues[queueId] = new BlockingCollection<object>();
+                else
+                    queues[queueId] = new BlockingCollection<object>(configQueue.bufferLimit);
+
+                queueNameToId.Add(configQueue.name, queueId);
+
+                QueueCounter++;
             }
 
             // Register connections
+            if (Config.connections == null)
+                Config.connections = new List<FCFConnection>();
+
             foreach (var configConnection in Config.connections)
             {
                 string fromName = configConnection.from;
