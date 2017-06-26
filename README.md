@@ -141,10 +141,10 @@ namespace ConsoleApp1
 			c.Run("frmn1", o);
 
 			/*
-				The console window shows:
-				
-				{DateTime.UtcNow} - W1: 105
-				{DateTime.UtcNow} - W1: 110
+			Output:
+			
+			{DateTime.UtcNow} - W1: 105
+			{DateTime.UtcNow} - W1: 110
 			*/
 		}
 	}
