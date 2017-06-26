@@ -17,8 +17,9 @@ namespace BatchConsole
     class Program
     {
         static void Main(string[] args)
+
         {
-            Test7();
+            Test2();
         }
 
         public static void Test1()
@@ -110,13 +111,13 @@ namespace BatchConsole
             c.ConnectForeman("frmn1", "frmn2", false);
 
             int x = 0;
-            object o = (object)x;
+            //object o = (object)x;
 
-            c.Run("frmn1", o);
+            c.Run("frmn1", (object)8);
 
             // writes 0 (as x is init'd with 0) because we're not passing a serializable object
             // or an object inheriting from MarshalByRefObject
-            Console.WriteLine(o);
+            //Console.WriteLine(o);
 
             c.RemoveForeman("frmn1");
             c.RemoveForeman("frmn2");

@@ -80,9 +80,9 @@ running Foremen and another one tests communication with BatchAgent by using JSO
 * BatchTestBL directory - contains some business logic to be loaded as Foremen by BatchTest. Inner test directories
 are numbered according to BatchTest unit tests.
 
-## A Simple Example (one-way communication to a short running Foreman)
+## Example 1: one-way communication to a short running Foreman
 
-__frmn1.dll (Class lib):__
+__Class lib (frmn1.dll):__
 
 ~~~~
 /* Add a reference to BatchFoundation */
@@ -106,6 +106,7 @@ namespace Foreman1
 __Console App:__
 
 ~~~~
+
 /* Add a reference to Batch */
 
 namespace ConsoleApp1
@@ -128,17 +129,13 @@ namespace ConsoleApp1
 
 			c.ConnectForeman("frmn1", "frmn2");
 
-			int x = 100;
-
-			object o = (object)x;
-
 			// a simple object in this case is not serializable so we won't get anything back - it's a one way
 			// communication to the Foreman. If we need to get a result back we would have to create a class that
 			// extends MarshalByRefObject OR apply the SerializableAttribute to the class
 
 			// this will automatically run frmn2 immediately after frmn1 ends.
 
-			c.Run("frmn1", o);
+			c.Run("frmn1", (object)100);
 
 			/*
 			Output:

@@ -17,6 +17,7 @@ namespace BatchTestBL.Test2
             Data = (object)((int)Data + 5);
             Console.WriteLine(DateTime.UtcNow + " - W1: " + Data);
 
+            // just test that referencing Newtonsoft.JSON is not failing
             var json = JsonConvert.SerializeObject(null);
         }
     }
