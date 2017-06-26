@@ -82,7 +82,7 @@ are numbered according to BatchTest unit tests.
 
 ## A Simple Example
 
-__frmn1-bl.dll:__
+__frmn1.dll (Class lib):__
 
 ~~~~
 
@@ -95,61 +95,69 @@ namespace Foreman1
             Data = (object)((int)Data + 5);
             Console.WriteLine(DateTime.UtcNow + " - W1: " + Data);
 			
-			//Data will be passed to downstream Foremen
+			/* Data will be passed to downstream Foremen */
         }
     }	
 }
 
 ~~~~
 
-__static void Main(string[] args):__
+__Console App:__
 
 ~~~~
 
-var c = new Contractor();
-
-string configString = File.ReadAllText("C:\\\\batchtest\\\\frmn1.config");
-
-// create two Foremen with the same BL
-
-c.AddForeman("frmn1", configString);
-
-c.AddForeman("frmn2", configString);
-
-/*
-
-frmn1.config:
-
+namespace ConsoleApp1
 {
-	"foremanVer": "0.1",
-	"assemblyPath": "C:\\\\batchtest\\\\frmn1-bl.dll",
-	"nodes": [{
-		"name": "n1",
-		"exeOrderId": 1,
-		"className": "Foreman1.MyWorker"    
-	}],
-	"queues": [],
-	"connections": []
+	class Program
+	{
+		static void Main(string[] args)
+		{
+			var c = new Contractor();
+
+			string configString = File.ReadAllText("C:\\\\batchtest\\\\frmn1.config");
+
+			// create two Foremen with the same BL
+
+			c.AddForeman("frmn1", configString);
+
+			c.AddForeman("frmn2", configString);
+
+			/*
+
+			frmn1.config:
+
+			{
+				"foremanVer": "0.1",
+				"assemblyPath": "C:\\\\batchtest\\\\frmn1.dll",
+				"nodes": [{
+					"name": "n1",
+					"exeOrderId": 1,
+					"className": "Foreman1.MyWorker"    
+				}],
+				"queues": [],
+				"connections": []
+			}
+
+			there's only one Worker (Foreman1.MyWorker). This is a simple short running Foreman.
+
+			*/
+
+			// the output of frmn1 shall be the input for frmn2
+
+			c.ConnectForeman("frmn1", "frmn2");
+
+			int x = 5;
+
+			object o = (object)x;
+
+			// a simple object in this case is not serializable so we won't get anything back (one-way)
+
+			// this will automatically run frmn2 immediately after frmn1 ends.
+
+			c.Run("frmn1", o);		
+		}
+	}
 }
-
-there's only one Worker (Foreman1.MyWorker). This is a simple short running Foreman.
-
-*/
-
-// the output of frmn1 shall be the input for frmn2
-
-c.ConnectForeman("frmn1", "frmn2");
-
-int x = 5;
-
-object o = (object)x;
-
-// a simple object in this case is not serializable so we won't get anything back (one-way)
-
-// this will automatically run frmn2 immediately after frmn1 ends.
-
-c.Run("frmn1", o);
-
 ~~~~
 
 ## License
