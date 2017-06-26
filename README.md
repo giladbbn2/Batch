@@ -114,7 +114,7 @@ namespace ConsoleApp1
 		{
 			var c = new Contractor();
 
-			string configString = File.ReadAllText("C:\\\\batchtest\\\\frmn1.config");
+			string configString = File.ReadAllText("C:\\batchtest\\frmn1.config");
 
 			// create two Foremen with the same BL
 
@@ -128,7 +128,7 @@ namespace ConsoleApp1
 
 			{
 				"foremanVer": "0.1",
-				"assemblyPath": "C:\\\\batchtest\\\\frmn1.dll",
+				"assemblyPath": "C:\\batchtest\\frmn1.dll",
 				"nodes": [{
 					"name": "n1",
 					"exeOrderId": 1,
