@@ -38,8 +38,8 @@ implemented messaging queue system (Distributed Batch is coming soon!)
 
 Batch envisions the way an enterprise server side system works as an assembly line. Imagine a conveyor belt
 running through several rooms in a factory. Each room occupies a different assembly worker that is responsible
-for doing something very specific. Every time a box reaches a certain room the room's worker modifies it according 
-to his instructions and puts the modified box on the rotating belt again to be conveyed to the next room in line.
+for doing something very specific. Every time a box reaches a certain room a worker modifies it according 
+to its instructions and puts the modified box on the belt again to be conveyed to the next room in line.
 You may even have some branching points along its way to route different boxes to different rooms and another
 branching point connecting the output of different rooms into a single pathway leading to more rooms downstream.
 The major advantage here is that there's (supposed to be) complete modularity between every room. A worker in some
