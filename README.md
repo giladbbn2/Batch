@@ -32,7 +32,7 @@ mechanisms to route incoming server traffic to a different server side software
 * Enables chaining different analytical (logical) building blocks together by a non-developer to be used for
 routine analytics use (Creating ETLs)
 * Enables distributing different logical building blocks between several computers in a network via an internally
-implemented messaging queue system (Distributed Batch is coming soon!)
+implemented messaging queue system - distribution is enabled using BatchAgent
 
 ## Philosophy
 
